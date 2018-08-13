@@ -17,7 +17,7 @@ public class Initialize_Contest_Test {
 
 		// Loading configuration properties
 		try{
-			FileInputStream fileStream = new FileInputStream("config.properties");
+			FileInputStream fileStream = new FileInputStream("config_example.properties");
 			prop.load(fileStream);
 		} catch (IOException e){
 			System.out.println("Error message: " + e.getMessage());
