@@ -1,4 +1,4 @@
-package com.sapfir;
+package com.sapfir.tests;
 
 import org.testng.annotations.Test;
 import static org.testng.Assert.assertTrue;

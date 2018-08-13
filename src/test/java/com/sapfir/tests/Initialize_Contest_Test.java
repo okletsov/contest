@@ -1,5 +1,6 @@
-package com.sapfir;
+package com.sapfir.tests;
 
+import com.sapfir.helpers.ReadProperties;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

@@ -2,7 +2,7 @@
 <suite name = "Suite_Initialize_Contest">
     <test name = "Test_Initialize_Contest">
         <classes>
-            <class name = "com.sapfir.Initialize_Contest_Test"></class>
+            <class name = "com.sapfir.tests.Initialize_Contest_Test"></class>
         </classes>
     </test>
 </suite>

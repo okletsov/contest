@@ -1,4 +1,4 @@
-package com.sapfir;
+package com.sapfir.helpers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
