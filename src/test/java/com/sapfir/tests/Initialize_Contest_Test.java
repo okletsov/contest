@@ -9,14 +9,13 @@ public class Initialize_Contest_Test {
 
 	@BeforeClass
 	public void setUp() {
-
+		ReadProperties properies = new ReadProperties();
+		ConnectToDatabase connection =
+				new ConnectToDatabase(properies.getDatabaseURL(), properies.getDatabaseUsername(), properies.getDatabasePassword());
 	}
 
 	@Test
 	public void test() {
-		ReadProperties rp = new ReadProperties();
-		System.out.println(rp.getDatabaseURL());
 
-		ConnectToDatabase c = new ConnectToDatabase(rp.getDatabaseURL(), rp.getDatabaseUsername(), rp.getDatabasePassword());
 	}
 }

@@ -14,7 +14,7 @@ public class ReadProperties {
         Properties prop = new Properties();
 
         try{
-            FileInputStream fileStream = new FileInputStream("config_example.properties");
+            FileInputStream fileStream = new FileInputStream("config.properties");
             prop.load(fileStream);
         } catch (IOException e){
             System.out.println("Error message: " + e.getMessage());
