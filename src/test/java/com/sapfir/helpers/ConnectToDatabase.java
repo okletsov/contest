@@ -6,13 +6,11 @@ import java.sql.SQLException;
 
 public class ConnectToDatabase {
 
-    private Connection conn = null;
-
     public ConnectToDatabase(String dbUrl, String dbUsername, String dbPassword) {
         System.out.println("Connecting database...");
 
         try {
-            conn = DriverManager.getConnection(dbUrl, dbUsername ,dbPassword);
+            Connection conn = DriverManager.getConnection(dbUrl, dbUsername ,dbPassword);
             System.out.println("Connection successful!");
 
         } catch (SQLException ex) {
@@ -22,7 +20,4 @@ public class ConnectToDatabase {
             System.out.println("VendorError: " + ex.getErrorCode());
         }
     }
-
-    public Connection getConn(){return conn;}
-
 }

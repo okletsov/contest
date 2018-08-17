@@ -7,11 +7,15 @@ import org.testng.annotations.Test;
 
 public class Initialize_Contest_Test {
 
+	private ConnectToDatabase connection;
+
 	@BeforeClass
 	public void setUp() {
-		ReadProperties properies = new ReadProperties();
-		ConnectToDatabase connection =
-				new ConnectToDatabase(properies.getDatabaseURL(), properies.getDatabaseUsername(), properies.getDatabasePassword());
+		ReadProperties properties = new ReadProperties();
+		connection = new ConnectToDatabase(
+						properties.getDatabaseURL(),
+						properties.getDatabaseUsername(),
+						properties.getDatabasePassword());
 	}
 
 	@Test
