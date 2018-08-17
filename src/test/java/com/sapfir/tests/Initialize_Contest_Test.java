@@ -1,6 +1,6 @@
 package com.sapfir.tests;
 
-import com.sapfir.helpers.ConnectToDatabase;
+import com.sapfir.helpers.DatabaseConnection;
 import com.sapfir.helpers.ReadProperties;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -12,14 +12,15 @@ import java.sql.SQLException;
 public class Initialize_Contest_Test {
 
 	private Connection connection;
-	private ConnectToDatabase c = new ConnectToDatabase();
+	private DatabaseConnection c = new DatabaseConnection();
 
 	@BeforeClass
 	public void setUp() {
 		ReadProperties properties = new ReadProperties();
 
 
-		connection = c.getConnection(properties.getDatabaseURL(),
+		connection = c.getConnection(
+						properties.getDatabaseURL(),
 						properties.getDatabaseUsername(),
 						properties.getDatabasePassword());
 	}

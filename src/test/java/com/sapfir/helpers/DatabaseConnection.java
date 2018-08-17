@@ -7,9 +7,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectToDatabase {
+public class DatabaseConnection {
 
-    private static final Logger Log = LogManager.getLogger(ConnectToDatabase.class.getName());
+    private static final Logger Log = LogManager.getLogger(DatabaseConnection.class.getName());
     private Connection conn;
 
     public Connection getConnection (String dbUrl, String dbUsername, String dbPassword) {
