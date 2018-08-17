@@ -1,10 +1,15 @@
 package com.sapfir.helpers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 public class ReadProperties {
+
+    private static final Logger Log = LogManager.getLogger(ReadProperties.class.getName());
 
     private String databaseURL;
     private String databaseUsername;
@@ -14,10 +19,13 @@ public class ReadProperties {
         Properties prop = new Properties();
 
         try{
+            Log.info("Reading properties file...");
             FileInputStream fileStream = new FileInputStream("config.properties");
             prop.load(fileStream);
-        } catch (IOException e){
-            System.out.println("Error message: " + e.getMessage());
+            Log.info("Successfully read properties file...");
+        } catch (IOException ex){
+            Log.error(ex.getMessage());
+            Log.trace("Stack trace: ", ex);
         }
 
         this.databaseURL = prop.getProperty("database_url");

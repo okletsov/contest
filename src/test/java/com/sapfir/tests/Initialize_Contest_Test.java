@@ -2,20 +2,31 @@ package com.sapfir.tests;
 
 import com.sapfir.helpers.ConnectToDatabase;
 import com.sapfir.helpers.ReadProperties;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class Initialize_Contest_Test {
 
-	private ConnectToDatabase connection;
+	private Connection connection;
+	private ConnectToDatabase c = new ConnectToDatabase();
 
 	@BeforeClass
 	public void setUp() {
 		ReadProperties properties = new ReadProperties();
-		connection = new ConnectToDatabase(
-						properties.getDatabaseURL(),
+
+
+		connection = c.getConnection(properties.getDatabaseURL(),
 						properties.getDatabaseUsername(),
 						properties.getDatabasePassword());
+	}
+
+	@AfterClass
+	public void tearDown() throws SQLException {
+		connection.close();
 	}
 
 	@Test

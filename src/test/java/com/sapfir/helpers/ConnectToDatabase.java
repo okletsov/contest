@@ -1,23 +1,31 @@
 package com.sapfir.helpers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectToDatabase {
 
-    public ConnectToDatabase(String dbUrl, String dbUsername, String dbPassword) {
-        System.out.println("Connecting database...");
+    private static final Logger Log = LogManager.getLogger(ConnectToDatabase.class.getName());
+    private Connection conn;
+
+    public Connection getConnection (String dbUrl, String dbUsername, String dbPassword) {
 
         try {
-            Connection conn = DriverManager.getConnection(dbUrl, dbUsername ,dbPassword);
-            System.out.println("Connection successful!");
+            Log.info("Connecting to database...");
+            this.conn = DriverManager.getConnection(dbUrl, dbUsername ,dbPassword);
+            Log.info("Connection successful...");
 
         } catch (SQLException ex) {
 
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            Log.error("SQLException: " + ex.getMessage());
+            Log.error("SQLState: " + ex.getSQLState());
+            Log.error("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
         }
+        return conn;
     }
 }
