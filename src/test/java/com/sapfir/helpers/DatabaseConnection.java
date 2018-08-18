@@ -9,18 +9,18 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private ReadProperties rp = new ReadProperties();
+    private Properties prop = new Properties();
     private static final Logger Log = LogManager.getLogger(DatabaseConnection.class.getName());
-    private Connection conn;
+    private Connection connection;
 
-    public Connection getConnection () {
+    public Connection connectToDatabase() {
 
         try {
             Log.info("Connecting to database...");
-            this.conn = DriverManager.getConnection(
-                    rp.getDatabaseURL(),
-                    rp.getDatabaseUsername(),
-                    rp.getDatabasePassword());
+            this.connection = DriverManager.getConnection(
+                    prop.getDatabaseURL(),
+                    prop.getDatabaseUsername(),
+                    prop.getDatabasePassword());
             Log.info("Connection successful...\n");
 
         } catch (SQLException ex) {
@@ -31,14 +31,14 @@ public class DatabaseConnection {
             Log.trace("Stack trace: ", ex);
             System.exit(0);
         }
-        return conn;
+        return connection;
     }
 
-    public void closeConnection(Connection conn){
+    public void closeConnection(Connection connection){
         try {
             Log.info("Closing connection...");
-            if (conn != null){
-                conn.close();
+            if (connection != null){
+                connection.close();
                 Log.info("Connection closed successfully...\n");
             } else {
                 Log.error("\nUnable to close connection because connection is null");

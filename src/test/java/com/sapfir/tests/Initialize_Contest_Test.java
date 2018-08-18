@@ -9,17 +9,17 @@ import java.sql.Connection;
 
 public class Initialize_Contest_Test {
 
-	private DatabaseConnection c = new DatabaseConnection();
+	private DatabaseConnection conn = new DatabaseConnection();
 	private Connection connection;
 
 	@BeforeClass
 	public void setUp() {
-		connection = c.getConnection();
+		connection = conn.connectToDatabase();
 	}
 
 	@AfterClass
 	public void tearDown() {
-		c.closeConnection(connection);
+		conn.closeConnection(connection);
 	}
 
 	@Test
