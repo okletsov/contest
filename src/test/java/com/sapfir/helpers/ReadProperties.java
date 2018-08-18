@@ -22,7 +22,7 @@ public class ReadProperties {
             Log.info("Reading properties file...");
             FileInputStream fileStream = new FileInputStream("config.properties");
             prop.load(fileStream);
-            Log.info("Successfully read properties file...");
+            Log.info("Successfully read properties file...\n\n");
         } catch (IOException ex){
             Log.error(ex.getMessage());
             Log.trace("Stack trace: ", ex);
