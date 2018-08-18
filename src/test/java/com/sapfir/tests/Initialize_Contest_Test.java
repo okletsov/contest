@@ -26,8 +26,8 @@ public class Initialize_Contest_Test {
 	}
 
 	@AfterClass
-	public void tearDown() throws SQLException {
-		connection.close();
+	public void tearDown() {
+		c.closeConnection(connection);
 	}
 
 	@Test
