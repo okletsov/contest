@@ -18,18 +18,22 @@ public class ContestOperations {
     private Statement statement;
 
     public void addSeasonalContest(String year, String season) {
-        String sql;
+        String sql_seasonal;
+        String sql_monthly_1;
+        String sql_monthly_2;
         String seasonal_start_date;
         String seasonal_end_date;
         String month_1_start_date;
         String month_1_end_date;
         String month_2_start_date;
         String month_2_end_date;
-        int resultSet;
+        int resultSet_seasonal;
+        int resultSet_monthly_1;
+        int resultSet_monthly_2;
 
         Connection connection = conn.connectToDatabase();
 
-        Log.info("Determining start_date and end_date...");
+        Log.info("Determining start and end dates...");
         switch (season) {
             case "Autumn":
                 seasonal_start_date = year + "-09-01 00:00:00";
@@ -69,20 +73,34 @@ public class ContestOperations {
             default:
                 seasonal_start_date = null;
                 seasonal_end_date = null;
+                month_1_start_date = null;
+                month_1_end_date = null;
+                month_2_start_date = null;
+                month_2_end_date = null;
                 Log.fatal("Incorrect season entered: " + season);
                 System.exit(0);
         }
 
-        Log.info("Inserting new seasonal contest into database...");
+        Log.info("Inserting new seasonal and monthly contests into database...");
         try{
-            sql = "INSERT INTO contest " +
+            sql_seasonal = "INSERT INTO contest " +
                     "(id, type, year, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
                     " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1);";
             statement = connection.createStatement();
-            resultSet = statement.executeUpdate(sql);
-            Log.info("Successfully added contest. Rows added: " + resultSet);
+            resultSet_seasonal = statement.executeUpdate(sql_seasonal);
+            Log.info("Successfully added seasonal contest. Rows added: " + resultSet_seasonal);
+
+            sql_monthly_1 = "INSERT INTO contest " +
+                    "(id, type, year, month, season, start_date, end_date, is_active)" +
+                    " VALUES" +
+                    " (UUID(), 'monthly', '" + year + "', '"+ "'1'," + season + "'," +
+                    " '" + month_1_start_date + "', '" + month_1_end_date + "', 1);";
+            statement = connection.createStatement();
+            resultSet_monthly_1 = statement.executeUpdate(sql_monthly_1);
+            Log.info("Successfully added month 1 contest. Rows added: " + resultSet_monthly_1);
+
         } catch (SQLException ex) {
             Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
