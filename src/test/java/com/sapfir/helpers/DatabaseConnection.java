@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DatabaseConnection {
 
@@ -21,11 +22,11 @@ public class DatabaseConnection {
                     prop.getDatabaseURL(),
                     prop.getDatabaseUsername(),
                     prop.getDatabasePassword());
-            Log.info("Connection successful...\n");
+            Log.info("Connection successful...");
 
         } catch (SQLException ex) {
 
-            Log.fatal("\nSQLException: " + ex.getMessage());
+            Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
             Log.fatal("VendorError: " + ex.getErrorCode());
             Log.trace("Stack trace: ", ex);
@@ -39,12 +40,26 @@ public class DatabaseConnection {
             Log.info("Closing connection...");
             if (connection != null){
                 connection.close();
-                Log.info("Connection closed successfully...\n");
+                Log.info("Connection closed successfully...");
             } else {
-                Log.error("\nUnable to close connection because connection is null");
+                Log.error("Unable to close connection because connection is null");
             }
         } catch (SQLException ex){
-            Log.error("\nSQL Exception: " + ex.getMessage());
+            Log.error("SQL Exception: " + ex.getMessage());
+        }
+    }
+
+    public void closeStatement(Statement statement){
+        try {
+            Log.info("Closing statement...");
+            if (statement != null){
+                statement.close();
+                Log.info("Statement closed successfully...");
+            } else {
+                Log.error("Unable to close statement because statement is null");
+            }
+        } catch (SQLException ex){
+            Log.error("SQL Exception: " + ex.getMessage());
         }
     }
 }

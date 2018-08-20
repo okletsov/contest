@@ -9,6 +9,10 @@ import java.sql.Statement;
 
 public class ContestOperations {
 
+    // Implement a check to see if there are active contests exist
+    // Implement visokosny year determination
+    // Use variables in appropriate places
+    // Implement monthly contest
     private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
 
     private DatabaseConnection conn = new DatabaseConnection();
@@ -32,8 +36,7 @@ public class ContestOperations {
         } else if (season.equals("Winter")) {
             start_date = year + "-12-01 00:00:00";
             int nextYear = Integer.parseInt(year) + 1;
-            year = Integer.toString(nextYear);
-            end_date = year + "-02-28 23:59:59";
+            end_date = Integer.toString(nextYear) + "-02-28 23:59:59";
         } else if (season.equals("Summer")) {
             start_date = year + "-06-01 00:00:00";
             end_date = year + "-08-31 23:59:59";
@@ -51,12 +54,13 @@ public class ContestOperations {
             resultSet = statement.executeUpdate(sql);
             Log.info("Rows updated: " + resultSet);
         } catch (SQLException ex) {
-            Log.fatal("\nSQLException: " + ex.getMessage());
+            Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
             Log.fatal("VendorError: " + ex.getErrorCode());
             Log.trace("Stack trace: ", ex);
             System.exit(0);
         } finally {
+            conn.closeStatement(statement);
             conn.closeConnection(connection);
         }
 

@@ -21,7 +21,7 @@ public class Properties {
             Log.info("Reading properties file...");
             FileInputStream fileStream = new FileInputStream("config.properties");
             properties.load(fileStream);
-            Log.info("Successfully read properties file...\n\n");
+            Log.info("Successfully read properties file...");
         } catch (IOException ex){
             Log.error(ex.getMessage());
             Log.trace("Stack trace: ", ex);
