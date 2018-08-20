@@ -11,22 +11,22 @@ public class ContestOperations {
 
     // Implement a check to see if there are active contests exist
     // Implement visokosny year determination
-    // Use variables in appropriate places
     // Implement monthly contest
     private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
 
     private DatabaseConnection conn = new DatabaseConnection();
-    private Connection connection;
     private Statement statement;
-    private String sql;
-    private String start_date;
-    private String end_date;
-    private int resultSet;
 
     public void addSeasonalContest(String year, String season) {
-        connection = conn.connectToDatabase();
+        String sql;
+        String start_date;
+        String end_date;
+        int resultSet;
+
+        Connection connection = conn.connectToDatabase();
 
         // Determining start_date and end_date
+        Log.info("Determining start_date and end_date...");
         if (season.equals("Autumn")) {
             start_date = year + "-09-01 00:00:00";
             end_date = year + "-11-30 23:59:59";
@@ -41,10 +41,13 @@ public class ContestOperations {
             start_date = year + "-06-01 00:00:00";
             end_date = year + "-08-31 23:59:59";
         } else {
+            start_date = null;
+            end_date = null;
             Log.fatal("Incorrect season entered: " + season);
             System.exit(0);
         }
 
+        Log.info("Inserting new seasonal contest into database...");
         try{
             sql = "INSERT INTO contest " +
                     "(id, type, year, season, start_date, end_date, is_active)" +
@@ -52,7 +55,7 @@ public class ContestOperations {
                     " (UUID(), 'seasonal', '" + year + "', '" + season + "', '" + start_date + "', '" + end_date + "', 1);";
             statement = connection.createStatement();
             resultSet = statement.executeUpdate(sql);
-            Log.info("Rows updated: " + resultSet);
+            Log.info("Successful insert. Rows added: " + resultSet);
         } catch (SQLException ex) {
             Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
@@ -63,7 +66,5 @@ public class ContestOperations {
             conn.closeStatement(statement);
             conn.closeConnection(connection);
         }
-
     }
-
 }
