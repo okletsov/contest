@@ -9,17 +9,11 @@ import java.sql.Statement;
 
 public class ContestOperations {
 
-    // Implement a check to see if there are active contests exist
+    // Implement seasonal contest deactivation
+    // Implement month 1 contest deactivation + month 2 activation
+    // Implement month 2 contest deactivation
 
     private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
-
-    private String findDaysInFebruary(String year){
-        String days = "28";
-        if (Integer.parseInt(year) % 4 == 0) {
-            days = "29";
-        }
-        return days;
-    }
 
     public void addSeasonalContest(Connection conn, String year, String season) {
 
@@ -55,9 +49,15 @@ public class ContestOperations {
                 month_2_end_date = year + "-04-30 23:59:59";
                 break;
             case "Winter":
+                //Increasing year by 1
                 int nextYearInt = Integer.parseInt(year) + 1;
                 String nextYear = Integer.toString(nextYearInt);
-                String februaryDays = findDaysInFebruary(nextYear);
+
+                //Set days in February to 29 for leap years
+                String februaryDays = "28";
+                if (Integer.parseInt(year) % 4 == 0){
+                    februaryDays = "29";
+                }
 
                 seasonal_start_date = year + "-12-01 00:00:00";
                 seasonal_end_date = nextYear + "-02-" + februaryDays + " 23:59:59";
