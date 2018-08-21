@@ -10,13 +10,10 @@ import java.sql.Statement;
 public class ContestOperations {
 
     // Implement a check to see if there are active contests exist
-    
+
     private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
 
-    private DatabaseConnection conn = new DatabaseConnection();
-    private Statement statement;
-
-    public String findDaysInFebruary(String year){
+    private String findDaysInFebruary(String year){
         String days = "28";
         if (Integer.parseInt(year) % 4 == 0) {
             days = "29";
@@ -24,7 +21,10 @@ public class ContestOperations {
         return days;
     }
 
-    public void addSeasonalContest(String year, String season) {
+    public void addSeasonalContest(Connection conn, String year, String season) {
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+
         String sql_seasonal;
         String sql_monthly_1;
         String sql_monthly_2;
@@ -34,11 +34,7 @@ public class ContestOperations {
         String month_1_end_date;
         String month_2_start_date;
         String month_2_end_date;
-        int resultSet_seasonal;
-        int resultSet_monthly_1;
-        int resultSet_monthly_2;
 
-        Connection connection = conn.connectToDatabase();
 
         Log.info("Determining start and end dates...");
         switch (season) {
@@ -90,43 +86,32 @@ public class ContestOperations {
         }
 
         Log.info("Inserting new seasonal and monthly contests into database...");
-        try{
-            sql_seasonal = "INSERT INTO contest " +
+
+        sql_seasonal = "INSERT INTO contest " +
                     "(id, type, year, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
                     " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1);";
-            statement = connection.createStatement();
-            resultSet_seasonal = statement.executeUpdate(sql_seasonal);
-            Log.info("Successfully added seasonal contest. Rows added: " + resultSet_seasonal);
+        Log.info("Adding seasonal contest...");
+        dbOp.updateDatabase(conn, sql_seasonal);
+        Log.info("Successfully added seasonal contest.");
 
-            sql_monthly_1 = "INSERT INTO contest " +
+        sql_monthly_1 = "INSERT INTO contest " +
                     "(id, type, year, month, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '1', '" + season + "'," +
                     " '" + month_1_start_date + "', '" + month_1_end_date + "', 1);";
-            statement = connection.createStatement();
-            resultSet_monthly_1 = statement.executeUpdate(sql_monthly_1);
-            Log.info("Successfully added month 1 contest. Rows added: " + resultSet_monthly_1);
+        Log.info("Adding month 1 contest");
+        dbOp.updateDatabase(conn, sql_monthly_1);
+        Log.info("Successfully added month 1 contest.");
 
-            sql_monthly_2 = "INSERT INTO contest " +
+        sql_monthly_2 = "INSERT INTO contest " +
                     "(id, type, year, month, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '2', '" + season + "'," +
                     " '" + month_2_start_date + "', '" + month_2_end_date + "', 0);";
-            statement = connection.createStatement();
-            resultSet_monthly_2 = statement.executeUpdate(sql_monthly_2);
-            Log.info("Successfully added month 2 contest. Rows added: " + resultSet_monthly_2);
-
-        } catch (SQLException ex) {
-            Log.fatal("SQLException: " + ex.getMessage());
-            Log.fatal("SQLState: " + ex.getSQLState());
-            Log.fatal("VendorError: " + ex.getErrorCode());
-            Log.trace("Stack trace: ", ex);
-            System.exit(0);
-        } finally {
-            conn.closeStatement(statement);
-            conn.closeConnection(connection);
-        }
+        Log.info("Adding month 2 contest");
+        dbOp.updateDatabase(conn, sql_monthly_2);
+        Log.info("Successfully added month 2 contest.");
     }
 }
