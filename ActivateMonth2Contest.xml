@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name = "Suite_ActivateMonth2Contest">
-    <test name = "Test_1">
-        <classes>
-            <class name = "com.sapfir.tests.Test_ActivateMonth2Contest"></class>
-        </classes>
-    </test>
-</suite>
