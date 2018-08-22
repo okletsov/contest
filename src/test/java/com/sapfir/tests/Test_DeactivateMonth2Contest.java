@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 
 import java.sql.Connection;
 
-public class Initialize_Contest_Test {
+public class Test_DeactivateMonth2Contest {
 
 	private DatabaseOperations dbOp = new DatabaseOperations();
 	private Connection conn = null;
@@ -27,8 +27,6 @@ public class Initialize_Contest_Test {
 	public void test() {
 		ContestOperations co = new ContestOperations();
 
-		co.deactivateContest(conn, "seasonal");
-		co.addContest(conn,"2018", "Winter");
-//		co.activateMonth2contest(conn);
+		co.deactivateContest(conn, "monthly");
 	}
 }
