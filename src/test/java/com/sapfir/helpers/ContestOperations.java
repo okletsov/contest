@@ -7,8 +7,6 @@ import java.sql.Connection;
 
 public class ContestOperations {
 
-    // Implement month 1 contest deactivation + month 2 activation
-
     private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
 
     public void addContest(Connection conn, String year, String season) {
@@ -121,5 +119,27 @@ public class ContestOperations {
         } else {
             Log.info("Contest deactivation: no active " + contestType +" contests found");
         }
+    }
+
+    public void activateMonth2contest (Connection conn) {
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+
+        String deactivate_month1 = "UPDATE contest SET is_active = 0 where type = 'monthly' and is_active = 1;";
+        String activate_month2 = "UPDATE contest c1 " +
+                            "SET c1.is_active = 1 " +
+                            "WHERE c1.type = 'monthly' " +
+                            "AND c1.is_active = 0 " +
+                            "AND c1.year = (SELECT c2.year from contest c2 " +
+                                            "WHERE c2.type = 'seasonal' " +
+                                            "AND c2.is_active = 1);";
+
+        Log.debug("Deactivating month 1 contest...");
+        dbOp.updateDatabase(conn, deactivate_month1);
+        Log.info("Month 1 contest successfully deactivated");
+
+        Log.debug("Activating month 2 contest");
+        dbOp.updateDatabase(conn, activate_month2);
+        Log.info("Month 2 contest successfully activated");
     }
 }
