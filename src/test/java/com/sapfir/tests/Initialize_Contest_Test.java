@@ -26,6 +26,7 @@ public class Initialize_Contest_Test {
 	@Test
 	public void test() {
 		ContestOperations co = new ContestOperations();
-		co.addSeasonalContest(conn,"2019", "Winter");
+//		co.addContest(conn,"2019", "Winter");
+		co.deactivateContest(conn, "monthly");
 	}
 }

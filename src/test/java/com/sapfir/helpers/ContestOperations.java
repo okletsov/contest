@@ -4,18 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class ContestOperations {
 
-    // Implement seasonal contest deactivation
     // Implement month 1 contest deactivation + month 2 activation
-    // Implement month 2 contest deactivation
 
     private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
 
-    public void addSeasonalContest(Connection conn, String year, String season) {
+    public void addContest(Connection conn, String year, String season) {
 
         DatabaseOperations dbOp = new DatabaseOperations();
 
@@ -111,5 +107,14 @@ public class ContestOperations {
         Log.debug("Adding month 2 contest");
         dbOp.updateDatabase(conn, sql_monthly_2);
         Log.info("Successfully added month 2 contest.");
+    }
+
+    public void deactivateContest(Connection conn, String contestType) {
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String sql = "UPDATE contest SET is_active = 0 " +
+                "     WHERE type = '" + contestType + "' AND is_active = 1;";
+        Log.debug("Deactivating contest...");
+        dbOp.updateDatabase(conn, sql);
+        Log.info("Contest successfully deactivated");
     }
 }

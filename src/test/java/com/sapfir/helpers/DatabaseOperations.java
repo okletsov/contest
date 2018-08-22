@@ -3,10 +3,7 @@ package com.sapfir.helpers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DatabaseOperations {
 
@@ -84,5 +81,26 @@ public class DatabaseOperations {
         } finally {
             closeStatement(statement);
         }
+    }
+
+    public ResultSet selectFromDatabase(Connection conn, String sql){
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        Log.debug("Executing SELECT statement...");
+        try{
+            statement = conn.createStatement();
+            resultSet = statement.executeQuery(sql);
+            Log.debug("Statement executed successfully");
+        } catch (SQLException ex){
+            Log.fatal("SQLException: " + ex.getMessage());
+            Log.fatal("SQLState: " + ex.getSQLState());
+            Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            System.exit(0);
+        } finally {
+            closeStatement(statement);
+        }
+        return resultSet;
     }
 }
