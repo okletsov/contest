@@ -88,7 +88,7 @@ public class ContestOperations {
                     " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1);";
         Log.debug("Adding seasonal contest...");
         dbOp.updateDatabase(conn, sql_seasonal);
-        Log.info("Successfully added seasonal contest.");
+        Log.info("Successfully added " + season + " " + year + " contest");
 
         sql_monthly_1 = "INSERT INTO contest " +
                     "(id, type, year, month, season, start_date, end_date, is_active)" +
@@ -97,7 +97,7 @@ public class ContestOperations {
                     " '" + month_1_start_date + "', '" + month_1_end_date + "', 1);";
         Log.debug("Adding month 1 contest");
         dbOp.updateDatabase(conn, sql_monthly_1);
-        Log.info("Successfully added month 1 contest.");
+        Log.info("Successfully added month 1 contest");
 
         sql_monthly_2 = "INSERT INTO contest " +
                     "(id, type, year, month, season, start_date, end_date, is_active)" +
@@ -106,15 +106,20 @@ public class ContestOperations {
                     " '" + month_2_start_date + "', '" + month_2_end_date + "', 0);";
         Log.debug("Adding month 2 contest");
         dbOp.updateDatabase(conn, sql_monthly_2);
-        Log.info("Successfully added month 2 contest.");
+        Log.info("Successfully added month 2 contest");
     }
 
     public void deactivateContest(Connection conn, String contestType) {
         DatabaseOperations dbOp = new DatabaseOperations();
+        int resultSet;
         String sql = "UPDATE contest SET is_active = 0 " +
                 "     WHERE type = '" + contestType + "' AND is_active = 1;";
         Log.debug("Deactivating contest...");
-        dbOp.updateDatabase(conn, sql);
-        Log.info("Contest successfully deactivated");
+        resultSet = dbOp.updateDatabase(conn, sql);
+        if (resultSet > 0){
+            Log.info( contestType + " contest successfully deactivated");
+        } else {
+            Log.info("Contest deactivation: no active " + contestType +" contests found");
+        }
     }
 }

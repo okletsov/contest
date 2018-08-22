@@ -61,7 +61,7 @@ public class DatabaseOperations {
         }
     }
 
-    public void updateDatabase(Connection conn, String sql) {
+    public int updateDatabase(Connection conn, String sql) {
 
         Statement statement = null;
         int resultSet = 0;
@@ -81,6 +81,7 @@ public class DatabaseOperations {
         } finally {
             closeStatement(statement);
         }
+        return resultSet;
     }
 
     public ResultSet selectFromDatabase(Connection conn, String sql){
