@@ -127,12 +127,12 @@ public class ContestOperations {
 
         String deactivate_month1 = "UPDATE contest SET is_active = 0 where type = 'monthly' and is_active = 1;";
         String activate_month2 = "UPDATE contest c1 " +
-                            "SET c1.is_active = 1 " +
-                            "WHERE c1.type = 'monthly' " +
-                            "AND c1.is_active = 0 " +
-                            "AND c1.year = (SELECT c2.year from contest c2 " +
-                                            "WHERE c2.type = 'seasonal' " +
-                                            "AND c2.is_active = 1);";
+                                 "JOIN contest c2 ON c1.year = c2.year " +
+                                 "AND c1.season = c2.season " +
+                                 "SET c1.is_active = 1 " +
+                                 "WHERE c2.type = 'seasonal' " +
+                                 "AND c2.is_active = 1 " +
+                                 "AND c1.month = 2;";
 
         Log.debug("Deactivating month 1 contest...");
         dbOp.updateDatabase(conn, deactivate_month1);

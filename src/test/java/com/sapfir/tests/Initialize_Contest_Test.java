@@ -28,6 +28,7 @@ public class Initialize_Contest_Test {
 		ContestOperations co = new ContestOperations();
 
 		co.deactivateContest(conn, "seasonal");
-		co.addContest(conn,"2019", "Autumn");
+		co.addContest(conn,"2018", "Winter");
+//		co.activateMonth2contest(conn);
 	}
 }
