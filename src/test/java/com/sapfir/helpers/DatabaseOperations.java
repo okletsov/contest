@@ -18,12 +18,12 @@ public class DatabaseOperations {
         Connection connection = null;
 
         try {
-            Log.info("Connecting to database...");
+            Log.debug("Connecting to database...");
             connection = DriverManager.getConnection(
                     prop.getDatabaseURL(),
                     prop.getDatabaseUsername(),
                     prop.getDatabasePassword());
-            Log.info("Connection successful...");
+            Log.info("Successfully connected to database...");
 
         } catch (SQLException ex) {
 
@@ -38,7 +38,7 @@ public class DatabaseOperations {
 
     public void closeConnection(Connection connection){
         try {
-            Log.info("Closing connection...");
+            Log.debug("Closing connection...");
             if (connection != null){
                 connection.close();
                 Log.info("Connection closed successfully...");
@@ -52,30 +52,28 @@ public class DatabaseOperations {
 
     public void closeStatement(Statement statement){
         try {
-            Log.info("Closing statement...");
+            Log.trace("Closing statement...");
             if (statement != null){
                 statement.close();
-                Log.info("Statement closed successfully...");
+                Log.trace("Statement closed successfully...");
             } else {
-                Log.error("Unable to close statement because statement is null");
+                Log.warn("Unable to close statement because statement is null");
             }
         } catch (SQLException ex){
             Log.error("SQL Exception: " + ex.getMessage());
         }
     }
 
-    public String updateDatabase(Connection conn, String sql) {
+    public void updateDatabase(Connection conn, String sql) {
 
         Statement statement = null;
-        String message = null;
-        int resultSet;
+        int resultSet = 0;
 
-        Log.info("Executing sql statement...");
+        Log.debug("Executing sql statement...");
         try{
             statement = conn.createStatement();
             resultSet = statement.executeUpdate(sql);
-            message = "Success. Rows affected: " + resultSet;
-            Log.info(message);
+            Log.debug("Success. Rows affected: " + resultSet);
 
         } catch (SQLException ex) {
             Log.fatal("SQLException: " + ex.getMessage());
@@ -86,7 +84,5 @@ public class DatabaseOperations {
         } finally {
             closeStatement(statement);
         }
-
-        return message;
     }
 }

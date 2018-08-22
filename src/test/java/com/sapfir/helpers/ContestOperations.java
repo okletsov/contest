@@ -30,7 +30,7 @@ public class ContestOperations {
         String month_2_end_date;
 
 
-        Log.info("Determining start and end dates...");
+        Log.debug("Determining start and end dates...");
         switch (season) {
             case "Autumn":
                 seasonal_start_date = year + "-09-01 00:00:00";
@@ -85,14 +85,12 @@ public class ContestOperations {
                 System.exit(0);
         }
 
-        Log.info("Inserting new seasonal and monthly contests into database...");
-
         sql_seasonal = "INSERT INTO contest " +
                     "(id, type, year, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
                     " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1);";
-        Log.info("Adding seasonal contest...");
+        Log.debug("Adding seasonal contest...");
         dbOp.updateDatabase(conn, sql_seasonal);
         Log.info("Successfully added seasonal contest.");
 
@@ -101,7 +99,7 @@ public class ContestOperations {
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '1', '" + season + "'," +
                     " '" + month_1_start_date + "', '" + month_1_end_date + "', 1);";
-        Log.info("Adding month 1 contest");
+        Log.debug("Adding month 1 contest");
         dbOp.updateDatabase(conn, sql_monthly_1);
         Log.info("Successfully added month 1 contest.");
 
@@ -110,7 +108,7 @@ public class ContestOperations {
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '2', '" + season + "'," +
                     " '" + month_2_start_date + "', '" + month_2_end_date + "', 0);";
-        Log.info("Adding month 2 contest");
+        Log.debug("Adding month 2 contest");
         dbOp.updateDatabase(conn, sql_monthly_2);
         Log.info("Successfully added month 2 contest.");
     }
