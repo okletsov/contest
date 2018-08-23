@@ -25,6 +25,7 @@ public class Properties {
         } catch (IOException ex){
             Log.error(ex.getMessage());
             Log.trace("Stack trace: ", ex);
+            System.exit(0);
         }
 
         this.databaseURL = properties.getProperty("database_url");
