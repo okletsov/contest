@@ -20,10 +20,10 @@ public class LoginPage {
     }
 
     @FindBy(id = "login-username1")
-    private WebElement username;
+    private WebElement usernameField;
 
     @FindBy(id = "login-password1")
-    private WebElement password;
+    private WebElement passwordField;
 
     @FindBy(css = "#col-content [name=login-submit]")
     private WebElement loginButton;
@@ -35,11 +35,11 @@ public class LoginPage {
         String sitePassword = prop.getSitePassword();
 
         Log.debug("Filling username...");
-        username.sendKeys(siteUsername);
+        usernameField.sendKeys(siteUsername);
         Log.info("Filled username");
 
         Log.debug("Filling password...");
-        password.sendKeys(sitePassword);
+        passwordField.sendKeys(sitePassword);
         Log.info("Filled password");
 
         Log.debug("Clicking Login button...");

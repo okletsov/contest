@@ -1,7 +1,8 @@
 package com.sapfir.tests;
 
 import com.sapfir.helpers.Properties;
-import com.sapfir.pageClasses.HomePage;
+import com.sapfir.pageClasses.CommonElements;
+import com.sapfir.pageClasses.HomePageBeforeLogin;
 import com.sapfir.pageClasses.LoginPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -32,10 +33,12 @@ public class Test_Participants {
     public void getParticipants(){
         driver.get(baseUrl);
 
-        HomePage hp = new HomePage(driver);
+        HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
         LoginPage lp = new LoginPage(driver);
+        CommonElements ce = new CommonElements(driver);
 
-        hp.clickLogin();
+        hpbl.clickLogin();
         lp.signIn();
+        ce.clickUsername();
     }
 }

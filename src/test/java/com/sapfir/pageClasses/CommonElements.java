@@ -7,23 +7,23 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class HomePage {
+public class CommonElements {
 
-    private static final Logger Log = LogManager.getLogger(HomePage.class.getName());
+    private static final Logger Log = LogManager.getLogger(CommonElements.class.getName());
 
     private WebDriver driver;
 
-    public HomePage(WebDriver driver){
+    public CommonElements(WebDriver driver){
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
-    @FindBy(name = "login-submit")
-    private WebElement loginButton;
+    @FindBy(css = "#user-header-r2 li:nth-child(5) a")
+    private WebElement username;
 
-    public void clickLogin(){
-        Log.debug("Clicking Login button on Home Page...");
-        loginButton.click();
-        Log.info("Clicked Login button on Home Page");
+    public void clickUsername(){
+        Log.debug("Clicking Username...");
+        username.click();
+        Log.info("Clicked Username");
     }
 }
