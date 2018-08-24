@@ -14,6 +14,10 @@ public class Properties {
     private String databaseUsername;
     private String databasePassword;
 
+    private String siteUrl;
+    private String siteUsername;
+    private String sitePassword;
+
     public Properties() {
         java.util.Properties properties = new java.util.Properties();
 
@@ -31,10 +35,17 @@ public class Properties {
         this.databaseURL = properties.getProperty("database_url");
         this.databaseUsername = properties.getProperty("database_username");
         this.databasePassword = properties.getProperty("database_password");
+
+        this.siteUrl = properties.getProperty("site_url");
+        this.siteUsername = properties.getProperty("site_username");
+        this.sitePassword = properties.getProperty("site_password");
     }
 
     public String getDatabaseURL() {return databaseURL;}
     public String getDatabaseUsername() {return databaseUsername;}
     public String getDatabasePassword() {return databasePassword;}
 
+    public String getSiteUrl() {return siteUrl;}
+    public String getSiteUsername() {return siteUsername;}
+    public String getSitePassword() {return sitePassword;}
 }
