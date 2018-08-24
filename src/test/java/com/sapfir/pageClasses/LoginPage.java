@@ -40,10 +40,10 @@ public class LoginPage {
 
         Log.debug("Filling password...");
         password.sendKeys(sitePassword);
-        Log.info("Password filled");
+        Log.info("Filled password");
 
-        Log.debug("Clicking login button...");
+        Log.debug("Clicking Login button...");
         loginButton.click();
-        Log.info("Login button clicked");
+        Log.info("Clicked Login button");
     }
 }

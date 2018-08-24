@@ -22,8 +22,8 @@ public class HomePage {
     private WebElement loginButton;
 
     public void clickLogin(){
-        Log.debug("Clicking Home Page Login button...");
+        Log.debug("Clicking Login button on Home Page...");
         loginButton.click();
-        Log.info("Home Page Login clicked");
+        Log.info("Clicked Login button on Home Page");
     }
 }
