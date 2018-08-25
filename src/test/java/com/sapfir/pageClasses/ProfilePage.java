@@ -1,5 +1,6 @@
 package com.sapfir.pageClasses;
 
+import com.sapfir.helpers.WaitOperations;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -24,25 +25,38 @@ public class ProfilePage {
     @FindBy(id = "feed_menu_following")
     private WebElement followingTab;
 
-    @FindBy(css = "#profile-following .item")
-    private List<WebElement> participants;
+    @FindBy(css = "#profile-following [type=submit]")
+    private WebElement saveChangesButton;
 
-    public void clickFollowingTab() throws InterruptedException {
+    public void clickFollowingTab() {
+
+        WaitOperations wo = new WaitOperations(driver);
+
         Log.debug("Clicking Following tab...");
         followingTab.click();
-        Thread.sleep(2000);
+
+        //Waiting for Save Changes button to know the tab finished loading
+        wo.waitForElement(saveChangesButton, 10);
+
         Log.info("Clicked Following tab");
     }
 
-    public void getParticipantUsername(){
+    public void getParticipantUsernames() {
 
         String username;
-        int itemIndex;
+        int childIndex;
+        List<WebElement> participants;
+
+        //Getting the list of users in Following Tab
+        participants = driver.findElements(By.cssSelector("#profile-following .item"));
 
         for (int i = 0; i < participants.size(); i++){
-            itemIndex = i + 2;
-            username = driver.findElement(By.cssSelector("#profile-following .item:nth-child(" + Integer.toString(itemIndex) +") .username")).getText();
-            System.out.println(username);
+
+            //Getting the child index of each user to generate unique css
+            childIndex = i + 2;
+
+            username = driver.findElement(By.cssSelector(
+                    "#profile-following .item:nth-child(" + Integer.toString(childIndex) +") .username")).getText();
         }
     }
 }

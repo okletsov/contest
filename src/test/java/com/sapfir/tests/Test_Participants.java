@@ -31,7 +31,7 @@ public class Test_Participants {
     }
 
     @Test
-    public void getParticipants() throws InterruptedException {
+    public void getParticipants() {
         driver.get(baseUrl);
 
         HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
@@ -43,6 +43,6 @@ public class Test_Participants {
         lp.signIn();
         ce.clickUsername();
         pp.clickFollowingTab();
-        pp.getParticipantUsername();
+        pp.getParticipantUsernames();
     }
 }
