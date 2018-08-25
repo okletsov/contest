@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfilePage {
@@ -41,22 +42,25 @@ public class ProfilePage {
         Log.info("Clicked Following tab");
     }
 
-    public void getParticipantUsernames() {
+
+    public ArrayList getParticipantUsernames() {
 
         String username;
         int childIndex;
         List<WebElement> participants;
 
+        ArrayList<String> usernames = new ArrayList<>();
+
         //Getting the list of users in Following Tab
         participants = driver.findElements(By.cssSelector("#profile-following .item"));
 
         for (int i = 0; i < participants.size(); i++){
-
             //Getting the child index of each user to generate unique css
             childIndex = i + 2;
-
             username = driver.findElement(By.cssSelector(
                     "#profile-following .item:nth-child(" + Integer.toString(childIndex) +") .username")).getText();
+            usernames.add(username);
         }
+        return usernames;
     }
 }

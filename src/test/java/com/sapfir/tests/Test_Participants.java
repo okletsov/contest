@@ -1,5 +1,6 @@
 package com.sapfir.tests;
 
+import com.sapfir.helpers.DatabaseOperations;
 import com.sapfir.helpers.Properties;
 import com.sapfir.pageClasses.CommonElements;
 import com.sapfir.pageClasses.HomePageBeforeLogin;
@@ -11,14 +12,20 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.sql.Connection;
+
 public class Test_Participants {
 
+    private DatabaseOperations dbOp = new DatabaseOperations();
+    private Connection conn = null;
     private Properties prop = new Properties();
     private WebDriver driver;
     private String baseUrl;
 
     @BeforeClass
     public void setUp() {
+
+        conn = dbOp.connectToDatabase();
         driver = new ChromeDriver();
         baseUrl = prop.getSiteUrl();
 
@@ -28,6 +35,7 @@ public class Test_Participants {
     @AfterClass
     public void tearDown() {
         driver.quit();
+        dbOp.closeConnection(conn);
     }
 
     @Test
@@ -43,6 +51,5 @@ public class Test_Participants {
         lp.signIn();
         ce.clickUsername();
         pp.clickFollowingTab();
-        pp.getParticipantUsernames();
     }
 }
