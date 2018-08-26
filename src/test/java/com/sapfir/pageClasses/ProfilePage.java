@@ -59,7 +59,7 @@ public class ProfilePage {
             childIndex = i + 2;
             username = driver.findElement(By.cssSelector(
                     "#profile-following .item:nth-child(" + Integer.toString(childIndex) +") .username")).getText();
-            usernames.add(username);
+            usernames.add(username.trim());
         }
         return usernames;
     }
