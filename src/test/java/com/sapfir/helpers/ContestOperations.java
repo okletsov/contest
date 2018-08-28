@@ -11,8 +11,6 @@ public class ContestOperations {
 
     public void addContest(Connection conn, String year, String season) {
 
-        DatabaseOperations dbOp = new DatabaseOperations();
-
         String sql_seasonal;
         String sql_monthly_1;
         String sql_monthly_2;
@@ -84,8 +82,11 @@ public class ContestOperations {
                     " VALUES" +
                     " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
                     " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1);";
+
         Log.debug("Adding seasonal contest...");
-        dbOp.updateDatabase(conn, sql_seasonal);
+        ExecuteQuery eq1 = new ExecuteQuery(conn, sql_seasonal);
+        System.out.println("Seasonal Rows affected: " + eq1.getRowsAffected());
+        eq1.cleanUp();
         Log.info("Successfully added " + season + " " + year + " contest");
 
         sql_monthly_1 = "INSERT INTO contest " +
@@ -93,8 +94,11 @@ public class ContestOperations {
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '1', '" + season + "'," +
                     " '" + month_1_start_date + "', '" + month_1_end_date + "', 1);";
+
         Log.debug("Adding month 1 contest");
-        dbOp.updateDatabase(conn, sql_monthly_1);
+        ExecuteQuery eq2 = new ExecuteQuery(conn, sql_monthly_1);
+        System.out.println("Monthly1 Rows affected: " + eq2.getRowsAffected());
+        eq2.cleanUp();
         Log.info("Successfully added month 1 contest");
 
         sql_monthly_2 = "INSERT INTO contest " +
@@ -102,18 +106,24 @@ public class ContestOperations {
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '2', '" + season + "'," +
                     " '" + month_2_start_date + "', '" + month_2_end_date + "', 0);";
+
         Log.debug("Adding month 2 contest");
-        dbOp.updateDatabase(conn, sql_monthly_2);
+        ExecuteQuery eq3 = new ExecuteQuery(conn, sql_monthly_2);
+        System.out.println("Monthly1 Rows affected: " + eq3.getRowsAffected());
+        eq3.cleanUp();
         Log.info("Successfully added month 2 contest");
     }
 
     public void deactivateContest(Connection conn, String contestType) {
-        DatabaseOperations dbOp = new DatabaseOperations();
         int resultSet;
         String sql = "UPDATE contest SET is_active = 0 " +
                 "     WHERE type = '" + contestType + "' AND is_active = 1;";
+
         Log.debug("Deactivating contest...");
-        resultSet = dbOp.updateDatabase(conn, sql);
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        resultSet = eq.getRowsAffected();
+        eq.cleanUp();
+
         if (resultSet > 0){
             Log.info( contestType + " contest successfully deactivated");
         } else {
@@ -122,8 +132,6 @@ public class ContestOperations {
     }
 
     public void activateMonth2contest (Connection conn) {
-
-        DatabaseOperations dbOp = new DatabaseOperations();
 
         String deactivate_month1 = "UPDATE contest SET is_active = 0 where type = 'monthly' and is_active = 1;";
         String activate_month2 = "UPDATE contest c1 " +
@@ -135,11 +143,13 @@ public class ContestOperations {
                                  "AND c1.month = 2;";
 
         Log.debug("Deactivating month 1 contest...");
-        dbOp.updateDatabase(conn, deactivate_month1);
+        ExecuteQuery eq1 = new ExecuteQuery(conn, deactivate_month1);
+        eq1.cleanUp();
         Log.info("Month 1 contest successfully deactivated");
 
         Log.debug("Activating month 2 contest");
-        dbOp.updateDatabase(conn, activate_month2);
+        ExecuteQuery eq2 = new ExecuteQuery(conn, activate_month2);
+        eq2.cleanUp();
         Log.info("Month 2 contest successfully activated");
     }
 }
