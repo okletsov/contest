@@ -85,7 +85,6 @@ public class ContestOperations {
 
         Log.debug("Adding seasonal contest...");
         ExecuteQuery eq1 = new ExecuteQuery(conn, sql_seasonal);
-        System.out.println("Seasonal Rows affected: " + eq1.getRowsAffected());
         eq1.cleanUp();
         Log.info("Successfully added " + season + " " + year + " contest");
 
@@ -97,7 +96,6 @@ public class ContestOperations {
 
         Log.debug("Adding month 1 contest");
         ExecuteQuery eq2 = new ExecuteQuery(conn, sql_monthly_1);
-        System.out.println("Monthly1 Rows affected: " + eq2.getRowsAffected());
         eq2.cleanUp();
         Log.info("Successfully added month 1 contest");
 
@@ -109,7 +107,6 @@ public class ContestOperations {
 
         Log.debug("Adding month 2 contest");
         ExecuteQuery eq3 = new ExecuteQuery(conn, sql_monthly_2);
-        System.out.println("Monthly1 Rows affected: " + eq3.getRowsAffected());
         eq3.cleanUp();
         Log.info("Successfully added month 2 contest");
     }

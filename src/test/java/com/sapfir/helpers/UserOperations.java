@@ -65,6 +65,6 @@ public class UserOperations {
         Log.debug("Adding " + nickname + " to 'user_nickname' table");
         ExecuteQuery eq2 = new ExecuteQuery(conn, addNicknameSql);
         eq2.cleanUp();
-        Log.info("Successfully added " + nickname + "to 'user_nickname' table");
+        Log.info("Successfully added " + nickname + " to 'user_nickname' table");
     }
 }
