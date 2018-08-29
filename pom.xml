@@ -55,6 +55,7 @@
           <version>2.22.0</version>
           <configuration>
             <systemPropertyVariables>
+             <log4j.configurationFile>resources/log4j2.xml</log4j.configurationFile>
              <year>2019</year>
              <season>Winter</season>
             </systemPropertyVariables>

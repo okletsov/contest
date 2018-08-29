@@ -6,23 +6,23 @@ import org.apache.logging.log4j.Logger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class UserOperations {
 
     private static final Logger Log = LogManager.getLogger(UserOperations.class.getName());
-    private DatabaseOperations dbOp = new DatabaseOperations();
 
     public String getUserID(Connection conn, String username){
         String userID = null;
         String sql = "SELECT id FROM user WHERE username = '" + username + "';";
-        ResultSet resultSet = dbOp.selectFromDatabase(conn, sql);
 
+        Log.debug("Getting userID for " + username);
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        ResultSet resultSet = eq.getSelectResult();
 
         try {
             while (resultSet.next()) {
-                System.out.println("Success 2");
                 userID = resultSet.getString("id");
+                Log.debug("Successfully got userID for " + username);
             }
         } catch (SQLException ex) {
             Log.fatal("SQLException: " + ex.getMessage());
@@ -36,18 +36,24 @@ public class UserOperations {
             Log.error("Unable to get userID for " + username);
             System.exit(0);
         }
+        eq.cleanUp();
         return userID;
     }
 
+    // To add new user to database just pass "New Participant" value for targetUser parameter
     public void addNickname(Connection conn, String nickname, String targetUser){
         String userId;
         String addNicknameSql;
         String addUserSql;
 
-        if (targetUser.equals("")){
+        if (targetUser.equals("New Participant")){
             addUserSql = "insert into user (id, username) values (uuid(), '" + nickname + "');";
-            dbOp.updateDatabase(conn, addUserSql);
-            System.out.println("Success 1");
+
+            Log.debug("Adding new participant " + nickname + " to 'user' table");
+            ExecuteQuery eq1 = new ExecuteQuery(conn, addUserSql);
+            eq1.cleanUp();
+            Log.info("Successfully added new participant " + nickname + " to 'user' table");
+
             userId = getUserID(conn, nickname);
         } else {
             userId = getUserID(conn, targetUser);
@@ -55,14 +61,10 @@ public class UserOperations {
 
         addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
                 "values (uuid(), '" + userId + "', '" + nickname + "');";
-        dbOp.updateDatabase(conn, addNicknameSql);
-    }
 
-    public void addUsers(Connection conn, ArrayList<String> usernames){
-
-        for (int i = 0; i < usernames.size(); i++) {
-            String username = usernames.get(i);
-            String sql = "";
-        }
+        Log.debug("Adding " + nickname + " to 'user_nickname' table");
+        ExecuteQuery eq2 = new ExecuteQuery(conn, addNicknameSql);
+        eq2.cleanUp();
+        Log.info("Successfully added " + nickname + " to 'user_nickname' table");
     }
 }
