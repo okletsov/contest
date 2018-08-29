@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class UserOperations {
 
@@ -16,12 +15,14 @@ public class UserOperations {
         String userID = null;
         String sql = "SELECT id FROM user WHERE username = '" + username + "';";
 
+        Log.debug("Getting userID for " + username);
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
         ResultSet resultSet = eq.getSelectResult();
 
         try {
             while (resultSet.next()) {
                 userID = resultSet.getString("id");
+                Log.debug("Successfully got userID for " + username);
             }
         } catch (SQLException ex) {
             Log.fatal("SQLException: " + ex.getMessage());
@@ -48,8 +49,10 @@ public class UserOperations {
         if (targetUser.equals("New Participant")){
             addUserSql = "insert into user (id, username) values (uuid(), '" + nickname + "');";
 
+            Log.debug("Adding new participant " + nickname + " to 'user' table");
             ExecuteQuery eq1 = new ExecuteQuery(conn, addUserSql);
             eq1.cleanUp();
+            Log.info("Successfully added new participant " + nickname + " to 'user' table");
 
             userId = getUserID(conn, nickname);
         } else {
@@ -59,7 +62,9 @@ public class UserOperations {
         addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
                 "values (uuid(), '" + userId + "', '" + nickname + "');";
 
+        Log.debug("Adding " + nickname + " to 'user_nickname' table");
         ExecuteQuery eq2 = new ExecuteQuery(conn, addNicknameSql);
         eq2.cleanUp();
+        Log.info("Successfully added " + nickname + "to 'user_nickname' table");
     }
 }
