@@ -19,7 +19,10 @@ public class UserOperations {
 
     public String getUserID(String username){
         String userID = null;
-        String sql = "SELECT id FROM user WHERE username = '" + username + "';";
+        String sql = "select u.id from user u " +
+                     "left join user_nickname un on u.id = un.user_id " +
+                     "where u.username = '" + username + "' " +
+                     "or un.nickname = '" + username + "';";
 
         Log.debug("Getting userID for " + username);
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
@@ -39,38 +42,50 @@ public class UserOperations {
         }
 
         if (userID == null){
-            Log.error("Unable to get userID for " + username);
-            System.exit(0);
+            Log.info("User ID for " + username + " not found");
         }
         eq.cleanUp();
         return userID;
     }
 
-    // To add new user to database just pass "New Participant" value for targetUser parameter
-    public void addNickname(String nickname, String targetUser){
-        String userId;
-        String addNicknameSql;
-        String addUserSql;
+    /*  To add new user to database just pass "New Participant" value for targetUser parameter
+        To add nickname for an existing user pass username of existing user for targetUser parameter
+     */
+    public void addUser(String nickname, String targetUser){
+        String userId = getUserID(nickname);
 
-        if (targetUser.equals("New Participant")){
-            addUserSql = "insert into user (id, username) values (uuid(), '" + nickname + "');";
+        /*  Check if user already exist in database:
+            - if YES - display a message and do nothing
+            - if NO - proceed with method execution
+         */
+        if (userId == null) {
 
-            Log.debug("Adding new participant " + nickname + " to 'user' table");
-            ExecuteQuery eq1 = new ExecuteQuery(conn, addUserSql);
-            eq1.cleanUp();
-            Log.info("Successfully added new participant " + nickname + " to 'user' table");
+            /*  Check if brand new user needs to be added:
+                - if YES - add it to both 'user' and 'user_nickname' tables
+                - if NO - just get userID for a user we are trying to add nickname for*/
+            if (targetUser.equals("New Participant")) {
 
-            userId = getUserID(nickname);
+                String addUserSql = "insert into user (id, username) values (uuid(), '" + nickname + "');";
+
+                Log.debug("Adding new participant " + nickname + " to 'user' table");
+                ExecuteQuery eq1 = new ExecuteQuery(conn, addUserSql);
+                eq1.cleanUp();
+                Log.info("Successfully added new participant " + nickname + " to 'user' table");
+
+                userId = getUserID(nickname);
+            } else {
+                userId = getUserID(targetUser);
+            }
+
+            String addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
+                    "values (uuid(), '" + userId + "', '" + nickname + "');";
+
+            Log.debug("Adding " + nickname + " to 'user_nickname' table");
+            ExecuteQuery eq2 = new ExecuteQuery(conn, addNicknameSql);
+            eq2.cleanUp();
+            Log.info("Successfully added " + nickname + " to 'user_nickname' table");
         } else {
-            userId = getUserID(targetUser);
+            Log.info("User '" + nickname + "' already exist in database with id " + userId);
         }
-
-        addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
-                "values (uuid(), '" + userId + "', '" + nickname + "');";
-
-        Log.debug("Adding " + nickname + " to 'user_nickname' table");
-        ExecuteQuery eq2 = new ExecuteQuery(conn, addNicknameSql);
-        eq2.cleanUp();
-        Log.info("Successfully added " + nickname + " to 'user_nickname' table");
     }
 }

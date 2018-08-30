@@ -53,6 +53,6 @@ public class Test_Participants {
 //        lp.signIn();
 //        ce.clickUsername();
 //        pp.clickFollowingTab();
-        uo.addNickname("Deagle", "New Participant");
+        uo.addUser("Deagle", "New Participant");
     }
 }
