@@ -7,9 +7,15 @@ import java.sql.Connection;
 
 public class ContestOperations {
 
+    private Connection conn;
+
+    public ContestOperations(Connection conn) {
+        this.conn = conn;
+    }
+
     private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
 
-    public void addContest(Connection conn, String year, String season) {
+    public void addContest(String year, String season) {
 
         String sql_seasonal;
         String sql_monthly_1;
@@ -111,7 +117,7 @@ public class ContestOperations {
         Log.info("Successfully added month 2 contest");
     }
 
-    public void deactivateContest(Connection conn, String contestType) {
+    public void deactivateContest(String contestType) {
         int resultSet;
         String sql = "UPDATE contest SET is_active = 0 " +
                 "     WHERE type = '" + contestType + "' AND is_active = 1;";
@@ -128,7 +134,7 @@ public class ContestOperations {
         }
     }
 
-    public void activateMonth2contest (Connection conn) {
+    public void activateMonth2contest() {
 
         String deactivate_month1 = "UPDATE contest SET is_active = 0 where type = 'monthly' and is_active = 1;";
         String activate_month2 = "UPDATE contest c1 " +

@@ -25,12 +25,12 @@ public class Test_AddSeasonalContest {
 
 	@Test
 	public void test() {
-		ContestOperations co = new ContestOperations();
+		ContestOperations co = new ContestOperations(conn);
 
 		String year = System.getProperty("year");
 		String season = System.getProperty("season");
 
-		co.deactivateContest(conn, "seasonal");
-		co.addContest(conn, year, season);
+		co.deactivateContest("seasonal");
+		co.addContest(year, season);
 	}
 }

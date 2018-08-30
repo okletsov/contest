@@ -25,8 +25,8 @@ public class Test_DeactivateMonth2Contest {
 
 	@Test
 	public void test() {
-		ContestOperations co = new ContestOperations();
+		ContestOperations co = new ContestOperations(conn);
 
-		co.deactivateContest(conn, "monthly");
+		co.deactivateContest("monthly");
 	}
 }

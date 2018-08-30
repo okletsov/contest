@@ -47,12 +47,12 @@ public class Test_Participants {
 //        LoginPage lp = new LoginPage(driver);
 //        CommonElements ce = new CommonElements(driver);
 //        ProfilePage pp = new ProfilePage(driver);
-        UserOperations uo = new UserOperations();
+        UserOperations uo = new UserOperations(conn);
 
 //        hpbl.clickLogin();
 //        lp.signIn();
 //        ce.clickUsername();
 //        pp.clickFollowingTab();
-        uo.addNickname(conn, "Deagle", "New Participant");
+        uo.addNickname("Deagle", "New Participant");
     }
 }

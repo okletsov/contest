@@ -9,9 +9,15 @@ import java.sql.SQLException;
 
 public class UserOperations {
 
+    private Connection conn;
+
+    public UserOperations(Connection conn){
+        this.conn = conn;
+    }
+
     private static final Logger Log = LogManager.getLogger(UserOperations.class.getName());
 
-    public String getUserID(Connection conn, String username){
+    public String getUserID(String username){
         String userID = null;
         String sql = "SELECT id FROM user WHERE username = '" + username + "';";
 
@@ -41,7 +47,7 @@ public class UserOperations {
     }
 
     // To add new user to database just pass "New Participant" value for targetUser parameter
-    public void addNickname(Connection conn, String nickname, String targetUser){
+    public void addNickname(String nickname, String targetUser){
         String userId;
         String addNicknameSql;
         String addUserSql;
@@ -54,9 +60,9 @@ public class UserOperations {
             eq1.cleanUp();
             Log.info("Successfully added new participant " + nickname + " to 'user' table");
 
-            userId = getUserID(conn, nickname);
+            userId = getUserID(nickname);
         } else {
-            userId = getUserID(conn, targetUser);
+            userId = getUserID(targetUser);
         }
 
         addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
