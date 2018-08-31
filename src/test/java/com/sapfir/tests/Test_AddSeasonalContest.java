@@ -30,7 +30,6 @@ public class Test_AddSeasonalContest {
 		String year = System.getProperty("year");
 		String season = System.getProperty("season");
 
-		co.deactivateContest("seasonal");
 		co.addContest(year, season);
 	}
 }
