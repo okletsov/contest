@@ -85,7 +85,7 @@ public class UserOperations {
             eq2.cleanUp();
             Log.info("Successfully added " + nickname + " to 'user_nickname' table");
         } else {
-            Log.info("User '" + nickname + "' already exist in database with id " + userId);
+            Log.error("Adding user: user '" + nickname + "' already exist in database with id " + userId);
         }
     }
 }

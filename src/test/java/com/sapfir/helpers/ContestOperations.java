@@ -155,7 +155,8 @@ public class ContestOperations {
             eq3.cleanUp();
             Log.info("Successfully added month 2 contest");
         } else {
-            Log.info(year + " " + season +" contest already exist");
+            Log.error("Adding contest: " + year + " " + season +
+                         " contest already exist in database with id " + existing_contest_id);
         }
     }
 
