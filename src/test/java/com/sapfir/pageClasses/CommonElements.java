@@ -21,9 +21,9 @@ public class CommonElements {
     @FindBy(css = "#user-header-r2 li:nth-child(5) a")
     private WebElement username;
 
-    public void clickUsername(){
+    public void openProfilePage(){
         Log.debug("Clicking Username...");
         username.click();
-        Log.info("Clicked Username");
+        Log.info("Navigated to Profile page");
     }
 }

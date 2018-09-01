@@ -36,14 +36,16 @@ public class LoginPage {
 
         Log.debug("Filling username...");
         usernameField.sendKeys(siteUsername);
-        Log.info("Filled username");
+        Log.debug("Filled username");
 
         Log.debug("Filling password...");
         passwordField.sendKeys(sitePassword);
-        Log.info("Filled password");
+        Log.debug("Filled password");
 
         Log.debug("Clicking Login button...");
         loginButton.click();
-        Log.info("Clicked Login button");
+        Log.debug("Clicked Login button");
+
+        Log.info("Successfully logged in");
     }
 }

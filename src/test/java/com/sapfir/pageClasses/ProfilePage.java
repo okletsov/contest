@@ -29,7 +29,7 @@ public class ProfilePage {
     @FindBy(css = "#profile-following [type=submit]")
     private WebElement saveChangesButton;
 
-    public void clickFollowingTab() {
+    public void viewParticipants() {
 
         WaitOperations wo = new WaitOperations(driver);
 
@@ -39,7 +39,7 @@ public class ProfilePage {
         //Waiting for Save Changes button to know the tab finished loading
         wo.waitForElement(saveChangesButton, 10);
 
-        Log.info("Clicked Following tab");
+        Log.debug("Viewing Participants");
     }
 
 

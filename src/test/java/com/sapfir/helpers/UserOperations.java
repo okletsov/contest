@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class UserOperations {
 
@@ -87,5 +88,23 @@ public class UserOperations {
         } else {
             Log.error("Adding user: user '" + nickname + "' already exist in database with id " + userId);
         }
+    }
+
+    public void inspectParticipantUsernames(ArrayList <String> participants){
+
+        Log.info("Inspecting participants...");
+        int counter = 0;
+
+        for (String username : participants) {
+            String userID = getUserID(username);
+
+            if (userID == null) {
+                counter = counter + 1;
+                Log.warn("User " + username + " does not exist in database");
+//                addUser(username, "New Participant");
+            }
+        }
+
+        if (counter == 0) {Log.info("Inspection complete: all participants exist in database");}
     }
 }

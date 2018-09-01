@@ -18,9 +18,9 @@ public class WaitOperations {
     }
 
     public void waitForElement (WebElement element, int timeout){
-        Log.info("Waiting for element...");
+        Log.debug("Waiting for element...");
         WebDriverWait wait = new WebDriverWait(driver, timeout);
         wait.until(ExpectedConditions.visibilityOf(element));
-        Log.info("Element found");
+        Log.debug("Element found");
     }
 }

@@ -24,6 +24,6 @@ public class HomePageBeforeLogin {
     public void clickLogin(){
         Log.debug("Clicking Login button on Home Page...");
         loginButton.click();
-        Log.info("Clicked Login button on Home Page");
+        Log.info("Starting log in...");
     }
 }

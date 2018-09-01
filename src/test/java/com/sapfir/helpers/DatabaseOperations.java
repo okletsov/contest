@@ -38,7 +38,7 @@ public class DatabaseOperations {
             Log.debug("Closing connection...");
             if (conn != null){
                 conn.close();
-                Log.info("Connection closed successfully...");
+                Log.info("Connection closed successfully");
             } else {
                 Log.error("Unable to close connection because connection is null");
             }
