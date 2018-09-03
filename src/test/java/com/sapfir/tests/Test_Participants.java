@@ -56,8 +56,6 @@ public class Test_Participants {
         ce.openProfilePage();
         pp.viewParticipants();
         ArrayList <String> participants =  pp.getParticipantUsernames();
-        uo.inspectParticipantUsernames(participants);
-//        uo.addUser("Deagle", "New Participant");
-
+        uo.inspectParticipants(participants);
     }
 }

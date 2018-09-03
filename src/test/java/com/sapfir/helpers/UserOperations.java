@@ -49,7 +49,8 @@ public class UserOperations {
         return userID;
     }
 
-    /*  To add new user to database just pass "New Participant" value for targetUser parameter
+    /*
+        To add new user to database just pass "New Participant" value for targetUser parameter
         To add nickname for an existing user pass username of existing user for targetUser parameter
      */
     public void addUser(String nickname, String targetUser){
@@ -90,11 +91,7 @@ public class UserOperations {
         }
     }
 
-    /*
-        The method will:
-        -
-     */
-    public void inspectParticipantUsernames(ArrayList <String> participants){
+    public void inspectParticipants(ArrayList <String> participants){
 
         Log.info("Inspecting participants...");
         ContestOperations co = new ContestOperations(conn);
@@ -111,7 +108,48 @@ public class UserOperations {
                         - increase counter
                         - display an error message that user does not exist in database
              */
-
+            int counter = 0;
+            for (String username : participants) {
+                String participationID = null;
+                String userID = getUserID(username);
+                if (userID != null){
+                    String sqlParticipationID = "select id from user_seasonal_contest_participation " +
+                            "where user_id = '" + userID + "' " +
+                            "and contest_id = '" + contestID + "';";
+                    ExecuteQuery eq1 = new ExecuteQuery(conn, sqlParticipationID);
+                    ResultSet rs = eq1.getSelectResult();
+                    try {
+                        while (rs.next()) {
+                            participationID = rs.getString("id");
+                            Log.debug("Successfully got participationID for " + username);
+                        }
+                    } catch (SQLException ex) {
+                        Log.fatal("SQLException: " + ex.getMessage());
+                        Log.fatal("SQLState: " + ex.getSQLState());
+                        Log.fatal("VendorError: " + ex.getErrorCode());
+                        Log.trace("Stack trace: ", ex);
+                        System.exit(0);
+                    }
+                    eq1.cleanUp();
+                    if (participationID != null){
+                        Log.debug("User " + username + " is already participating in current contest");
+                    } else {
+                        Log.debug("Inserting user_x_contest link for " + username + "...");
+                        String sqlParticipant_x_Contest = "insert into user_seasonal_contest_participation" +
+                                "(id, user_id, contest_id) " +
+                                "values (UUID(), '" + userID + "', '" + contestID + "');";
+                        ExecuteQuery eq2 = new ExecuteQuery(conn, sqlParticipant_x_Contest);
+                        eq2.cleanUp();
+                        Log.info("Inserted user_x_contest link for " + username);
+                    }
+                } else {
+                    counter = counter + 1;
+                    Log.warn("User " + username + " does not exist in database");
+//                addUser(username, "New Participant");
+                }
+            }
+            if (counter == 0) {Log.info("Inspection complete: all participants exist and linked to contest");}
+            else { Log.info("Inspection complete"); }
         } else {
             Log.error("There are no active seasonal contests in database");
         }
