@@ -198,4 +198,29 @@ public class ContestOperations {
         eq2.cleanUp();
         Log.info("Month 2 contest successfully activated");
     }
+
+    public String getActiveSeasonalContestID() {
+        String contestID = null;
+
+        Log.debug("Getting active seasonal contest ID...");
+        String sql = "select * from contest where is_active = 1 and type = 'seasonal';";
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        ResultSet rs = eq.getSelectResult();
+        try {
+            while (rs.next()) {
+                contestID = rs.getString("id");
+            }
+        } catch (SQLException ex) {
+            Log.fatal("SQLException: " + ex.getMessage());
+            Log.fatal("SQLState: " + ex.getSQLState());
+            Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            System.exit(0);
+        }
+
+        if (contestID != null) {Log.debug("Successfully got active seasonal contest ID"); }
+        else { Log.debug("There are no active seasonal contests in database"); }
+
+        return contestID;
+    }
 }

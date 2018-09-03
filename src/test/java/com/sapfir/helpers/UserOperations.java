@@ -90,21 +90,30 @@ public class UserOperations {
         }
     }
 
+    /*
+        The method will:
+        -
+     */
     public void inspectParticipantUsernames(ArrayList <String> participants){
 
         Log.info("Inspecting participants...");
-        int counter = 0;
+        ContestOperations co = new ContestOperations(conn);
+        String contestID = co.getActiveSeasonalContestID();
 
-        for (String username : participants) {
-            String userID = getUserID(username);
+        if (contestID != null){
+            /*
+                  Get userID
+                    if CAN find:
+                        - check if given userID and contestID pair exist in `user_seasonal_contest_participation` table (new method):
+                            if YES - do nothing (maybe display debug message)
+                            if NO - implement insertion of given userID into `user_seasonal_contest_participation` table (new method)
+                    if CANNOT find
+                        - increase counter
+                        - display an error message that user does not exist in database
+             */
 
-            if (userID == null) {
-                counter = counter + 1;
-                Log.warn("User " + username + " does not exist in database");
-//                addUser(username, "New Participant");
-            }
+        } else {
+            Log.error("There are no active seasonal contests in database");
         }
-
-        if (counter == 0) {Log.info("Inspection complete: all participants exist in database");}
     }
 }
