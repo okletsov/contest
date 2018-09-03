@@ -27,7 +27,7 @@ public class UserOperations {
 
         Log.debug("Getting userID for " + username);
         DatabaseOperations dbOp = new DatabaseOperations();
-        userID = dbOp.getSingleValue("id", sql);
+        userID = dbOp.getSingleValue(conn,"id", sql);
 
         if (userID == null) {
             Log.info("User ID for " + username + " not found");
@@ -129,7 +129,7 @@ public class UserOperations {
                 "where user_id = '" + userID + "' " +
                 "and contest_id = '" + contestID + "';";
         DatabaseOperations dbOP = new DatabaseOperations();
-        participationID = dbOP.getSingleValue("id", sqlParticipationID);
+        participationID = dbOP.getSingleValue(conn,"id", sqlParticipationID);
         Log.debug("Successfully got participation ID for " + username);
         return participationID;
     }

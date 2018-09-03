@@ -8,11 +8,11 @@ import java.sql.*;
 public class DatabaseOperations {
 
     private static final Logger Log = LogManager.getLogger(DatabaseOperations.class.getName());
-    private Connection conn;
 
     public Connection connectToDatabase() {
 
         Properties prop = new Properties();
+        Connection conn = null;
 
         try {
             Log.debug("Connecting to database...");
@@ -47,7 +47,7 @@ public class DatabaseOperations {
         }
     }
 
-    public String getSingleValue (String columnLabel, String sql){
+    public String getSingleValue (Connection conn, String columnLabel, String sql){
         String value = null;
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
         ResultSet rs = eq.getSelectResult();

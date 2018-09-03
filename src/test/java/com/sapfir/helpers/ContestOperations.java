@@ -34,7 +34,7 @@ public class ContestOperations {
                                   " and season = '" + season +
                                   "' and type = 'seasonal';";
         DatabaseOperations dbOp = new DatabaseOperations();
-        String existingContestID =  dbOp.getSingleValue("id", sql_find_contest);
+        String existingContestID =  dbOp.getSingleValue(conn,"id", sql_find_contest);
 
         //Checking if contest already exist
         if (existingContestID == null) {
@@ -191,7 +191,7 @@ public class ContestOperations {
         Log.debug("Getting active seasonal contest ID...");
         String sql = "select * from contest where is_active = 1 and type = 'seasonal';";
         DatabaseOperations dbOp = new DatabaseOperations();
-        String contestID = dbOp.getSingleValue("id", sql);
+        String contestID = dbOp.getSingleValue(conn,"id", sql);
 
         if (contestID != null) {Log.debug("Successfully got active seasonal contest ID"); }
         else { Log.debug("There are no active seasonal contests in database"); }
