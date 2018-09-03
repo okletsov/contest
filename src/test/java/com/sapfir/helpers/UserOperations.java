@@ -49,46 +49,49 @@ public class UserOperations {
         return userID;
     }
 
-    /*
-        To add new user to database just pass "New Participant" value for targetUser parameter
-        To add nickname for an existing user pass username of existing user for targetUser parameter
-     */
     public void addUser(String nickname, String targetUser) {
+        /*
+        Notes:
+            - to add brand new user to database just pass "New Participant" value for targetUser parameter
+            - to add nickname for an existing user pass username of existing user for targetUser parameter
+
+        How method works:
+            Check if nickname already exist:
+                if CAN find - do nothing and dusplay a message
+                if CANNOT find - check if brand new user needs to be added:
+                    if YES - add to both 'user' and 'user_nickname' tables
+                    if NO - add only to 'user_nickname' table
+     */
         String userId = getUserID(nickname);
-
-        /*  Check if user already exist in database:
-            - if YES - display a message and do nothing
-            - if NO - proceed with method execution
-         */
         if (userId == null) {
-
-            /*  Check if brand new user needs to be added:
-                - if YES - add it to both 'user' and 'user_nickname' tables
-                - if NO - just get userID for a user we are trying to add nickname for*/
             if (targetUser.equals("New Participant")) {
-
-                String addUserSql = "insert into user (id, username) values (uuid(), '" + nickname + "');";
-
-                Log.debug("Adding new participant " + nickname + " to 'user' table");
-                ExecuteQuery eq1 = new ExecuteQuery(conn, addUserSql);
-                eq1.cleanUp();
-                Log.info("Successfully added new participant " + nickname + " to 'user' table");
-
-                userId = getUserID(nickname);
+                addToUserTable(nickname);
+                addToUserNicknameTable(nickname, targetUser);
             } else {
-                userId = getUserID(targetUser);
+                addToUserNicknameTable(nickname, targetUser);
             }
-
-            String addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
-                    "values (uuid(), '" + userId + "', '" + nickname + "');";
-
-            Log.debug("Adding " + nickname + " to 'user_nickname' table");
-            ExecuteQuery eq2 = new ExecuteQuery(conn, addNicknameSql);
-            eq2.cleanUp();
-            Log.info("Successfully added " + nickname + " to 'user_nickname' table");
         } else {
             Log.error("Adding user: user '" + nickname + "' already exist in database with id " + userId);
         }
+    }
+
+    private void addToUserTable(String username){
+        Log.debug("Adding new participant " + username + " to 'user' table");
+        String addUserSql = "insert into user (id, username) values (uuid(), '" + username + "');";
+        ExecuteQuery eq1 = new ExecuteQuery(conn, addUserSql);
+        eq1.cleanUp();
+        Log.info("Successfully added new participant " + username + " to 'user' table");
+    }
+
+    private void addToUserNicknameTable (String nickname, String targetUser){
+        Log.debug("Adding nickaname '" + nickname + "' to 'user_nickname' table for '" + targetUser + "' user");
+        String userId = getUserID(targetUser);
+        String addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
+                "values (uuid(), '" + userId + "', '" + nickname + "');";
+
+        ExecuteQuery eq2 = new ExecuteQuery(conn, addNicknameSql);
+        eq2.cleanUp();
+        Log.info("Successfully added " + nickname + " to 'user_nickname' table for '" + targetUser + "' user");
     }
 
     public void inspectParticipants(ArrayList<String> participants) {
@@ -132,7 +135,7 @@ public class UserOperations {
         } else { Log.error("There are no active seasonal contests in database"); }
     }
 
-    public String getParticipationID(String contestID, String username) {
+    private String getParticipationID(String contestID, String username) {
         Log.debug("Getting participatoin ID for " + username + "...");
         String userID = getUserID(username);
         String participationID;
@@ -145,7 +148,7 @@ public class UserOperations {
         return participationID;
     }
 
-    public void addParticipationID(String contestID, String username) {
+    private void addParticipationID(String contestID, String username) {
         String userID = getUserID(username);
         Log.debug("Adding Participation ID for " + username + "...");
         String sqlParticipant_x_Contest = "insert into user_seasonal_contest_participation" +
