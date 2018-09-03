@@ -19,33 +19,19 @@ public class UserOperations {
     private static final Logger Log = LogManager.getLogger(UserOperations.class.getName());
 
     public String getUserID(String username) {
-        String userID = null;
+        String userID;
         String sql = "select u.id from user u " +
                 "left join user_nickname un on u.id = un.user_id " +
                 "where u.username = '" + username + "' " +
                 "or un.nickname = '" + username + "';";
 
         Log.debug("Getting userID for " + username);
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        ResultSet resultSet = eq.getSelectResult();
-
-        try {
-            while (resultSet.next()) {
-                userID = resultSet.getString("id");
-                Log.debug("Successfully got userID for " + username);
-            }
-        } catch (SQLException ex) {
-            Log.fatal("SQLException: " + ex.getMessage());
-            Log.fatal("SQLState: " + ex.getSQLState());
-            Log.fatal("VendorError: " + ex.getErrorCode());
-            Log.trace("Stack trace: ", ex);
-            System.exit(0);
-        }
+        DatabaseOperations dbOp = new DatabaseOperations();
+        userID = dbOp.getSingleValue("id", sql);
 
         if (userID == null) {
             Log.info("User ID for " + username + " not found");
         }
-        eq.cleanUp();
         return userID;
     }
 
