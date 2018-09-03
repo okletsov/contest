@@ -33,24 +33,11 @@ public class ContestOperations {
                                   "where year = " + year +
                                   " and season = '" + season +
                                   "' and type = 'seasonal';";
-        ExecuteQuery eq4 = new ExecuteQuery(conn, sql_find_contest);
-        ResultSet rs = eq4.getSelectResult();
-        String existing_contest_id = null;
-        try {
-            while (rs.next()) {
-                existing_contest_id = rs.getString("id");
-            }
-        } catch (SQLException ex) {
-            Log.fatal("SQLException: " + ex.getMessage());
-            Log.fatal("SQLState: " + ex.getSQLState());
-            Log.fatal("VendorError: " + ex.getErrorCode());
-            Log.trace("Stack trace: ", ex);
-            System.exit(0);
-        }
-        eq4.cleanUp();
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String existingContestID =  dbOp.getSingleValue("id", sql_find_contest);
 
         //Checking if contest already exist
-        if (existing_contest_id == null) {
+        if (existingContestID == null) {
 
             String sql_seasonal;
             String sql_monthly_1;
@@ -156,7 +143,7 @@ public class ContestOperations {
             Log.info("Successfully added month 2 contest");
         } else {
             Log.error("Adding contest: " + year + " " + season +
-                         " contest already exist in database with id " + existing_contest_id);
+                         " contest already exist in database with id " + existingContestID);
         }
     }
 
@@ -200,23 +187,11 @@ public class ContestOperations {
     }
 
     public String getActiveSeasonalContestID() {
-        String contestID = null;
 
         Log.debug("Getting active seasonal contest ID...");
         String sql = "select * from contest where is_active = 1 and type = 'seasonal';";
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        ResultSet rs = eq.getSelectResult();
-        try {
-            while (rs.next()) {
-                contestID = rs.getString("id");
-            }
-        } catch (SQLException ex) {
-            Log.fatal("SQLException: " + ex.getMessage());
-            Log.fatal("SQLState: " + ex.getSQLState());
-            Log.fatal("VendorError: " + ex.getErrorCode());
-            Log.trace("Stack trace: ", ex);
-            System.exit(0);
-        }
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String contestID = dbOp.getSingleValue("id", sql);
 
         if (contestID != null) {Log.debug("Successfully got active seasonal contest ID"); }
         else { Log.debug("There are no active seasonal contests in database"); }
