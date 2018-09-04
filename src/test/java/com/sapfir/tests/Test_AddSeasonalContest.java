@@ -24,7 +24,7 @@ public class Test_AddSeasonalContest {
 	}
 
 	@Test
-	public void test() {
+	public void addSeasonalContest() {
 		ContestOperations co = new ContestOperations(conn);
 
 		String year = System.getProperty("year");

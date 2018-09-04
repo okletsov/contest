@@ -20,8 +20,8 @@ public class ContestOperations {
     public void addContest(String year, String season) {
         /*
             This method will check if seasonal contest for a given year and season already exist:
-            if YES - display a message
-            if NO - proceed with method execution
+                if YES - display a message
+                if NO - proceed with method execution
 
             Method does the following:
              - deactivates any existing seasonal and monthly contests
@@ -33,24 +33,11 @@ public class ContestOperations {
                                   "where year = " + year +
                                   " and season = '" + season +
                                   "' and type = 'seasonal';";
-        ExecuteQuery eq4 = new ExecuteQuery(conn, sql_find_contest);
-        ResultSet rs = eq4.getSelectResult();
-        String existing_contest_id = null;
-        try {
-            while (rs.next()) {
-                existing_contest_id = rs.getString("id");
-            }
-        } catch (SQLException ex) {
-            Log.fatal("SQLException: " + ex.getMessage());
-            Log.fatal("SQLState: " + ex.getSQLState());
-            Log.fatal("VendorError: " + ex.getErrorCode());
-            Log.trace("Stack trace: ", ex);
-            System.exit(0);
-        }
-        eq4.cleanUp();
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String existingContestID =  dbOp.getSingleValue(conn,"id", sql_find_contest);
 
         //Checking if contest already exist
-        if (existing_contest_id == null) {
+        if (existingContestID == null) {
 
             String sql_seasonal;
             String sql_monthly_1;
@@ -122,101 +109,90 @@ public class ContestOperations {
                     System.exit(0);
             }
 
+            Log.debug("Adding seasonal contest...");
             sql_seasonal = "INSERT INTO contest " +
                     "(id, type, year, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
                     " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1);";
 
-            Log.debug("Adding seasonal contest...");
             ExecuteQuery eq1 = new ExecuteQuery(conn, sql_seasonal);
             eq1.cleanUp();
             Log.info("Successfully added " + season + " " + year + " contest");
 
+            Log.debug("Adding month 1 contest");
             sql_monthly_1 = "INSERT INTO contest " +
                     "(id, type, year, month, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '1', '" + season + "'," +
                     " '" + month_1_start_date + "', '" + month_1_end_date + "', 1);";
 
-            Log.debug("Adding month 1 contest");
             ExecuteQuery eq2 = new ExecuteQuery(conn, sql_monthly_1);
             eq2.cleanUp();
             Log.info("Successfully added month 1 contest");
 
+            Log.debug("Adding month 2 contest");
             sql_monthly_2 = "INSERT INTO contest " +
                     "(id, type, year, month, season, start_date, end_date, is_active)" +
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '2', '" + season + "'," +
                     " '" + month_2_start_date + "', '" + month_2_end_date + "', 0);";
 
-            Log.debug("Adding month 2 contest");
             ExecuteQuery eq3 = new ExecuteQuery(conn, sql_monthly_2);
             eq3.cleanUp();
             Log.info("Successfully added month 2 contest");
         } else {
             Log.error("Adding contest: " + year + " " + season +
-                         " contest already exist in database with id " + existing_contest_id);
+                         " contest already exist in database with id " + existingContestID);
         }
     }
 
     public void deactivateContest(String contestType) {
+        Log.debug("Deactivating contest...");
         int resultSet;
         String sql = "UPDATE contest SET is_active = 0 " +
                      "WHERE type = '" + contestType + "' AND is_active = 1;";
 
-        Log.debug("Deactivating contest...");
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
         resultSet = eq.getRowsAffected();
         eq.cleanUp();
 
-        if (resultSet > 0){
-            Log.info( contestType + " contest successfully deactivated");
-        } else {
-            Log.info("Contest deactivation: no active " + contestType +" contests found");
-        }
+        if (resultSet > 0){ Log.info( contestType + " contest successfully deactivated"); }
+        else { Log.info("Contest deactivation: no active " + contestType +" contests found"); }
     }
 
     public void activateMonth2contest() {
-
-        String deactivate_month1 = "UPDATE contest SET is_active = 0 where type = 'monthly' and is_active = 1;";
-        String activate_month2 = "UPDATE contest c1 " +
-                                 "JOIN contest c2 ON c1.year = c2.year " +
-                                 "AND c1.season = c2.season " +
-                                 "SET c1.is_active = 1 " +
-                                 "WHERE c2.type = 'seasonal' " +
-                                 "AND c2.is_active = 1 " +
-                                 "AND c1.month = 2;";
+        /*
+            This method does two things:
+                - deactivates any month 1 active contests
+                - activates month 2 contest that belong to currently active seasonal contest
+         */
 
         Log.debug("Deactivating month 1 contest...");
+        String deactivate_month1 = "UPDATE contest SET is_active = 0 where type = 'monthly' and is_active = 1;";
         ExecuteQuery eq1 = new ExecuteQuery(conn, deactivate_month1);
         eq1.cleanUp();
         Log.info("Month 1 contest successfully deactivated");
 
         Log.debug("Activating month 2 contest");
+        String activate_month2 = "UPDATE contest c1 " +
+                "JOIN contest c2 ON c1.year = c2.year " +
+                "AND c1.season = c2.season " +
+                "SET c1.is_active = 1 " +
+                "WHERE c2.type = 'seasonal' " +
+                "AND c2.is_active = 1 " +
+                "AND c1.month = 2;";
         ExecuteQuery eq2 = new ExecuteQuery(conn, activate_month2);
         eq2.cleanUp();
         Log.info("Month 2 contest successfully activated");
     }
 
     public String getActiveSeasonalContestID() {
-        String contestID = null;
 
         Log.debug("Getting active seasonal contest ID...");
         String sql = "select * from contest where is_active = 1 and type = 'seasonal';";
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        ResultSet rs = eq.getSelectResult();
-        try {
-            while (rs.next()) {
-                contestID = rs.getString("id");
-            }
-        } catch (SQLException ex) {
-            Log.fatal("SQLException: " + ex.getMessage());
-            Log.fatal("SQLState: " + ex.getSQLState());
-            Log.fatal("VendorError: " + ex.getErrorCode());
-            Log.trace("Stack trace: ", ex);
-            System.exit(0);
-        }
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String contestID = dbOp.getSingleValue(conn,"id", sql);
 
         if (contestID != null) {Log.debug("Successfully got active seasonal contest ID"); }
         else { Log.debug("There are no active seasonal contests in database"); }
