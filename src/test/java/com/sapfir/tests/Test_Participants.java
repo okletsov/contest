@@ -42,7 +42,7 @@ public class Test_Participants {
     }
 
     @Test
-    public void getParticipants() {
+    public void testParticipants() {
         driver.get(baseUrl);
 
         HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
@@ -55,6 +55,7 @@ public class Test_Participants {
         lp.signIn();
         ce.openProfilePage();
         pp.viewParticipants();
+
         ArrayList <String> participants =  pp.getParticipantUsernames();
         uo.inspectParticipants(participants);
     }
