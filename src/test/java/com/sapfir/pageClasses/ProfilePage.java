@@ -29,6 +29,18 @@ public class ProfilePage {
     @FindBy(css = "#profile-following [type=submit]")
     private WebElement saveChangesButton;
 
+    @FindBy(id = "feed_menu_feeds")
+    private WebElement feedTab;
+
+    @FindBy(id = "feed")
+    private WebElement feed;
+
+    @FindBy(css = ".view-more[style=\"display: block;\"]")
+    private WebElement viewMoreButton;
+
+    @FindBy(css = "#profile-following .item")
+    private List<WebElement> participants;
+
     public void viewParticipants() {
 
         WaitOperations wo = new WaitOperations(driver);
@@ -42,17 +54,11 @@ public class ProfilePage {
         Log.debug("Viewing Participants");
     }
 
-
     public ArrayList getParticipantUsernames() {
 
         String username;
         int childIndex;
-        List<WebElement> participants;
-
         ArrayList<String> usernames = new ArrayList<>();
-
-        //Getting the list of users in Following Tab
-        participants = driver.findElements(By.cssSelector("#profile-following .item"));
 
         for (int i = 0; i < participants.size(); i++){
             //Getting the child index of each user to generate unique css
@@ -62,5 +68,12 @@ public class ProfilePage {
             usernames.add(username.trim());
         }
         return usernames;
+    }
+
+    public void viewPredictions() {
+        Log.debug("Viewing predictions...");
+        feedTab.click();
+        WaitOperations wo = new WaitOperations(driver);
+        wo.waitForElement(feed, 30);
     }
 }
