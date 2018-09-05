@@ -52,7 +52,8 @@ public class Test_Predictions {
 
         hpbl.clickLogin();
         lp.signIn();
-        ce.openProfilePage();
+//        ce.openProfilePage();
+        driver.get("http://www.oddsportal.com/profile/baboonda/");
         pp.viewPredictions();
     }
 }
