@@ -1,6 +1,6 @@
 package com.sapfir.pageClasses;
 
-import com.sapfir.helpers.WaitOperations;
+import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -43,12 +43,12 @@ public class ProfilePage {
 
     public void viewParticipants() {
 
-        WaitOperations wo = new WaitOperations(driver);
+        SeleniumMethods sm = new SeleniumMethods(driver);
 
         Log.debug("Clicking Following tab...");
         followingTab.click();
         //Waiting for Save Changes button to know the tab finished loading
-        wo.waitForElement(saveChangesButton, 10);
+        sm.waitForElement(saveChangesButton, 10);
 
         Log.debug("Viewing Participants");
     }
