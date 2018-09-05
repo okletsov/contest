@@ -32,11 +32,11 @@ public class ProfilePage {
     @FindBy(id = "feed_menu_feeds")
     private WebElement feedTab;
 
-    @FindBy(id = "feed")
-    private WebElement feed;
-
     @FindBy(css = ".view-more[style=\"display: block;\"]")
     private WebElement viewMoreButton;
+
+    @FindBy(css = ".feed-loader")
+    private WebElement feedLoafingSpinner;
 
     @FindBy(css = "#profile-following .item")
     private List<WebElement> participants;
@@ -47,7 +47,6 @@ public class ProfilePage {
 
         Log.debug("Clicking Following tab...");
         followingTab.click();
-
         //Waiting for Save Changes button to know the tab finished loading
         wo.waitForElement(saveChangesButton, 10);
 
@@ -74,6 +73,13 @@ public class ProfilePage {
         Log.debug("Viewing predictions...");
         feedTab.click();
         WaitOperations wo = new WaitOperations(driver);
-        wo.waitForElement(feed, 30);
+        wo.waitForElement(viewMoreButton, 30);
+
+//        wo.waitForElement(viewMoreButton,10);
+//        try{
+//            Thread.sleep(2000);
+//        } catch (InterruptedException ex){}
+        boolean isDisplayed = driver.findElement(By.id("feed_item_3090199703")).isDisplayed();
+        System.out.println(isDisplayed);
     }
 }
