@@ -32,16 +32,8 @@ public class ProfilePage {
     @FindBy(id = "feed_menu_feeds")
     private WebElement feedTab;
 
-    @FindBy(css = ".view-more[style=\"display: block;\"]")
-    private WebElement viewMoreButton;
-
-    @FindBy(css = ".feed-loader")
-    private WebElement feedLoadingSpinner;
-
     @FindBy(css = "#profile-following .item")
     private List<WebElement> participants;
-
-
 
     public void viewParticipants() {
 
@@ -72,6 +64,11 @@ public class ProfilePage {
     }
 
     public void viewPredictions() {
+        /*
+            This method will click on the Feed tab and wait for one of the following conditions to be true:
+                - at least one prediction appears on page
+                - the text saying there are no predictions appears
+         */
         Log.debug("Viewing predictions...");
         feedTab.click();
 
@@ -83,5 +80,8 @@ public class ProfilePage {
             predictionsPresent = sm.isElementPresent("css", ".feed-item");
             noPredictionsTextPresent = sm.isElementPresent("css", ".message-info.feed-end[style=\"display: block;\"]");
         } while (!predictionsPresent && !noPredictionsTextPresent);
+
+        if (predictionsPresent) {Log.debug("Feed loaded");}
+        if (noPredictionsTextPresent) {Log.debug("User does not have any predictions");}
     }
 }

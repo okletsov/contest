@@ -37,8 +37,8 @@ public class SeleniumMethods {
             Just pass locator type (id, css, xpath) and locator itself as parameters
          */
 
-        List<WebElement> elements = new ArrayList<>();
         Log.debug("Trying to locate elements with " + type + ": " + locator);
+        List<WebElement> elements = new ArrayList<>();
         switch (type){
             case "id":
                 elements = driver.findElements(By.id(locator));
@@ -59,10 +59,10 @@ public class SeleniumMethods {
         boolean isPresent;
         if (elements.size() > 0){
             isPresent = true;
-            Log.debug("Element found");
+            Log.debug("Element found with " + type + ": " + locator);
         } else {
             isPresent = false;
-            Log.debug("Element not found");
+            Log.debug("Element not found with " + type + ": " + locator);
         }
         return isPresent;
     }
