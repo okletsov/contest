@@ -36,10 +36,12 @@ public class ProfilePage {
     private WebElement viewMoreButton;
 
     @FindBy(css = ".feed-loader")
-    private WebElement feedLoafingSpinner;
+    private WebElement feedLoadingSpinner;
 
     @FindBy(css = "#profile-following .item")
     private List<WebElement> participants;
+
+
 
     public void viewParticipants() {
 
@@ -73,24 +75,13 @@ public class ProfilePage {
         Log.debug("Viewing predictions...");
         feedTab.click();
 
-        List<WebElement> text;
-        List<WebElement> predictions;
-        int size;
-        int size2;
-        do {
-            text = driver.findElements(By.cssSelector(".message-info.feed-end[style=\"display: block;\"]"));
-            size2 = text.size();
-            predictions = driver.findElements(By.cssSelector(".feed-item"));
-            size = predictions.size();
-            System.out.println("Size: " + size);
-            System.out.println("Size2: " + size2);
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean predictionsPresent;
+        boolean noPredictionsTextPresent;
 
-        } while (size + size2 == 0);
-        
-        if (size > 0) {
-            System.out.println("predictions loaded");
-        } else if (size2 > 0) {
-            System.out.println("user does not have any predictions");
-        }
+        do{
+            predictionsPresent = sm.isElementPresent("css", ".feed-item");
+            noPredictionsTextPresent = sm.isElementPresent("css", ".message-info.feed-end[style=\"display: block;\"]");
+        } while (!predictionsPresent && !noPredictionsTextPresent);
     }
 }

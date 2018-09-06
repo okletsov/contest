@@ -27,7 +27,7 @@ public class Test_Predictions {
     @BeforeClass
     public void setUp() {
 
-        conn = dbOp.connectToDatabase();
+//        conn = dbOp.connectToDatabase();
         driver = new ChromeDriver();
         baseUrl = prop.getSiteUrl();
 
@@ -37,7 +37,7 @@ public class Test_Predictions {
     @AfterClass
     public void tearDown() {
 //        driver.quit();
-        dbOp.closeConnection(conn);
+//        dbOp.closeConnection(conn);
     }
 
     @Test
