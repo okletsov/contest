@@ -32,8 +32,14 @@ public class ProfilePage {
     @FindBy(id = "feed_menu_feeds")
     private WebElement feedTab;
 
+    @FindBy(className = "view-more")
+    private WebElement viewMoreButton;
+
     @FindBy(css = "#profile-following .item")
-    private List<WebElement> participants;
+    private ArrayList<WebElement> participants;
+
+    @FindBy(className = "feed-item")
+    private ArrayList<WebElement> predictions;
 
     public void viewParticipants() {
 
@@ -81,7 +87,18 @@ public class ProfilePage {
             noPredictionsTextPresent = sm.isElementPresent("css", ".message-info.feed-end[style=\"display: block;\"]");
         } while (!predictionsPresent && !noPredictionsTextPresent);
 
-        if (predictionsPresent) {Log.debug("Feed loaded");}
+        if (predictionsPresent) {
+            Log.debug("Feed loaded");
+
+            List<WebElement> visiblePredictions = predictions;
+            List<WebElement> predictionsAfterViewMore = new ArrayList<>();
+            boolean viewMorePresent = viewMoreButton.isDisplayed();
+
+
+
+        }
         if (noPredictionsTextPresent) {Log.debug("User does not have any predictions");}
+
+
     }
 }
