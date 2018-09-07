@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ProfilePage {
 
-    private static final Logger Log = LogManager.getLogger(CommonElements.class.getName());
+    private static final Logger Log = LogManager.getLogger(ProfilePage.class.getName());
 
     private WebDriver driver;
 
@@ -36,10 +36,10 @@ public class ProfilePage {
     private WebElement viewMoreButton;
 
     @FindBy(css = "#profile-following .item")
-    private ArrayList<WebElement> participants;
+    private List<WebElement> participants;
 
     @FindBy(className = "feed-item")
-    private ArrayList<WebElement> predictions;
+    private List<WebElement> predictions;
 
     public void viewParticipants() {
 
@@ -74,6 +74,8 @@ public class ProfilePage {
             This method will click on the Feed tab and wait for one of the following conditions to be true:
                 - at least one prediction appears on page
                 - the text saying there are no predictions appears
+
+            If there are predictions the method will use clickViewMoreButton method to load all predictions
          */
         Log.debug("Viewing predictions...");
         feedTab.click();
@@ -89,16 +91,32 @@ public class ProfilePage {
 
         if (predictionsPresent) {
             Log.debug("Feed loaded");
-
-            List<WebElement> visiblePredictions = predictions;
-            List<WebElement> predictionsAfterViewMore = new ArrayList<>();
-            boolean viewMorePresent = viewMoreButton.isDisplayed();
-
-
-
+            clickViewMoreButton();
+            Log.info("All predictions loaded");
         }
-        if (noPredictionsTextPresent) {Log.debug("User does not have any predictions");}
+        if (noPredictionsTextPresent) {Log.info("User does not have any predictions");}
+    }
 
+    private void clickViewMoreButton() {
+        /*
+            This method will keep clicking View More button until all predictions are loaded
 
+            How it works:
+                The method will keep clicking View More button until it is unavailable (while loop)
+                Once view More button is clicked - method will wait until loading of new predictions
+                is complete (do-while loop)
+         */
+        int visiblePredictions = predictions.size();
+        int predictionsAfterViewMore;
+        boolean viewMoreButtonPresent = viewMoreButton.isDisplayed();
+
+        while (viewMoreButtonPresent){
+            viewMoreButton.click();
+            do {
+                predictionsAfterViewMore = predictions.size();
+            } while (visiblePredictions == predictionsAfterViewMore);
+            visiblePredictions = predictions.size();
+            viewMoreButtonPresent = viewMoreButton.isDisplayed();
+        }
     }
 }

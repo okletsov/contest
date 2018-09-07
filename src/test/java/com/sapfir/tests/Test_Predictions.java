@@ -27,7 +27,7 @@ public class Test_Predictions {
     @BeforeClass
     public void setUp() {
 
-//        conn = dbOp.connectToDatabase();
+        conn = dbOp.connectToDatabase();
         driver = new ChromeDriver();
         baseUrl = prop.getSiteUrl();
 
@@ -36,8 +36,8 @@ public class Test_Predictions {
 
     @AfterClass
     public void tearDown() {
-//        driver.quit();
-//        dbOp.closeConnection(conn);
+        driver.quit();
+        dbOp.closeConnection(conn);
     }
 
     @Test
@@ -52,8 +52,8 @@ public class Test_Predictions {
 
         hpbl.clickLogin();
         lp.signIn();
-//        ce.openProfilePage();
-        driver.get("http://www.oddsportal.com/profile/baboonda/");
+        ce.openProfilePage();
+//        driver.get("http://www.oddsportal.com/profile/baboonda/");
         pp.viewPredictions();
     }
 }
