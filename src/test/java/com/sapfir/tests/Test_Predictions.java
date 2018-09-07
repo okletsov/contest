@@ -36,7 +36,7 @@ public class Test_Predictions {
 
     @AfterClass
     public void tearDown() {
-//        driver.quit();
+        driver.quit();
         dbOp.closeConnection(conn);
     }
 
@@ -53,6 +53,7 @@ public class Test_Predictions {
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
+//        driver.get("http://www.oddsportal.com/profile/baboonda/");
         pp.viewPredictions();
     }
 }

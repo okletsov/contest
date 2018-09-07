@@ -1,6 +1,6 @@
 package com.sapfir.pageClasses;
 
-import com.sapfir.helpers.WaitOperations;
+import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ProfilePage {
 
-    private static final Logger Log = LogManager.getLogger(CommonElements.class.getName());
+    private static final Logger Log = LogManager.getLogger(ProfilePage.class.getName());
 
     private WebDriver driver;
 
@@ -32,24 +32,23 @@ public class ProfilePage {
     @FindBy(id = "feed_menu_feeds")
     private WebElement feedTab;
 
-    @FindBy(id = "feed")
-    private WebElement feed;
-
-    @FindBy(css = ".view-more[style=\"display: block;\"]")
+    @FindBy(className = "view-more")
     private WebElement viewMoreButton;
 
     @FindBy(css = "#profile-following .item")
     private List<WebElement> participants;
 
+    @FindBy(className = "feed-item")
+    private List<WebElement> predictions;
+
     public void viewParticipants() {
 
-        WaitOperations wo = new WaitOperations(driver);
+        SeleniumMethods sm = new SeleniumMethods(driver);
 
         Log.debug("Clicking Following tab...");
         followingTab.click();
-
         //Waiting for Save Changes button to know the tab finished loading
-        wo.waitForElement(saveChangesButton, 10);
+        sm.waitForElement(saveChangesButton, 10);
 
         Log.debug("Viewing Participants");
     }
@@ -71,9 +70,53 @@ public class ProfilePage {
     }
 
     public void viewPredictions() {
+        /*
+            This method will click on the Feed tab and wait for one of the following conditions to be true:
+                - at least one prediction appears on page
+                - the text saying there are no predictions appears
+
+            If there are predictions the method will use clickViewMoreButton method to load all predictions
+         */
         Log.debug("Viewing predictions...");
         feedTab.click();
-        WaitOperations wo = new WaitOperations(driver);
-        wo.waitForElement(feed, 30);
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean predictionsPresent;
+        boolean noPredictionsTextPresent;
+
+        do{
+            predictionsPresent = sm.isElementPresent("css", ".feed-item");
+            noPredictionsTextPresent = sm.isElementPresent("css", ".message-info.feed-end[style=\"display: block;\"]");
+        } while (!predictionsPresent && !noPredictionsTextPresent);
+
+        if (predictionsPresent) {
+            Log.debug("Feed loaded");
+            clickViewMoreButton();
+            Log.info("All predictions loaded");
+        }
+        if (noPredictionsTextPresent) {Log.info("User does not have any predictions");}
+    }
+
+    private void clickViewMoreButton() {
+        /*
+            This method will keep clicking View More button until all predictions are loaded
+
+            How it works:
+                The method will keep clicking View More button until it is unavailable (while loop)
+                Once view More button is clicked - method will wait until loading of new predictions
+                is complete (do-while loop)
+         */
+        int visiblePredictions = predictions.size();
+        int predictionsAfterViewMore;
+        boolean viewMoreButtonPresent = viewMoreButton.isDisplayed();
+
+        while (viewMoreButtonPresent){
+            viewMoreButton.click();
+            do {
+                predictionsAfterViewMore = predictions.size();
+            } while (visiblePredictions == predictionsAfterViewMore);
+            visiblePredictions = predictions.size();
+            viewMoreButtonPresent = viewMoreButton.isDisplayed();
+        }
     }
 }
