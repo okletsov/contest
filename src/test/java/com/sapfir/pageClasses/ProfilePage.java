@@ -69,6 +69,11 @@ public class ProfilePage {
         return usernames;
     }
 
+    public void clickParticipantUsername(String username){
+        String css = "#profile-following .username[title=" + username + "]";
+        driver.findElement(By.cssSelector(css)).click();
+    }
+
     public void viewPredictions() {
         /*
             This method will click on the Feed tab and wait for one of the following conditions to be true:

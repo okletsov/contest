@@ -70,12 +70,26 @@ public class UserOperations {
 
     private void addToUserNicknameTable (String nickname, String targetUser){
         Log.debug("Adding nickaname '" + nickname + "' to 'user_nickname' table for '" + targetUser + "' user");
+        deactivteNickname(targetUser);
         String userId = getUserID(targetUser);
-        String addNicknameSql = "insert into user_nickname (id, user_id, nickname) " +
-                "values (uuid(), '" + userId + "', '" + nickname + "');";
+        String addNicknameSql = "insert into user_nickname (id, user_id, nickname, is_active) " +
+                "values (uuid(), '" + userId + "', '" + nickname + "', 1);";
         ExecuteQuery eq = new ExecuteQuery(conn, addNicknameSql);
         eq.cleanUp();
         Log.info("Successfully added " + nickname + " to 'user_nickname' table for '" + targetUser + "' user");
+    }
+
+    private void deactivteNickname(String targetUser){
+        Log.debug("Deactivating nicknames for user '" + targetUser + "'");
+
+        String userID = getUserID(targetUser);
+        String sql = "update user_nickname set is_active = 0 where is_active = 1 and user_id = '" + userID + "';";
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        int resultSet = eq.getRowsAffected();
+        eq.cleanUp();
+
+        if (resultSet > 0){ Log.debug("Nicknames deactivated successfully"); }
+        else { Log.debug("No active nicknames found for " + targetUser);}
     }
 
     public void inspectParticipants(ArrayList<String> participants) {
@@ -110,8 +124,8 @@ public class UserOperations {
                 } else {
                     counter = counter + 1;
                     Log.warn("User " + username + " does not exist in database");
-//                addUser(username, "New Participant");
-//                addParticipationID(contestID, username);
+                addUser(username, "New Participant");
+                addParticipationID(contestID, username);
                 }
             }
             if (counter == 0) { Log.info("Inspection complete: all participants exist and linked to contest"); }
