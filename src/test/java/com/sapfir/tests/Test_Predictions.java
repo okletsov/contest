@@ -53,7 +53,8 @@ public class Test_Predictions {
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
-//        driver.get("http://www.oddsportal.com/profile/baboonda/");
+        pp.viewParticipants();
+        pp.clickParticipantUsername("Cap4ik");
         pp.viewPredictions();
     }
 }

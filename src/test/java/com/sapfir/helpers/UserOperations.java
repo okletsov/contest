@@ -78,6 +78,10 @@ public class UserOperations {
         Log.info("Successfully added " + nickname + " to 'user_nickname' table for '" + targetUser + "' user");
     }
 
+    // Need to add 'in_use' column to user_nickname table
+    // Need to write a new method to deactivate nicknames that are currently in use for given username
+    // Need to update addToUserNicknameTable method to always add '1' for 'in_use' column
+
     public void inspectParticipants(ArrayList<String> participants) {
          /*
             Get active seasonal contest ID:
