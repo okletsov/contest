@@ -4,8 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class ContestOperations {
 
@@ -54,7 +52,7 @@ public class ContestOperations {
             deactivateContest("monthly");
 
             //Determining start and end dates depending on contest season
-            Log.debug("Determining start and end dates...");
+            Log.trace("Determining start and end dates...");
             switch (season) {
                 case "Autumn":
                     seasonal_start_date = year + "-09-01 00:00:00";
@@ -189,13 +187,13 @@ public class ContestOperations {
 
     public String getActiveSeasonalContestID() {
 
-        Log.debug("Getting active seasonal contest ID...");
+        Log.trace("Getting active seasonal contest ID...");
         String sql = "select * from contest where is_active = 1 and type = 'seasonal';";
         DatabaseOperations dbOp = new DatabaseOperations();
         String contestID = dbOp.getSingleValue(conn,"id", sql);
 
-        if (contestID != null) {Log.debug("Successfully got active seasonal contest ID"); }
-        else { Log.debug("There are no active seasonal contests in database"); }
+        if (contestID != null) {Log.trace("Successfully got active seasonal contest ID"); }
+        else { Log.trace("There are no active seasonal contests in database"); }
 
         return contestID;
     }

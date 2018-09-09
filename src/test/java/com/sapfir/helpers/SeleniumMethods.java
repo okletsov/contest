@@ -22,10 +22,10 @@ public class SeleniumMethods {
     }
 
     public void waitForElement (WebElement element, int timeout){
-        Log.debug("Waiting for element...");
+        Log.trace("Waiting for element...");
         WebDriverWait wait = new WebDriverWait(driver, timeout);
         wait.until(ExpectedConditions.visibilityOf(element));
-        Log.debug("Element is visible");
+        Log.trace("Element is visible");
     }
 
     public boolean isElementPresent(String type, String locator) {
@@ -37,7 +37,7 @@ public class SeleniumMethods {
             Just pass locator type (id, css, xpath) and locator itself as parameters
          */
 
-        Log.debug("Trying to locate elements with " + type + ": " + locator);
+        Log.trace("Trying to locate elements with " + type + ": " + locator);
         List<WebElement> elements = new ArrayList<>();
         switch (type){
             case "id":
@@ -59,7 +59,7 @@ public class SeleniumMethods {
         boolean isPresent;
         if (elements.size() > 0){
             isPresent = true;
-            Log.debug("Element found with " + type + ": " + locator);
+            Log.trace("Element found with " + type + ": " + locator);
         } else {
             isPresent = false;
             Log.debug("Element not found with " + type + ": " + locator);

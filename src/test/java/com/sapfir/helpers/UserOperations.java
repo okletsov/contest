@@ -4,8 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserOperations {
@@ -19,7 +17,7 @@ public class UserOperations {
     private static final Logger Log = LogManager.getLogger(UserOperations.class.getName());
 
     public String getUserID(String username) {
-        Log.debug("Getting userID for " + username);
+        Log.trace("Getting userID for " + username);
         String userID;
         String sql = "select u.id from user u " +
                 "left join user_nickname un on u.id = un.user_id " +
@@ -28,8 +26,8 @@ public class UserOperations {
         DatabaseOperations dbOp = new DatabaseOperations();
         userID = dbOp.getSingleValue(conn,"id", sql);
 
-        if (userID != null) { Log.debug("Successfully got user ID for " + username); }
-        else { Log.debug("User ID for " + username + " not found"); }
+        if (userID != null) { Log.trace("Successfully got user ID for " + username); }
+        else { Log.trace("User ID for " + username + " not found"); }
 
         return userID;
     }
@@ -124,8 +122,8 @@ public class UserOperations {
                 } else {
                     counter = counter + 1;
                     Log.warn("User " + username + " does not exist in database");
-                addUser(username, "New Participant");
-                addParticipationID(contestID, username);
+//                addUser(username, "New Participant");
+//                addParticipationID(contestID, username);
                 }
             }
             if (counter == 0) { Log.info("Inspection complete: all participants exist and linked to contest"); }
