@@ -40,8 +40,8 @@ public class Test_Predictions {
         dbOp.closeConnection(conn);
     }
 
-    @Test
-    public void testParticipants() {
+    @Test(dataProvider = "participants", dataProviderClass = Participants.class)
+    public void testPredictions(String username) {
         driver.get(baseUrl);
 
         HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
@@ -54,7 +54,7 @@ public class Test_Predictions {
         lp.signIn();
         ce.openProfilePage();
         pp.viewParticipants();
-        pp.clickParticipantUsername("Cap4ik");
+        pp.clickParticipantUsername(username);
         pp.viewPredictions();
     }
 }
