@@ -32,6 +32,16 @@ public class Test_Predictions {
         baseUrl = prop.getSiteUrl();
 
         driver.manage().window().maximize();
+
+        driver.get(baseUrl);
+
+        HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
+        LoginPage lp = new LoginPage(driver);
+        CommonElements ce = new CommonElements(driver);
+        ProfilePage pp = new ProfilePage(driver);
+        hpbl.clickLogin();
+        lp.signIn();
+        ce.openProfilePage();
     }
 
     @AfterClass
@@ -42,19 +52,13 @@ public class Test_Predictions {
 
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
     public void testPredictions(String username) {
-        driver.get(baseUrl);
 
-        HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
-        LoginPage lp = new LoginPage(driver);
         CommonElements ce = new CommonElements(driver);
         ProfilePage pp = new ProfilePage(driver);
-        UserOperations uo = new UserOperations(conn);
 
-        hpbl.clickLogin();
-        lp.signIn();
-        ce.openProfilePage();
         pp.viewParticipants();
         pp.clickParticipantUsername(username);
         pp.viewPredictions();
+        ce.openProfilePage();
     }
 }
