@@ -25,24 +25,15 @@ public class Participants {
                      "AND c.is_active = 1;";
         ArrayList<String> participants = dbOp.getArray(conn, "nickname", sql);
 
-        Object[][] testData = new Object[1] [participants.size()];
-        for (int i = 0; i < testData.length; i++) {
-            for (int j = 0; j < testData[i].length; j++) {
-                testData[i][j] = participants.get(j);
+        Object[][] testData = new Object [participants.size()][1];
+
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < participants.size(); j++) {
+                testData[j][i] = participants.get(j);
             }
         }
 
-        //        for (int i = 1; i < participants.size(); i++) {
-//            testData[i][1] = participants.get(i);
-//        }
-
         dbOp.closeConnection(conn);
         return testData;
-
-
-//        return new Object[][]{
-//                {"Cap4ik"},
-//                {"Deagle"}
-//        };
     }
 }

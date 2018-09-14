@@ -20,25 +20,23 @@ public class Test_Predictions {
 
     private DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
-    private Properties prop = new Properties();
     private WebDriver driver;
-    private String baseUrl;
 
     @BeforeClass
     public void setUp() {
 
         conn = dbOp.connectToDatabase();
         driver = new ChromeDriver();
-        baseUrl = prop.getSiteUrl();
-
         driver.manage().window().maximize();
 
+        Properties prop = new Properties();
+        String baseUrl = prop.getSiteUrl();
         driver.get(baseUrl);
 
         HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
         LoginPage lp = new LoginPage(driver);
         CommonElements ce = new CommonElements(driver);
-        ProfilePage pp = new ProfilePage(driver);
+
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
