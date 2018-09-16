@@ -38,8 +38,8 @@ public class ProfilePage {
     @FindBy(css = "#profile-following .item")
     private List<WebElement> participants;
 
-    @FindBy(className = "feed-item")
-    private List<WebElement> predictions;
+//    @FindBy(className = "feed-item")
+//    private List<WebElement> predictions;
 
     public void viewParticipants() {
 
@@ -111,16 +111,18 @@ public class ProfilePage {
                 Once view More button is clicked - method will wait until loading of new predictions
                 is complete (do-while loop)
          */
-        int visiblePredictions = predictions.size();
+        PredictionsInspection pi = new PredictionsInspection(driver);
+
+        int visiblePredictions = pi.getPredictions().size();
         int predictionsAfterViewMore;
         boolean viewMoreButtonPresent = viewMoreButton.isDisplayed();
 
         while (viewMoreButtonPresent){
             viewMoreButton.click();
             do {
-                predictionsAfterViewMore = predictions.size();
+                predictionsAfterViewMore = pi.getPredictions().size();
             } while (visiblePredictions == predictionsAfterViewMore);
-            visiblePredictions = predictions.size();
+            visiblePredictions = pi.getPredictions().size();
             viewMoreButtonPresent = viewMoreButton.isDisplayed();
         }
     }

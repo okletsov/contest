@@ -23,14 +23,18 @@ public class PredictionsInspection {
     }
 
     public List<String> getPredictions() {
+        Log.trace("Getting list of prediction IDs...");
         List<WebElement> predictionsList = driver.findElements(By.className("feed-item"));
         List<String> predictionIDs = new ArrayList<>();
 
         for (WebElement prediction : predictionsList) {
             predictionIDs.add(prediction.getAttribute("id"));
         }
+        Log.trace("Successfully got list of prediction IDs");
         return predictionIDs;
     }
 
-
+    public String getSport(String predictionID) {
+        return driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(1)")).getText();
+    }
 }
