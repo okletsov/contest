@@ -34,7 +34,19 @@ public class PredictionsInspection {
         return predictionIDs;
     }
 
+    public boolean checkIfRemoved(String predicitonID) {
+        boolean isRemoved = false;
+        String text = driver.findElement(By.id(predicitonID)).getText();
+        if (text.trim().equals("Prediction was removed.")) {
+            isRemoved = true;
+        }
+        System.out.println("Text:" + text);
+        System.out.println("Is prediction removed: " + isRemoved);
+        return isRemoved;
+    }
+
     public String getSport(String predictionID) {
+        checkIfRemoved(predictionID);
         return driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(1)")).getText();
     }
 }
