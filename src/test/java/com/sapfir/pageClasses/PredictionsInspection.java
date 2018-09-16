@@ -22,6 +22,10 @@ public class PredictionsInspection {
         PageFactory.initElements(driver, this);
     }
 
+    public String getItemNumber(String predictionID) {
+        return predictionID.replaceAll("\\D+","");
+    }
+
     public List<String> getPredictions() {
         Log.trace("Getting list of prediction IDs...");
         List<WebElement> predictionsList = driver.findElements(By.className("feed-item"));
@@ -35,8 +39,11 @@ public class PredictionsInspection {
     }
 
     public boolean checkIfRemoved(String predicitonID) {
+        String itemNumber = getItemNumber(predicitonID);
         boolean isRemoved = false;
-        String text = driver.findElement(By.id(predicitonID)).getText();
+        WebElement element = 
+
+        String text = driver.findElement(By.cssSelector(predicitonID)).getText();
         if (text.trim().equals("Prediction was removed.")) {
             isRemoved = true;
         }
