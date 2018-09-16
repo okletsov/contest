@@ -40,11 +40,11 @@ public class PredictionsInspection {
 
     public boolean checkIfRemoved(String predicitonID) {
         String itemNumber = getItemNumber(predicitonID);
-        boolean isRemoved = false;
-        WebElement element = 
+        WebElement element = driver.findElement(By.cssSelector("#"+predicitonID+" #reportResult_" + itemNumber));
+        String text = element.getText().trim();
 
-        String text = driver.findElement(By.cssSelector(predicitonID)).getText();
-        if (text.trim().equals("Prediction was removed.")) {
+        boolean isRemoved = false;
+        if (text.equals("Prediction was removed.")) {
             isRemoved = true;
         }
         System.out.println("Text:" + text);
