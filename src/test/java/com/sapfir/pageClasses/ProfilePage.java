@@ -38,9 +38,6 @@ public class ProfilePage {
     @FindBy(css = "#profile-following .item")
     private List<WebElement> participants;
 
-//    @FindBy(className = "feed-item")
-//    private List<WebElement> predictions;
-
     public void viewParticipants() {
 
         SeleniumMethods sm = new SeleniumMethods(driver);
