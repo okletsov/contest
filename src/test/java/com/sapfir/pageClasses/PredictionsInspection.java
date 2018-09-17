@@ -56,8 +56,24 @@ public class PredictionsInspection {
     public String getSport(String predictionID) {
         Log.debug("Getting sport of prediction...");
         WebElement element = driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(1)"));
-        String sport = element.getText();
+        String sport = element.getText().trim();
         Log.debug("Successfully got sport: " + sport);
         return sport;
+    }
+
+    public String getRegion(String predictionID) {
+        Log.debug("Getting region of prediction...");
+        WebElement element = driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(2)"));
+        String region = element.getText().trim();
+        Log.debug("Successfully got region: " + region);
+        return region;
+    }
+
+    public String getTournament(String predictionID) {
+        Log.debug("Getting tournament of prediction...");
+        WebElement element = driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(3)"));
+        String region = element.getText().trim();
+        Log.debug("Successfully got tournament: " + region);
+        return region;
     }
 }

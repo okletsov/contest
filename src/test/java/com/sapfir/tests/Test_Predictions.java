@@ -66,11 +66,13 @@ public class Test_Predictions {
 //        List<String> predictions = new ArrayList<>();
 //        predictions.add("feed_item_3090192303");
 
-        String sport;
+//        String sport;
         for (String predictionID: predictions) {
             if (!pi.checkIfRemoved(predictionID)){
-                sport = pi.getSport(predictionID);
-                System.out.println(sport);
+                String sport = pi.getSport(predictionID);
+                String region = pi.getRegion(predictionID);
+                String tournament = pi.getTournament(predictionID);
+                System.out.println(sport + " --> " + region + " --> " + tournament);
             } else {
                Log.warn("Prediction was removed by " + username);
             }
