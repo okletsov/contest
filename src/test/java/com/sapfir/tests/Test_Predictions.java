@@ -4,17 +4,23 @@ import com.sapfir.helpers.DatabaseOperations;
 import com.sapfir.helpers.Properties;
 import com.sapfir.helpers.UserOperations;
 import com.sapfir.pageClasses.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import sun.rmi.runtime.Log;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Test_Predictions {
+
+    private static final Logger Log = LogManager.getLogger(Test_Predictions.class.getName());
 
     private DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -49,7 +55,6 @@ public class Test_Predictions {
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
     public void testPredictions(String username) {
 
-        CommonElements ce = new CommonElements(driver);
         ProfilePage pp = new ProfilePage(driver);
         PredictionsInspection pi = new PredictionsInspection(driver);
 
@@ -58,12 +63,19 @@ public class Test_Predictions {
         pp.viewPredictions();
 
         List<String> predictions = pi.getPredictions();
+//        List<String> predictions = new ArrayList<>();
+//        predictions.add("feed_item_3090192303");
+
         String sport;
         for (String predictionID: predictions) {
-            sport = pi.getSport(predictionID);
-            System.out.println(sport);
+            if (!pi.checkIfRemoved(predictionID)){
+                sport = pi.getSport(predictionID);
+                System.out.println(sport);
+            } else {
+               Log.warn("Prediction was removed by " + username);
+            }
         }
-
+        CommonElements ce = new CommonElements(driver);
         ce.openProfilePage();
     }
 }

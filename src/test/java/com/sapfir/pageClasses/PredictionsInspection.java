@@ -22,10 +22,6 @@ public class PredictionsInspection {
         PageFactory.initElements(driver, this);
     }
 
-    public String getItemNumber(String predictionID) {
-        return predictionID.replaceAll("\\D+","");
-    }
-
     public List<String> getPredictions() {
         Log.trace("Getting list of prediction IDs...");
         List<WebElement> predictionsList = driver.findElements(By.className("feed-item"));
@@ -39,21 +35,29 @@ public class PredictionsInspection {
     }
 
     public boolean checkIfRemoved(String predicitonID) {
-        String itemNumber = getItemNumber(predicitonID);
-        WebElement element = driver.findElement(By.cssSelector("#"+predicitonID+" #reportResult_" + itemNumber));
-        String text = element.getText().trim();
+      /*
+            This method will try to search if the following text is present for prediction:
+            "Prediction was removed."
+            It will return true if prediction was removed (false otherwise)
+       */
+
+      Log.trace("Checking if prediction was removed...");
+      WebElement element = driver.findElement(By.cssSelector("#" + predicitonID + " .feed-item-content.hover-togle"));
+      String text = element.getText();
 
         boolean isRemoved = false;
-        if (text.equals("Prediction was removed.")) {
+        if (text.contains("Prediction was removed.")) {
             isRemoved = true;
         }
-        System.out.println("Text:" + text);
-        System.out.println("Is prediction removed: " + isRemoved);
+        Log.trace("Check complete. Prediction removed = " + isRemoved);
         return isRemoved;
     }
 
     public String getSport(String predictionID) {
-        checkIfRemoved(predictionID);
-        return driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(1)")).getText();
+        Log.debug("Getting sport of prediction...");
+        WebElement element = driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(1)"));
+        String sport = element.getText();
+        Log.debug("Successfully got sport: " + sport);
+        return sport;
     }
 }
