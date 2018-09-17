@@ -69,10 +69,18 @@ public class Test_Predictions {
 //        String sport;
         for (String predictionID: predictions) {
             if (!pi.checkIfRemoved(predictionID)){
+
                 String sport = pi.getSport(predictionID);
                 String region = pi.getRegion(predictionID);
                 String tournament = pi.getTournament(predictionID);
                 System.out.println(sport + " --> " + region + " --> " + tournament);
+
+                ArrayList<String> options = pi.getOptionNames(predictionID);
+                ArrayList<String> values = pi.getOptionValues(predictionID);
+                for (int i = 0; i < options.size(); i++) {
+                    System.out.println(options.get(i) + ": " + values.get(i));
+                }
+
             } else {
                Log.warn("Prediction was removed by " + username);
             }
