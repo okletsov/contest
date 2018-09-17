@@ -1,5 +1,6 @@
 package com.sapfir.pageClasses;
 
+import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -117,5 +118,21 @@ public class PredictionsInspection {
         }
         Log.debug("Successfully got optoin values");
         return values;
+    }
+
+    public String getResult(String predictionID) {
+        Log.debug("Getting prediction result...");
+        String locator = "#" + predictionID + " .odd [class*=\"status-text-\"]";
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean resultKnown = sm.isElementPresent("css", locator);
+
+        String result;
+        if (resultKnown) {
+            result = driver.findElement(By.cssSelector(locator)).getText().trim();
+        } else {
+            result = "Not Played";
+        }
+        Log.debug("Successfully got prediction result: " + result);
+        return result;
     }
 }

@@ -81,6 +81,10 @@ public class Test_Predictions {
                     System.out.println(options.get(i) + ": " + values.get(i));
                 }
 
+                String result = pi.getResult(predictionID);
+                System.out.println(result);
+                System.out.println("\n");
+
             } else {
                Log.warn("Prediction was removed by " + username);
             }
