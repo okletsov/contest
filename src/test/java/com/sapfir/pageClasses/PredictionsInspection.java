@@ -146,4 +146,23 @@ public class PredictionsInspection {
         Log.debug("Successfully got prediction result: " + result);
         return result;
     }
+
+    public void getDateScheduled(String predictionID) {
+        String locator = "#" + predictionID + " [id*=\"status-\"]";
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean dateExist = sm.isElementPresent("css", locator);
+
+        if (dateExist) {
+            WebElement element = driver.findElement(By.cssSelector(locator));
+            String text = element.getText().trim();
+
+            int breakIndex = text.indexOf("\n");
+            String eventDate = text.substring(0, breakIndex);
+
+
+
+        } else {
+            System.out.println("Event date unknown");
+        }
+    }
 }
