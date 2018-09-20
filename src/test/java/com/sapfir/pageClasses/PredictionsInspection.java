@@ -154,11 +154,11 @@ public class PredictionsInspection {
 
         if (dateExist) {
             WebElement element = driver.findElement(By.cssSelector(locator));
-            String text = element.getText().trim();
-
-            int breakIndex = text.indexOf("\n");
-            String eventDate = text.substring(0, breakIndex);
-
+            String className = element.getAttribute("class");
+            int startIndex = className.indexOf(" t") + 2;
+            int endIndex = className.indexOf("-", startIndex);
+            String unixDate = className.substring(startIndex, endIndex);
+            System.out.println(unixDate);
 
 
         } else {
