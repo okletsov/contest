@@ -1,5 +1,7 @@
 package com.sapfir.pageClasses;
 
+import com.sapfir.helpers.DatabaseOperations;
+import com.sapfir.helpers.DateTimeOperations;
 import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -148,18 +150,24 @@ public class PredictionsInspection {
     }
 
     public void getDateScheduled(String predictionID) {
+        //Check if event date exist
         String locator = "#" + predictionID + " [id*=\"status-\"]";
         SeleniumMethods sm = new SeleniumMethods(driver);
         boolean dateExist = sm.isElementPresent("css", locator);
 
         if (dateExist) {
+            //Getting element's class name
             WebElement element = driver.findElement(By.cssSelector(locator));
             String className = element.getAttribute("class");
+
+            //Getting unix timestamp from class name
             int startIndex = className.indexOf(" t") + 2;
             int endIndex = className.indexOf("-", startIndex);
             String unixDate = className.substring(startIndex, endIndex);
-            System.out.println(unixDate);
 
+            DateTimeOperations dop = new DateTimeOperations();
+            String dateScheduled = dop.convertFromUnix(unixDate);
+            System.out.println(dateScheduled);
 
         } else {
             System.out.println("Event date unknown");
