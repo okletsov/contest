@@ -187,4 +187,13 @@ public class PredictionsInspection {
         Log.debug("Successfully got competitors");
         return competitors;
     }
+
+    public String getMarket(String predictionID) {
+        Log.debug("Getting market...");
+        String locator = "#" + predictionID + " .odd span a";
+        WebElement element = driver.findElement(By.cssSelector(locator));
+        String market = element.getText().trim();
+        Log.debug("Successfully got market");
+        return market;
+    }
 }

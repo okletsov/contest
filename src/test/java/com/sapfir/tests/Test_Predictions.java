@@ -89,6 +89,9 @@ public class Test_Predictions {
                 String competitors = pi.getCompetitors(predictionID);
                 System.out.println(competitors);
 
+				String market = pi.getMarket(predictionID);
+				System.out.println(market);
+
                 System.out.println("\n");
 
             } else {
