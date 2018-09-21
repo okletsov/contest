@@ -62,9 +62,9 @@ public class Test_Predictions {
         pp.clickParticipantUsername(username);
         pp.viewPredictions();
 
-//        List<String> predictions = pi.getPredictions();
-        List<String> predictions = new ArrayList<>();
-        predictions.add("feed_item_3108344203");
+        List<String> predictions = pi.getPredictions();
+//        List<String> predictions = new ArrayList<>();
+//        predictions.add("feed_item_3108344203");
 
         for (String predictionID: predictions) {
             if (!pi.checkIfRemoved(predictionID)){
@@ -83,7 +83,12 @@ public class Test_Predictions {
                 String result = pi.getResult(predictionID);
                 System.out.println(result);
 
-                pi.getDateScheduled(predictionID);
+                String dateScheduled = pi.getDateScheduled(predictionID);
+                System.out.println(dateScheduled);
+
+                String competitors = pi.getCompetitors(predictionID);
+                System.out.println(competitors);
+
                 System.out.println("\n");
 
             } else {

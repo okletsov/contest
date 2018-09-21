@@ -34,7 +34,7 @@ public class Participants {
 //        }
 
         Object[][] testData = new Object[][]{
-                {"Ajax"}
+                {"TestUser2018"}
         };
 
         dbOp.closeConnection(conn);

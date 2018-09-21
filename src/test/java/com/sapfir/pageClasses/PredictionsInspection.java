@@ -149,7 +149,10 @@ public class PredictionsInspection {
         return result;
     }
 
-    public void getDateScheduled(String predictionID) {
+    public String getDateScheduled(String predictionID) {
+        Log.debug("Getting date scheduled...");
+        String dateScheduled;
+
         //Check if event date exist
         String locator = "#" + predictionID + " [id*=\"status-\"]";
         SeleniumMethods sm = new SeleniumMethods(driver);
@@ -166,11 +169,22 @@ public class PredictionsInspection {
             String unixDate = className.substring(startIndex, endIndex);
 
             DateTimeOperations dop = new DateTimeOperations();
-            String dateScheduled = dop.convertFromUnix(unixDate);
-            System.out.println(dateScheduled);
+            dateScheduled = dop.convertFromUnix(unixDate);
+            Log.debug("Successfully got date scheduled");
 
         } else {
-            System.out.println("Event date unknown");
+            Log.debug("Event date unknown: null returned");
+            dateScheduled = null;
         }
+        return dateScheduled;
+    }
+
+    public String getCompetitors(String predictionID) {
+        Log.debug("Getting competitors...");
+        String locator = "#" + predictionID + " .odd a.bold";
+        WebElement element = driver.findElement(By.cssSelector(locator));
+        String competitors = element.getText().trim();
+        Log.debug("Successfully got competitors");
+        return competitors;
     }
 }
