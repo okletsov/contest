@@ -179,10 +179,9 @@ public class PredictionsInspection {
         return dateScheduled;
     }
 
-    public String getCompetitors(String predictionID) {
+    public String getCompetitorsText(String predictionID) {
         Log.debug("Getting competitors...");
-        String locator = "#" + predictionID + " .odd a.bold";
-        WebElement element = driver.findElement(By.cssSelector(locator));
+        WebElement element = getCompetitorsElement(predictionID);
         String competitors = element.getText().trim();
         Log.debug("Successfully got competitors");
         return competitors;
@@ -195,5 +194,27 @@ public class PredictionsInspection {
         String market = element.getText().trim();
         Log.debug("Successfully got market");
         return market;
+    }
+
+    private WebElement getCompetitorsElement(String predictionID) {
+        String locator = "#" + predictionID + " .odd a.bold";
+        return driver.findElement(By.cssSelector(locator));
+    }
+
+    public String getScore(String predictionID) {
+        Log.debug("Getting event score...");
+        WebElement competitors = getCompetitorsElement(predictionID);
+        String eventLink = competitors.getAttribute("href");
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.openNewTab(eventLink);
+
+        WebElement result = driver.findElement(By.id("event-status"));
+
+        String text = result.getText();
+        String score = text.replace("Final result ", "").trim();
+        sm.closeTab();
+        Log.debug("Successfully got event score");
+        return score;
     }
 }
