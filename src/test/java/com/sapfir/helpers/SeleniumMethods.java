@@ -74,7 +74,8 @@ public class SeleniumMethods {
     }
 
     public void closeTab() {
-        JavascriptExecutor js = (JavascriptExecutor)driver;
-        js.executeScript("window.close()");
+        driver.close();
+        ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(0));
     }
 }
