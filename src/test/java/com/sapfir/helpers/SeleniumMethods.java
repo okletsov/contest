@@ -78,4 +78,14 @@ public class SeleniumMethods {
         ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
         driver.switchTo().window(tabs.get(0));
     }
+
+    public String getNextTextNode(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        return (String)js.executeScript("return arguments[0].nextSibling.textContent", element);
+    }
+
+    public String getPreviousTextNode(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        return (String)js.executeScript("return arguments[0].previousSibling.textContent", element);
+    }
 }

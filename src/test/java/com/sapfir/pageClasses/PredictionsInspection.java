@@ -202,53 +202,43 @@ public class PredictionsInspection {
 
     public String getScore(String predictionID) {
         Log.debug("Getting event score...");
-        String score;
-        String scoreLocator = "#" + predictionID + " [class=\"center bold table-odds\"]";
-
         SeleniumMethods sm = new SeleniumMethods(driver);
+        String score;
+
+        String scoreLocator = "#" + predictionID + " [class=\"center bold table-odds\"]";
         boolean scoreKnown = sm.isElementPresent("css", scoreLocator);
+
         if (scoreKnown){
             WebElement competitors = getCompetitorsElement(predictionID);
-            String eventLink = competitors.getAttribute("href");
+            sm.openNewTab(competitors.getAttribute("href"));
 
-            sm.openNewTab(eventLink);
-
-            JavascriptExecutor js = (JavascriptExecutor)driver;
             WebElement mainScoreElement = driver.findElement(By.cssSelector("#event-status strong"));
             String mainScoreText = mainScoreElement.getText().trim();
-            score = mainScoreText;
 
             String supLocator = "#event-status sup";
             boolean supTextPresent = sm.isElementPresent("css", supLocator);
 
+            String detailedScore = "";
             if (supTextPresent) {
+
                 List<WebElement> supElements = driver.findElements(By.cssSelector(supLocator));
                 for (int i = 0; i < supElements.size(); i++) {
 
-                    String textBefore = (String)js.executeScript(
-                            "return arguments[0].previousSibling.textContent", supElements.get(i));
+                    String textBeforeSup = sm.getPreviousTextNode(supElements.get(i));
                     String supText = supElements.get(i).getText();
-                    score = score + textBefore + "[" + supText + "]";
+                    detailedScore = detailedScore + textBeforeSup + "[" + supText + "]";
 
                     if (i == supElements.size() - 1) {
-                        String textAfter = (String)js.executeScript(
-                                "return arguments[0].nextSibling.textContent", supElements.get(i));
-                        score = score + textAfter;
+                        String textAfterSup = sm.getNextTextNode(supElements.get(i));
+                        detailedScore = detailedScore + textAfterSup;
                     }
                 }
             } else {
-                String detailedScore = (String)js.executeScript(
-                        "return arguments[0].nextSibling.textContent", mainScoreElement);
-                score = mainScoreText + detailedScore;
+                detailedScore = sm.getNextTextNode(mainScoreElement);
             }
+            score = mainScoreText + detailedScore;
 
 
-//            String supTextAbove = (String)js.executeScript("return arguments[0].previousSibling.textContent.trim()", supElement);
-//            String supTextBelow = (String)js.executeScript("return arguments[0].nextSibling.textContent.trim()", supElement);
-
-//            WebElement result = driver.findElement(By.id("event-status"));
-//            String text = result.getText();
-//            score = text.replace("Final result ", "").trim();
             sm.closeTab();
 
             Log.debug("Successfully got event score");
