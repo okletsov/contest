@@ -203,18 +203,26 @@ public class PredictionsInspection {
 
     public String getScore(String predictionID) {
         Log.debug("Getting event score...");
-        WebElement competitors = getCompetitorsElement(predictionID);
-        String eventLink = competitors.getAttribute("href");
+        String score;
+        String scoreLocator = "#" + predictionID + " [class=\"center bold table-odds\"]";
 
         SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.openNewTab(eventLink);
+        boolean scoreKnown = sm.isElementPresent("css", scoreLocator);
+        if (scoreKnown){
+            WebElement competitors = getCompetitorsElement(predictionID);
+            String eventLink = competitors.getAttribute("href");
 
-        WebElement result = driver.findElement(By.id("event-status"));
+            sm.openNewTab(eventLink);
+            WebElement result = driver.findElement(By.id("event-status"));
+            String text = result.getText();
+            score = text.replace("Final result ", "").trim();
+            sm.closeTab();
 
-        String text = result.getText();
-        String score = text.replace("Final result ", "").trim();
-        sm.closeTab();
-        Log.debug("Successfully got event score");
+            Log.debug("Successfully got event score");
+        } else {
+            Log.debug("Score unknown");
+            score = null;
+        }
         return score;
     }
 }

@@ -62,9 +62,9 @@ public class Test_Predictions {
         pp.clickParticipantUsername(username);
         pp.viewPredictions();
 
-//        List<String> predictions = pi.getPredictions();
-        List<String> predictions = new ArrayList<>();
-        predictions.add("feed_item_3090192303");
+        List<String> predictions = pi.getPredictions();
+//        List<String> predictions = new ArrayList<>();
+//        predictions.add("feed_item_3090192303");
 
         for (String predictionID: predictions) {
             if (!pi.checkIfRemoved(predictionID)){
