@@ -1,14 +1,13 @@
 package com.sapfir.pageClasses;
 
-import com.sapfir.helpers.DatabaseOperations;
 import com.sapfir.helpers.DateTimeOperations;
 import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import java.util.ArrayList;
@@ -203,7 +202,7 @@ public class PredictionsInspection {
 
     public String getScore(String predictionID) {
         Log.debug("Getting event score...");
-        String score;
+        String score = null;
         String scoreLocator = "#" + predictionID + " [class=\"center bold table-odds\"]";
 
         SeleniumMethods sm = new SeleniumMethods(driver);
@@ -213,15 +212,26 @@ public class PredictionsInspection {
             String eventLink = competitors.getAttribute("href");
 
             sm.openNewTab(eventLink);
-            WebElement result = driver.findElement(By.id("event-status"));
-            String text = result.getText();
-            score = text.replace("Final result ", "").trim();
+
+            String locator = "#event-status sup";
+            WebElement supElement = driver.findElement(By.cssSelector(locator));
+
+            JavascriptExecutor js = (JavascriptExecutor)driver;
+            String supTextAbove = (String)js.executeScript("return arguments[0].previousSibling.textContent.trim()", supElement);
+            String supTextBelow = (String)js.executeScript("return arguments[0].nextSibling.textContent.trim()", supElement);
+
+            System.out.println(supTextAbove);
+            System.out.println(supElement.getText());
+            System.out.println(supTextBelow);
+
+//            WebElement result = driver.findElement(By.id("event-status"));
+//            String text = result.getText();
+//            score = text.replace("Final result ", "").trim();
             sm.closeTab();
 
             Log.debug("Successfully got event score");
         } else {
             Log.debug("Score unknown");
-            score = null;
         }
         return score;
     }
