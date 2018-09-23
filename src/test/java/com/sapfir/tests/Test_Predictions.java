@@ -64,7 +64,7 @@ public class Test_Predictions {
 
 //        List<String> predictions = pi.getPredictions();
         List<String> predictions = new ArrayList<>();
-        predictions.add("feed_item_3043046503");
+        predictions.add("feed_item_3120488703");
 
         for (String predictionID: predictions) {
             if (!pi.checkIfRemoved(predictionID)){

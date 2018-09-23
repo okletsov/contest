@@ -202,7 +202,7 @@ public class PredictionsInspection {
 
     public String getScore(String predictionID) {
         Log.debug("Getting event score...");
-        String score = null;
+        String score;
         String scoreLocator = "#" + predictionID + " [class=\"center bold table-odds\"]";
 
         SeleniumMethods sm = new SeleniumMethods(driver);
@@ -213,16 +213,35 @@ public class PredictionsInspection {
 
             sm.openNewTab(eventLink);
 
-            String locator = "#event-status sup";
-            WebElement supElement = driver.findElement(By.cssSelector(locator));
-
             JavascriptExecutor js = (JavascriptExecutor)driver;
-            String supTextAbove = (String)js.executeScript("return arguments[0].previousSibling.textContent.trim()", supElement);
-            String supTextBelow = (String)js.executeScript("return arguments[0].nextSibling.textContent.trim()", supElement);
+            WebElement mainScoreElement = driver.findElement(By.cssSelector("#event-status strong"));
+            String mainScoreText = mainScoreElement.getText().trim();
+            score = mainScoreText;
+            boolean supTextPresent = sm.isElementPresent("css", "#event-status sup");
 
-            System.out.println(supTextAbove);
-            System.out.println(supElement.getText());
-            System.out.println(supTextBelow);
+            if (supTextPresent) {
+                List<WebElement> supElements = driver.findElements(By.cssSelector("#event-status sup"));
+                for (int i = 0; i < supElements.size(); i++) {
+
+                    String textBefore = (String)js.executeScript(
+                            "return arguments[0].previousSibling.textContent", supElements.get(i));
+                    String supText = supElements.get(i).getText();
+                    score = score + textBefore + "[" + supText + "]";
+                    if (i == supElements.size() - 1) {
+                        String textAfter = (String)js.executeScript(
+                                "return arguments[0].nextSibling.textContent", supElements.get(i));
+                        score = score + textAfter;
+                    }
+                }
+            } else {
+                String detailedScore = (String)js.executeScript(
+                        "return arguments[0].nextSibling.textContent", mainScoreElement);
+                score = mainScoreText + detailedScore;
+            }
+
+
+//            String supTextAbove = (String)js.executeScript("return arguments[0].previousSibling.textContent.trim()", supElement);
+//            String supTextBelow = (String)js.executeScript("return arguments[0].nextSibling.textContent.trim()", supElement);
 
 //            WebElement result = driver.findElement(By.id("event-status"));
 //            String text = result.getText();
@@ -232,6 +251,7 @@ public class PredictionsInspection {
             Log.debug("Successfully got event score");
         } else {
             Log.debug("Score unknown");
+            score = null;
         }
         return score;
     }
