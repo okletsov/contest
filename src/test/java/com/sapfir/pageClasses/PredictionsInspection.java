@@ -217,16 +217,19 @@ public class PredictionsInspection {
             WebElement mainScoreElement = driver.findElement(By.cssSelector("#event-status strong"));
             String mainScoreText = mainScoreElement.getText().trim();
             score = mainScoreText;
-            boolean supTextPresent = sm.isElementPresent("css", "#event-status sup");
+
+            String supLocator = "#event-status sup";
+            boolean supTextPresent = sm.isElementPresent("css", supLocator);
 
             if (supTextPresent) {
-                List<WebElement> supElements = driver.findElements(By.cssSelector("#event-status sup"));
+                List<WebElement> supElements = driver.findElements(By.cssSelector(supLocator));
                 for (int i = 0; i < supElements.size(); i++) {
 
                     String textBefore = (String)js.executeScript(
                             "return arguments[0].previousSibling.textContent", supElements.get(i));
                     String supText = supElements.get(i).getText();
                     score = score + textBefore + "[" + supText + "]";
+
                     if (i == supElements.size() - 1) {
                         String textAfter = (String)js.executeScript(
                                 "return arguments[0].nextSibling.textContent", supElements.get(i));
