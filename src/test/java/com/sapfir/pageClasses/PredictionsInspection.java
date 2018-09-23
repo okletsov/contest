@@ -215,15 +215,11 @@ public class PredictionsInspection {
             WebElement mainScoreElement = driver.findElement(By.cssSelector("#event-status strong"));
             String mainScoreText = mainScoreElement.getText().trim();
 
-            String supLocator = "#event-status sup";
-            boolean supTextPresent = sm.isElementPresent("css", supLocator);
+            List<WebElement> supElements = driver.findElements(By.cssSelector("#event-status sup"));
 
             String detailedScore = "";
-            if (supTextPresent) {
-
-                List<WebElement> supElements = driver.findElements(By.cssSelector(supLocator));
+            if (supElements.size() > 0) {
                 for (int i = 0; i < supElements.size(); i++) {
-
                     String textBeforeSup = sm.getPreviousTextNode(supElements.get(i));
                     String supText = supElements.get(i).getText();
                     detailedScore = detailedScore + textBeforeSup + "[" + supText + "]";
@@ -237,10 +233,7 @@ public class PredictionsInspection {
                 detailedScore = sm.getNextTextNode(mainScoreElement);
             }
             score = mainScoreText + detailedScore;
-
-
             sm.closeTab();
-
             Log.debug("Successfully got event score");
         } else {
             Log.debug("Score unknown");
