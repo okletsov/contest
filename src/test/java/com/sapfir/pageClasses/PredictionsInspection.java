@@ -240,7 +240,7 @@ public class PredictionsInspection {
             sm.closeTab();
             Log.debug("Successfully got detailed score");
         } else {
-            detailedScore = null;
+            detailedScore = "unknown";
             Log.debug("Detailed score unknown");
         }
         return detailedScore;
