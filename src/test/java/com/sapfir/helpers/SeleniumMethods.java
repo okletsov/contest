@@ -86,7 +86,7 @@ public class SeleniumMethods {
                         "if(arguments[0].nextSibling != null) {" +
                         "x = arguments[0].nextSibling.textContent;" +
                         "} else {" +
-                        "x = \"\";" +
+                        "x = null;" +
                         "}" +
                         "return x;", element);
     }
