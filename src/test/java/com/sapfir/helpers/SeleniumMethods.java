@@ -81,7 +81,14 @@ public class SeleniumMethods {
 
     public String getNextTextNode(WebElement element) {
         JavascriptExecutor js = (JavascriptExecutor)driver;
-        return (String)js.executeScript("return arguments[0].nextSibling.textContent", element);
+        return (String)js.executeScript(
+                "var x;" +
+                        "if(arguments[0].nextSibling != null) {" +
+                        "x = arguments[0].nextSibling.textContent;" +
+                        "} else {" +
+                        "x = \"\";" +
+                        "}" +
+                        "return x;", element);
     }
 
     public String getPreviousTextNode(WebElement element) {

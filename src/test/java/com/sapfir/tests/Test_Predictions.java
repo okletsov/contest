@@ -94,7 +94,7 @@ public class Test_Predictions {
 
 				String mainScore = pi.getMainScore(predictionID);
 				String detailedScore = pi.getDetailedScore(predictionID);
-				System.out.println(mainScore + " " + detailedScore);
+				System.out.println("Score: " + mainScore + " " + detailedScore);
 
                 System.out.println("\n");
 
