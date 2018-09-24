@@ -27,7 +27,7 @@ public class EventPage {
     private List<WebElement> supElements;
 
 
-    String getDetailedScore() {
+    String getDetailedScoreHelper() {
         SeleniumMethods sm = new SeleniumMethods(driver);
 
         String detailedScore = "";

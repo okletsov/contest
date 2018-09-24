@@ -246,7 +246,7 @@ public class PredictionsInspection {
             EventPage ep = new EventPage(driver);
 
             //Grab detailed score and close the tab
-            detailedScore = ep.getDetailedScore();
+            detailedScore = ep.getDetailedScoreHelper();
             sm.closeTab();
             Log.debug("Successfully got detailed score");
         } else {
