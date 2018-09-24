@@ -127,22 +127,12 @@ public class PredictionsInspection {
         SeleniumMethods sm = new SeleniumMethods(driver);
         boolean resultKnown = sm.isElementPresent("css", locator);
 
-        String result = "Not played";
+        String result;
         if (resultKnown) {
-            String siteText = driver.findElement(By.cssSelector(locator)).getText().trim();
-            switch (siteText) {
-                case "W":
-                    result = "Won";
-                    break;
-                case "L":
-                    result = "Lost";
-                    break;
-                case "V":
-                    result = "Voided";
-                    break;
-                default:
-                    Log.error("Unexpected text returned");
-            }
+            String className = driver.findElement(By.cssSelector(locator)).getAttribute("class");
+            result = className.replace("center status-text-", "");
+        } else {
+            result = "Not played";
         }
         Log.debug("Successfully got prediction result: " + result);
         return result;
