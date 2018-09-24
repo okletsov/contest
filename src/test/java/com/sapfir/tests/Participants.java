@@ -34,7 +34,7 @@ public class Participants {
 //        }
 
         Object[][] testData = new Object[][]{
-                {"SchusterPicks"}
+                {"maxpav1987"}
         };
 
         dbOp.closeConnection(conn);
