@@ -51,13 +51,7 @@ public class EventPage {
                     }
                 }
             } else {
-                try {
-                    detailedScore = sm.getNextTextNode(getMainScoreElement()).trim();
-                } catch (Exception ex) {
-                    Log.warn("Unable to locate detailed score. Check the event");
-                    Log.warn("Message: " + ex.getMessage());
-                    return null;
-                }
+                detailedScore = sm.getNextTextNode(getMainScoreElement()).trim();
             }
         } else {
             detailedScore = null;
