@@ -92,8 +92,9 @@ public class Test_Predictions {
 				String market = pi.getMarket(predictionID);
 				System.out.println(market);
 
-				String score = pi.getScore(predictionID);
-				System.out.println(score);
+				String mainScore = pi.getMainScore(predictionID);
+				String detailedScore = pi.getDetailedScore(predictionID);
+				System.out.println(mainScore + " " + detailedScore);
 
                 System.out.println("\n");
 

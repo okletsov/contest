@@ -200,45 +200,59 @@ public class PredictionsInspection {
         return driver.findElement(By.cssSelector(locator));
     }
 
-    public String getScore(String predictionID) {
-        Log.debug("Getting event score...");
-        SeleniumMethods sm = new SeleniumMethods(driver);
-        String score;
+    public String getMainScore(String predictionID) {
 
-        String scoreLocator = "#" + predictionID + " [class=\"center bold table-odds\"]";
-        boolean scoreKnown = sm.isElementPresent("css", scoreLocator);
+        /*
+            This method checks if the score is known and grabs main score from feed page
+         */
+
+        Log.debug("Getting main score score...");
+        String mainScoreText;
+        String locator = "#" + predictionID + " [class=\"center bold table-odds\"]";
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean scoreKnown = sm.isElementPresent("css", locator);
 
         if (scoreKnown){
+            WebElement mainScoreElement = driver.findElement(By.cssSelector(locator));
+            mainScoreText = mainScoreElement.getText().trim();
+            Log.debug("Successfully got main score");
+        } else {
+            Log.debug("Main score unknown");
+            mainScoreText = null;
+        }
+        return mainScoreText;
+    }
+
+    public String getDetailedScore(String predictionID) {
+
+        /*
+            This method checks if main score exist and:
+                - opens event page in new tab
+                - grabs detailed score
+                - closes tab
+         */
+
+        Log.debug("Getting detailed score...");
+        String detailedScore;
+        String mainScore = getMainScore(predictionID);
+
+        if (mainScore != null) {
+            SeleniumMethods sm = new SeleniumMethods(driver);
+
+            //Open new tab
             WebElement competitors = getCompetitorsElement(predictionID);
             sm.openNewTab(competitors.getAttribute("href"));
+            EventPage ep = new EventPage(driver);
 
-            WebElement mainScoreElement = driver.findElement(By.cssSelector("#event-status strong"));
-            String mainScoreText = mainScoreElement.getText().trim();
-
-            List<WebElement> supElements = driver.findElements(By.cssSelector("#event-status sup"));
-
-            String detailedScore = "";
-            if (supElements.size() > 0) {
-                for (int i = 0; i < supElements.size(); i++) {
-                    String textBeforeSup = sm.getPreviousTextNode(supElements.get(i));
-                    String supText = supElements.get(i).getText();
-                    detailedScore = detailedScore + textBeforeSup + "[" + supText + "]";
-
-                    if (i == supElements.size() - 1) {
-                        String textAfterSup = sm.getNextTextNode(supElements.get(i));
-                        detailedScore = detailedScore + textAfterSup;
-                    }
-                }
-            } else {
-                detailedScore = sm.getNextTextNode(mainScoreElement);
-            }
-            score = mainScoreText + detailedScore;
+            //Grab detailed score and close the tab
+            detailedScore = ep.getDetailedScore();
             sm.closeTab();
-            Log.debug("Successfully got event score");
+            Log.debug("Successfully got detailed score");
         } else {
-            Log.debug("Score unknown");
-            score = null;
+            detailedScore = null;
+            Log.debug("Detailed score unknown");
         }
-        return score;
+        return detailedScore;
     }
 }
