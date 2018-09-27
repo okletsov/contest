@@ -177,7 +177,7 @@ public class PredictionsInspection {
             String unixDate = className.substring(startIndex, endIndex);
 
             DateTimeOperations dop = new DateTimeOperations();
-            dateScheduled = dop.convertFromUnix(unixDate);
+            dateScheduled = dop.convertFromUnix(unixDate) + ":00";
             Log.debug("Successfully got date scheduled");
 
         } else {
@@ -185,6 +185,23 @@ public class PredictionsInspection {
             dateScheduled = null;
         }
         return dateScheduled;
+    }
+
+    public String getDatePredicted(String predictionID) {
+        Log.debug("Getting date predicted");
+
+        WebElement element = driver.findElement(By.cssSelector(
+                "#" + predictionID + " .feed-item-controls [class*=\"item-create datet\"]"));
+        String className = element.getAttribute("class");
+        int startIndex = className.indexOf(" t") + 2;
+        int endIndex = className.indexOf("-", startIndex);
+        String unixDate = className.substring(startIndex, endIndex);
+
+        DateTimeOperations dop = new DateTimeOperations();
+        String datePredicted = dop.convertFromUnix(unixDate);
+
+        Log.debug("Successfully got date predicted");
+        return datePredicted;
     }
 
     public String getCompetitorsText(String predictionID) {

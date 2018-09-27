@@ -16,6 +16,6 @@ public class DateTimeOperations {
 		Long timestamp = Long.parseLong(unixTimeStamp);
 		Date date = Date.from(Instant.ofEpochSecond(timestamp));
 		LocalDateTime localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-		return localDate + ":00";
+		return localDate.toString();
 	}
 }

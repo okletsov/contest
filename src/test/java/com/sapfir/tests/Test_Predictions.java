@@ -88,7 +88,10 @@ public class Test_Predictions {
                 System.out.println(result);
 
                 String dateScheduled = pi.getDateScheduled(predictionID);
-                System.out.println(dateScheduled);
+                System.out.println("Scheduled: " + dateScheduled);
+
+                String datePredicted = pi.getDatePredicted(predictionID);
+                System.out.println("Predicted: " + datePredicted);
 
                 String competitors = pi.getCompetitorsText(predictionID);
                 System.out.println(competitors);
