@@ -74,11 +74,15 @@ public class Test_Predictions {
                 String tournament = pi.getTournament(predictionID);
                 System.out.println(sport + " --> " + region + " --> " + tournament);
 
+                String market = pi.getMarket(predictionID);
                 ArrayList<String> options = pi.getOptionNames(predictionID);
                 ArrayList<String> values = pi.getOptionValues(predictionID);
                 for (int i = 0; i < options.size(); i++) {
                     System.out.println(options.get(i) + ": " + values.get(i));
                 }
+
+                int userPick = pi.getUserPick(predictionID);
+                System.out.println("User pick: " + market + " " + options.get(userPick) + ", odd: " + values.get(userPick));
 
                 String result = pi.getResult(predictionID);
                 System.out.println(result);
@@ -88,9 +92,6 @@ public class Test_Predictions {
 
                 String competitors = pi.getCompetitorsText(predictionID);
                 System.out.println(competitors);
-
-				String market = pi.getMarket(predictionID);
-				System.out.println(market);
 
 				String mainScore = pi.getMainScore(predictionID);
 				String detailedScore = pi.getDetailedScore(predictionID);

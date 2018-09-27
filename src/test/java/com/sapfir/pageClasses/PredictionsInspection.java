@@ -121,6 +121,25 @@ public class PredictionsInspection {
         return values;
     }
 
+    public int getUserPick(String predictionID) {
+        Log.debug("Getting user pick index...");
+        Integer index = 5;
+
+        List<WebElement> pickColumns = driver.findElements(By.cssSelector(
+                "#" + predictionID + "  [class='pred-usertip'] td"));
+
+        for (int i = 0; i < pickColumns.size(); i++){
+            if (pickColumns.get(i).getText().equals("PICK")) {
+                index = i;
+            }
+        }
+
+        if (index == 5) { Log.error("Unable to find user pick index");
+        } else { Log.debug("Successfully got user pick index"); }
+
+        return index;
+    }
+
     public String getResult(String predictionID) {
         Log.debug("Getting prediction result...");
         String locator = "#" + predictionID + " .odd [class*=\"status-text-\"]";
