@@ -283,4 +283,27 @@ public class PredictionsInspection {
         if (detailedScore != null) { detailedScore = detailedScore.trim(); }
         return detailedScore;
     }
+
+    public String getEventIdentifier(String predictionID) {
+        Log.debug("Getting event identifier...");
+        String locator = "#" + predictionID + " [id*=\"status-\"]";
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean identifierExist = sm.isElementPresent("css", locator);
+
+        String identifier;
+        if (identifierExist) {
+            identifier = driver.findElement(By.cssSelector(locator)).getAttribute("id");
+        } else {
+            Log.warn("Standard identifier does not exist. Generating custom one...");
+            String sport = getSport(predictionID).replaceAll("\\s+","");
+            String region = getRegion(predictionID).replaceAll("\\s+","");
+            String tournament = getTournament(predictionID).replaceAll("\\s+","");
+            String market = getMarket(predictionID).replaceAll("\\s+","");
+
+            identifier = sport + region + tournament + market;
+        }
+        Log.debug("Successfully got event identifier");
+        return identifier;
+    }
 }

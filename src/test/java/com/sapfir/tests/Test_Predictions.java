@@ -100,6 +100,9 @@ public class Test_Predictions {
 				String detailedScore = pi.getDetailedScore(predictionID);
 				System.out.println("Score: " + mainScore + " " + detailedScore);
 
+				String eventIdentifier = pi.getEventIdentifier(predictionID);
+				System.out.println("Identifier: " + eventIdentifier);
+
                 System.out.println("\n");
 
             } else {
