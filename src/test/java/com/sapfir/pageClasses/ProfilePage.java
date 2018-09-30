@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,8 +68,14 @@ public class ProfilePage {
     }
 
     public void clickParticipantUsername(String username){
-        String css = "#profile-following .username[title=" + username + "]";
-        driver.findElement(By.cssSelector(css)).click();
+        String locator = "#profile-following .username[title=" + username + "]";
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean usernameExist = sm.isElementPresent("css", locator);
+
+        Assert.assertTrue(usernameExist,
+                "Participant " + username + " exist in database, but is not present in Following tab");
+        driver.findElement(By.cssSelector(locator)).click();
     }
 
     public void viewPredictions() {
