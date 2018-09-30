@@ -51,7 +51,7 @@ public class EventPage {
                     }
                 }
             } else {
-                detailedScore = sm.getNextTextNode(getMainScoreElement()).trim();
+                detailedScore = sm.getNextTextNode(getMainScoreElement());
             }
         } else {
             detailedScore = null;
