@@ -294,14 +294,21 @@ public class PredictionsInspection {
         if (identifierExist) {
             identifier = driver.findElement(By.cssSelector(locator)).getAttribute("id");
         } else {
-            Log.warn("Standard identifier does not exist. Generating custom one...");
             String sport = getSport(predictionID).replaceAll("\\s+","");
             String region = getRegion(predictionID).replaceAll("\\s+","");
-            String tournament = getTournament(predictionID).replaceAll("\\s+","");
             String market = getMarket(predictionID).replaceAll("\\s+","");
 
-            identifier = sport + region + tournament + market;
+            identifier = sport + region + market;
+
+            /*
+            Warning message if identifier does not contain the word "winner" as the expectation
+             is custom identifiers only needed if user bet on tournament winner
+             */
+            if (identifier.contains("Winner")) {
+                Log.warn("Custom identifier does not have the word 'Winner'. Check prediction.");
+            }
         }
+
         Log.debug("Successfully got event identifier");
         return identifier;
     }
