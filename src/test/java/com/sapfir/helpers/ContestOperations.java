@@ -60,7 +60,7 @@ public class ContestOperations {
                     month_1_start_date = seasonal_start_date;
                     month_1_end_date = year + "-09-30 23:59:59";
                     month_2_start_date = year + "-10-01 00:00:00";
-                    month_2_end_date = year + "-10-31T23:59:59";
+                    month_2_end_date = year + "-10-31 23:59:59";
                     break;
                 case "Spring":
                     seasonal_start_date = year + "-03-01 00:00:00";
