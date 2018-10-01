@@ -304,7 +304,7 @@ public class PredictionsInspection {
             Warning message if identifier does not contain the word "winner" as the expectation
              is custom identifiers only needed if user bet on tournament winner
              */
-            if (identifier.contains("Winner")) {
+            if (!identifier.contains("Winner")) {
                 Log.warn("Custom identifier does not have the word 'Winner'. Check prediction.");
             }
         }
