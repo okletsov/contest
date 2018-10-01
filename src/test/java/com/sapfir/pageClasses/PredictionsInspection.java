@@ -176,7 +176,7 @@ public class PredictionsInspection {
             String unixDate = className.substring(startIndex, endIndex);
 
             DateTimeOperations dop = new DateTimeOperations();
-            dateScheduled = dop.convertFromUnix(unixDate) + ":00";
+            dateScheduled = dop.convertFromUnix(unixDate);
             Log.debug("Successfully got date scheduled");
 
         } else {
