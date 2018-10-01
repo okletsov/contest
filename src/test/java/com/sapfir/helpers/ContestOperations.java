@@ -55,20 +55,20 @@ public class ContestOperations {
             Log.trace("Determining start and end dates...");
             switch (season) {
                 case "Autumn":
-                    seasonal_start_date = year + "-09-01T00:00:00";
-                    seasonal_end_date = year + "-11-30T23:59:59";
+                    seasonal_start_date = year + "-09-01 00:00:00";
+                    seasonal_end_date = year + "-11-30 23:59:59";
                     month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-09-30T23:59:59";
-                    month_2_start_date = year + "-10-01T00:00:00";
+                    month_1_end_date = year + "-09-30 23:59:59";
+                    month_2_start_date = year + "-10-01 00:00:00";
                     month_2_end_date = year + "-10-31T23:59:59";
                     break;
                 case "Spring":
-                    seasonal_start_date = year + "-03-01T00:00:00";
-                    seasonal_end_date = year + "-5-31T23:59:59";
+                    seasonal_start_date = year + "-03-01 00:00:00";
+                    seasonal_end_date = year + "-5-31 23:59:59";
                     month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-03-31T23:59:59";
-                    month_2_start_date = year + "-04-01T00:00:00";
-                    month_2_end_date = year + "-04-30T23:59:59";
+                    month_1_end_date = year + "-03-31 23:59:59";
+                    month_2_start_date = year + "-04-01 00:00:00";
+                    month_2_end_date = year + "-04-30 23:59:59";
                     break;
                 case "Winter":
                     //Increasing year by 1
@@ -81,20 +81,20 @@ public class ContestOperations {
                         februaryDays = "29";
                     }
 
-                    seasonal_start_date = year + "-12-01T00:00:00";
-                    seasonal_end_date = nextYear + "-02-" + februaryDays + "T23:59:59";
+                    seasonal_start_date = year + "-12-01 00:00:00";
+                    seasonal_end_date = nextYear + "-02-" + februaryDays + " 23:59:59";
                     month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-12-31T23:59:59";
-                    month_2_start_date = nextYear + "-01-01T00:00:00";
-                    month_2_end_date = nextYear + "-01-31T23:59:59";
+                    month_1_end_date = year + "-12-31 23:59:59";
+                    month_2_start_date = nextYear + "-01-01 00:00:00";
+                    month_2_end_date = nextYear + "-01-31 23:59:59";
                     break;
                 case "Summer":
-                    seasonal_start_date = year + "-06-01T00:00:00";
-                    seasonal_end_date = year + "-08-31T23:59:59";
+                    seasonal_start_date = year + "-06-01 00:00:00";
+                    seasonal_end_date = year + "-08-31 23:59:59";
                     month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-06-30T23:59:59";
-                    month_2_start_date = year + "-07-01T00:00:00";
-                    month_2_end_date = year + "-07-31T23:59:59";
+                    month_1_end_date = year + "-06-30 23:59:59";
+                    month_2_start_date = year + "-07-01 00:00:00";
+                    month_2_end_date = year + "-07-31 23:59:59";
                     break;
                 default:
                     seasonal_start_date = null;
