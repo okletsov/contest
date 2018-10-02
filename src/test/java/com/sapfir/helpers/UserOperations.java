@@ -68,7 +68,7 @@ public class UserOperations {
 
     private void addToUserNicknameTable (String nickname, String targetUser){
         Log.debug("Adding nickaname '" + nickname + "' to 'user_nickname' table for '" + targetUser + "' user");
-        deactivteNickname(targetUser);
+        deactivateNickname(targetUser);
         String userId = getUserID(targetUser);
         String addNicknameSql = "insert into user_nickname (id, user_id, nickname, is_active) " +
                 "values (uuid(), '" + userId + "', '" + nickname + "', 1);";
@@ -77,7 +77,7 @@ public class UserOperations {
         Log.info("Successfully added " + nickname + " to 'user_nickname' table for '" + targetUser + "' user");
     }
 
-    private void deactivteNickname(String targetUser){
+    private void deactivateNickname(String targetUser){
         Log.debug("Deactivating nicknames for user '" + targetUser + "'");
 
         String userID = getUserID(targetUser);

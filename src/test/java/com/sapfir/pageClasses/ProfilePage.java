@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.testng.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +39,6 @@ public class ProfilePage {
     @FindBy(css = "#profile-following .item")
     private List<WebElement> participants;
 
-    @FindBy(className = "feed-item")
-    private List<WebElement> predictions;
-
     public void viewParticipants() {
 
         SeleniumMethods sm = new SeleniumMethods(driver);
@@ -70,8 +68,14 @@ public class ProfilePage {
     }
 
     public void clickParticipantUsername(String username){
-        String css = "#profile-following .username[title=" + username + "]";
-        driver.findElement(By.cssSelector(css)).click();
+        String locator = "#profile-following .username[title=" + username + "]";
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        boolean usernameExist = sm.isElementPresent("css", locator);
+
+        Assert.assertTrue(usernameExist,
+                "Participant " + username + " exist in database, but is not present in Following tab");
+        driver.findElement(By.cssSelector(locator)).click();
     }
 
     public void viewPredictions() {
@@ -111,16 +115,18 @@ public class ProfilePage {
                 Once view More button is clicked - method will wait until loading of new predictions
                 is complete (do-while loop)
          */
-        int visiblePredictions = predictions.size();
+        PredictionsInspection pi = new PredictionsInspection(driver);
+
+        int visiblePredictions = pi.getPredictions().size();
         int predictionsAfterViewMore;
         boolean viewMoreButtonPresent = viewMoreButton.isDisplayed();
 
         while (viewMoreButtonPresent){
             viewMoreButton.click();
             do {
-                predictionsAfterViewMore = predictions.size();
+                predictionsAfterViewMore = pi.getPredictions().size();
             } while (visiblePredictions == predictionsAfterViewMore);
-            visiblePredictions = predictions.size();
+            visiblePredictions = pi.getPredictions().size();
             viewMoreButtonPresent = viewMoreButton.isDisplayed();
         }
     }

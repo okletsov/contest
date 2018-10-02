@@ -2,9 +2,7 @@ package com.sapfir.helpers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -65,5 +63,36 @@ public class SeleniumMethods {
             Log.debug("Element not found with " + type + ": " + locator);
         }
         return isPresent;
+    }
+
+    public void openNewTab(String link) {
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("window.open('" + link + "')");
+
+        ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+    }
+
+    public void closeTab() {
+        driver.close();
+        ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(0));
+    }
+
+    public String getNextTextNode(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        return  (String)js.executeScript(
+                "var x;" +
+                        "if(arguments[0].nextSibling != null) {" +
+                        "x = arguments[0].nextSibling.textContent;" +
+                        "} else {" +
+                        "x = null;" +
+                        "}" +
+                        "return x;", element);
+    }
+
+    public String getPreviousTextNode(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        return (String)js.executeScript("return arguments[0].previousSibling.textContent", element);
     }
 }
