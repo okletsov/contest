@@ -62,16 +62,16 @@ public class ContestOperations {
 
             switch (season) {
                 case "Autumn":
-                    seasonal_start_date = year + "-08-31 21:00:00";
-                    seasonal_end_date = year + "-11-30 21:59:59";
+                    seasonal_start_date = year + "-08-31 21:00:01";
+                    seasonal_end_date = year + "-11-30 22:00:00";
                     month_1_start_date = seasonal_start_date;
                     month_1_end_date = year + "-09-30 20:59:59";
                     month_2_start_date = year + "-09-30 21:00:00";
                     month_2_end_date = year + "-10-31 21:59:59";
                     break;
                 case "Spring":
-                    seasonal_start_date = year + "-02-" + februaryDays + " 22:00:00";
-                    seasonal_end_date = year + "-05-31 20:59:59";
+                    seasonal_start_date = year + "-02-" + februaryDays + " 22:00:01";
+                    seasonal_end_date = year + "-05-31 21:00:00";
                     month_1_start_date = seasonal_start_date;
                     month_1_end_date = year + "-03-31 20:59:59";
                     month_2_start_date = year + "-03-31 21:00:00";
@@ -82,16 +82,16 @@ public class ContestOperations {
                     int nextYearInt = Integer.parseInt(year) + 1;
                     String nextYear = Integer.toString(nextYearInt);
 
-                    seasonal_start_date = year + "-11-30 22:00:00";
-                    seasonal_end_date = nextYear + "-02-" + februaryDays + " 21:59:59";
+                    seasonal_start_date = year + "-11-30 22:00:01";
+                    seasonal_end_date = nextYear + "-02-" + februaryDays + " 22:00:00";
                     month_1_start_date = seasonal_start_date;
                     month_1_end_date = year + "-12-31 21:59:59";
                     month_2_start_date = year + "-12-31 22:00:00";
                     month_2_end_date = nextYear + "-01-31 21:59:59";
                     break;
                 case "Summer":
-                    seasonal_start_date = year + "-05-31 21:00:00";
-                    seasonal_end_date = year + "-08-31 20:59:59";
+                    seasonal_start_date = year + "-05-31 21:00:01";
+                    seasonal_end_date = year + "-08-31 21:00:00";
                     month_1_start_date = seasonal_start_date;
                     month_1_end_date = year + "-06-30 20:59:59";
                     month_2_start_date = year + "-06-30 21:00:00";
