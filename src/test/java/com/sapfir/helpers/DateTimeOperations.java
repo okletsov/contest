@@ -12,6 +12,6 @@ public class DateTimeOperations {
 	private static final Logger Log = LogManager.getLogger(DateTimeOperations.class.getName());
 
 	public String convertFromUnix(String unixTimeStamp){
-		return Instant.ofEpochSecond(Long.parseLong(unixTimeStamp)).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss"));
+		return Instant.ofEpochSecond(Long.parseLong(unixTimeStamp)).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
 	}
 }
