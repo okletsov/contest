@@ -18,6 +18,8 @@ public class Properties {
     private String siteUsername;
     private String sitePassword;
 
+    private String headless;
+
     public Properties() {
         java.util.Properties properties = new java.util.Properties();
 
@@ -39,6 +41,8 @@ public class Properties {
         this.siteUrl = properties.getProperty("site_url");
         this.siteUsername = properties.getProperty("site_username");
         this.sitePassword = properties.getProperty("site_password");
+
+        this.headless = properties.getProperty("headless");
     }
 
     public String getDatabaseURL() {return databaseURL;}
@@ -48,4 +52,6 @@ public class Properties {
     public String getSiteUrl() {return siteUrl;}
     public String getSiteUsername() {return siteUsername;}
     public String getSitePassword() {return sitePassword;}
+
+    public String getHeadless() {return headless;}
 }

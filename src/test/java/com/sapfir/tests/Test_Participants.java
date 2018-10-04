@@ -1,5 +1,6 @@
 package com.sapfir.tests;
 
+import com.sapfir.helpers.BrowserDriver;
 import com.sapfir.helpers.DatabaseOperations;
 import com.sapfir.helpers.Properties;
 import com.sapfir.helpers.UserOperations;
@@ -15,13 +16,11 @@ import org.testng.annotations.Test;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Test_Participants {
 
     private DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
-    private Properties prop = new Properties();
     private WebDriver driver;
     private String baseUrl;
 
@@ -29,10 +28,13 @@ public class Test_Participants {
     public void setUp() {
 
         conn = dbOp.connectToDatabase();
-        driver = new ChromeDriver();
-        baseUrl = prop.getSiteUrl();
 
+        BrowserDriver bd = new BrowserDriver();
+        driver = bd.getDriver();
         driver.manage().window().maximize();
+
+        Properties prop = new Properties();
+        baseUrl = prop.getSiteUrl();
     }
 
     @AfterClass

@@ -1,18 +1,15 @@
 package com.sapfir.tests;
 
+import com.sapfir.helpers.BrowserDriver;
 import com.sapfir.helpers.DatabaseOperations;
 import com.sapfir.helpers.Properties;
-import com.sapfir.helpers.UserOperations;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import sun.rmi.runtime.Log;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -30,7 +27,9 @@ public class Test_Predictions {
     public void setUp() {
 
         conn = dbOp.connectToDatabase();
-        driver = new ChromeDriver();
+
+        BrowserDriver bd = new BrowserDriver();
+        driver = bd.getDriver();
         driver.manage().window().maximize();
 
         Properties prop = new Properties();
