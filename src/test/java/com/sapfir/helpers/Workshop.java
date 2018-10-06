@@ -23,6 +23,7 @@ public class Workshop {
 
         System.out.println(date);
 
-
+        String now = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        System.out.println(now);
     }
 }

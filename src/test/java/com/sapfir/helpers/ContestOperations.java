@@ -109,11 +109,13 @@ public class ContestOperations {
             }
 
             Log.debug("Adding seasonal contest...");
+            DateTimeOperations dtOp = new DateTimeOperations();
+
             sql_seasonal = "INSERT INTO contest " +
-                    "(id, type, year, season, start_date, end_date, is_active)" +
+                    "(id, type, year, season, start_date, end_date, is_active, date_created)" +
                     " VALUES" +
                     " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
-                    " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1);";
+                    " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1, '" + dtOp.getTimestamp() + "');";
 
             ExecuteQuery eq1 = new ExecuteQuery(conn, sql_seasonal);
             eq1.cleanUp();
@@ -121,10 +123,10 @@ public class ContestOperations {
 
             Log.debug("Adding month 1 contest");
             sql_monthly_1 = "INSERT INTO contest " +
-                    "(id, type, year, month, season, start_date, end_date, is_active)" +
+                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)" +
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '1', '" + season + "'," +
-                    " '" + month_1_start_date + "', '" + month_1_end_date + "', 1);";
+                    " '" + month_1_start_date + "', '" + month_1_end_date + "', 1, '" + dtOp.getTimestamp() + "');";
 
             ExecuteQuery eq2 = new ExecuteQuery(conn, sql_monthly_1);
             eq2.cleanUp();
@@ -132,10 +134,10 @@ public class ContestOperations {
 
             Log.debug("Adding month 2 contest");
             sql_monthly_2 = "INSERT INTO contest " +
-                    "(id, type, year, month, season, start_date, end_date, is_active)" +
+                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)" +
                     " VALUES" +
                     " (UUID(), 'monthly', '" + year + "', '2', '" + season + "'," +
-                    " '" + month_2_start_date + "', '" + month_2_end_date + "', 0);";
+                    " '" + month_2_start_date + "', '" + month_2_end_date + "', 0, '" + dtOp.getTimestamp() + "');";
 
             ExecuteQuery eq3 = new ExecuteQuery(conn, sql_monthly_2);
             eq3.cleanUp();
