@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class PredictionsInspection {
         return values;
     }
 
-    private int getUserPick(String predictionID) {
+    public int getUserPick(String predictionID) {
         Log.debug("Getting user pick index...");
         int index = 5;
 
@@ -56,7 +57,7 @@ public class PredictionsInspection {
 
         for (int i = 0; i < pickColumns.size(); i++){
             if (pickColumns.get(i).getText().equals("PICK")) {
-                index = i;
+                index = i + 1;
             }
         }
 
@@ -313,5 +314,25 @@ public class PredictionsInspection {
         }
         Log.debug("Successfully got option " + index + " name");
         return optionName;
+    }
+
+    public BigDecimal getOptionValue(String predictionID, int index) {
+        Log.debug("Getting option " + index + " value...");
+        ArrayList<String> values = getOptionValues(predictionID);
+
+        BigDecimal optionValue;
+        if (index == 1) { optionValue = new BigDecimal(values.get(0)); }
+        else if (index == 2) {
+            if (values.size() >= 2) { optionValue = new BigDecimal(values.get(1)); }
+            else { optionValue = null; }
+        } else if (index == 3) {
+            if (values.size() == 3) { optionValue = new BigDecimal(values.get(2)); }
+            else { optionValue = null; }
+        } else {
+            optionValue = null;
+            Log.error("Index " + index + " not supported");
+        }
+        Log.debug("Successfully got option " + index + " value");
+        return optionValue;
     }
 }
