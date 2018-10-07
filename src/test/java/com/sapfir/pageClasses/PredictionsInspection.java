@@ -138,7 +138,7 @@ public class PredictionsInspection {
             String className = driver.findElement(By.cssSelector(locator)).getAttribute("class");
             result = className.replace("center status-text-", "");
         } else {
-            result = "Not played";
+            result = "not-played";
         }
         Log.debug("Successfully got prediction result: " + result);
         return result;
