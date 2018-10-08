@@ -30,7 +30,7 @@ public class PredictionOperations {
 
             String sport = pred.getSport(predictionID);
             String region = pred.getRegion(predictionID);
-            String tournament = pred.getTournament(predictionID);
+            String tournament_name = pred.getTournament(predictionID);
             String result = pred.getResult(predictionID);
             String dateScheduled = pred.getDateScheduled(predictionID);
             String datePredicted = pred.getDatePredicted(predictionID);
@@ -54,6 +54,23 @@ public class PredictionOperations {
 
             DateTimeOperations dateOp = new DateTimeOperations();
             String dateCreated = dateOp.getTimestamp();
+
+            String sql = "insert into prediction \n" +
+                    "(id, seasonal_contest_id, user_id, event_identifier, sport, region, tournament_name, " +
+                    "main_score, detailed_score, " +
+                    "result, date_scheduled, date_predicted, competitors, market, option1_name, option1_value, " +
+                    "option2_name, option2_value, option3_name, option3_value, user_pick_name, user_pick_value, " +
+                    "date_created) \n" +
+                    "values \n" +
+                    "('" + predictionID + "', '" + contestID + "', '" + userID + "', '" + eventIdentifier +
+                    "', '" + sport + "', '" + region + "', '" + tournament_name + "', '" + mainScore +
+                    "', '" + detailedScore + "', '" + result + "', '" + dateScheduled + "', '" + datePredicted +
+                    "', '" + competitors + "', '" + market + "', '" + option1Name + "', " + option1Value +
+                    ", '" + option2Name + "', " + option2Value + ", '" + option3Name + "', " + option3Value +
+                    ", '" + userPickName + "', " + userPickValue + ", '" + dateCreated + "');";
+
+            ExecuteQuery eq = new ExecuteQuery(conn, sql);
+            Log.info(eq.getRowsAffected() + " prediction with id " + predictionID + " successfully inserted into db");
 
         } else {
             Log.error("There are no active seasonal contests in database");

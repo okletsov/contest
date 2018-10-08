@@ -2,6 +2,7 @@ package com.sapfir.tests;
 
 import com.sapfir.helpers.BrowserDriver;
 import com.sapfir.helpers.DatabaseOperations;
+import com.sapfir.helpers.PredictionOperations;
 import com.sapfir.helpers.Properties;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
@@ -67,6 +68,8 @@ public class Test_Predictions {
 
         for (String predictionID: predictions) {
             if (!pi.checkIfRemoved(predictionID)){
+                PredictionOperations predOp = new PredictionOperations(driver, conn);
+                predOp.addPrediction(predictionID, username);
 
 //                String sport = pi.getSport(predictionID);
 //                String region = pi.getRegion(predictionID);
