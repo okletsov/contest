@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class ContestOperations {
 
@@ -37,7 +39,7 @@ public class ContestOperations {
         //Checking if contest already exist
         if (existingContestID == null) {
 
-            String sql_seasonal;
+            PreparedStatement sql_seasonal;
             String sql_monthly_1;
             String sql_monthly_2;
             String seasonal_start_date;
@@ -108,40 +110,61 @@ public class ContestOperations {
                     System.exit(0);
             }
 
-            Log.debug("Adding seasonal contest...");
-            DateTimeOperations dtOp = new DateTimeOperations();
+            try {
+                DateTimeOperations dtOp = new DateTimeOperations();
 
-            sql_seasonal = "INSERT INTO contest " +
-                    "(id, type, year, season, start_date, end_date, is_active, date_created)" +
-                    " VALUES" +
-                    " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
-                    " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1, '" + dtOp.getTimestamp() + "');";
+                Log.debug("Adding seasonal contest...");
+                sql_seasonal = conn.prepareStatement("INSERT INTO contest \n" +
+                        "(id, type, year, season, start_date, end_date, is_active, date_created)\n" +
+                        "VALUES (UUID(), 'seasonal', ?, ?, ?, ?, 1, ?);");
+                sql_seasonal.setString(1, year);
+                sql_seasonal.setString(2, season);
+                sql_seasonal.setString(3, seasonal_start_date);
+                sql_seasonal.setString(4, seasonal_end_date);
+                sql_seasonal.setString(5, dtOp.getTimestamp());
+                sql_seasonal.executeUpdate();
+                Log.info("Successfully added " + season + " " + year + " contest");
 
-            ExecuteQuery eq1 = new ExecuteQuery(conn, sql_seasonal);
-            eq1.cleanUp();
-            Log.info("Successfully added " + season + " " + year + " contest");
 
-            Log.debug("Adding month 1 contest");
-            sql_monthly_1 = "INSERT INTO contest " +
-                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)" +
-                    " VALUES" +
-                    " (UUID(), 'monthly', '" + year + "', '1', '" + season + "'," +
-                    " '" + month_1_start_date + "', '" + month_1_end_date + "', 1, '" + dtOp.getTimestamp() + "');";
+            } catch (SQLException ex) {
+                Log.fatal("SQLException: " + ex.getMessage());
+                Log.fatal("SQLState: " + ex.getSQLState());
+                Log.fatal("VendorError: " + ex.getErrorCode());
+                Log.trace("Stack trace: ", ex);
+                System.exit(0);
+            }
 
-            ExecuteQuery eq2 = new ExecuteQuery(conn, sql_monthly_1);
-            eq2.cleanUp();
-            Log.info("Successfully added month 1 contest");
-
-            Log.debug("Adding month 2 contest");
-            sql_monthly_2 = "INSERT INTO contest " +
-                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)" +
-                    " VALUES" +
-                    " (UUID(), 'monthly', '" + year + "', '2', '" + season + "'," +
-                    " '" + month_2_start_date + "', '" + month_2_end_date + "', 0, '" + dtOp.getTimestamp() + "');";
-
-            ExecuteQuery eq3 = new ExecuteQuery(conn, sql_monthly_2);
-            eq3.cleanUp();
-            Log.info("Successfully added month 2 contest");
+//            sql_seasonal = "INSERT INTO contest " +
+//                    "(id, type, year, season, start_date, end_date, is_active, date_created)" +
+//                    " VALUES" +
+//                    " (UUID(), 'seasonal', '" + year + "', '" + season + "'," +
+//                    " '" + seasonal_start_date + "', '" + seasonal_end_date + "', 1, '" + dtOp.getTimestamp() + "');";
+//
+//            ExecuteQuery eq1 = new ExecuteQuery(conn, sql_seasonal);
+//            eq1.cleanUp();
+//            Log.info("Successfully added " + season + " " + year + " contest");
+//
+//            Log.debug("Adding month 1 contest");
+//            sql_monthly_1 = "INSERT INTO contest " +
+//                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)" +
+//                    " VALUES" +
+//                    " (UUID(), 'monthly', '" + year + "', '1', '" + season + "'," +
+//                    " '" + month_1_start_date + "', '" + month_1_end_date + "', 1, '" + dtOp.getTimestamp() + "');";
+//
+//            ExecuteQuery eq2 = new ExecuteQuery(conn, sql_monthly_1);
+//            eq2.cleanUp();
+//            Log.info("Successfully added month 1 contest");
+//
+//            Log.debug("Adding month 2 contest");
+//            sql_monthly_2 = "INSERT INTO contest " +
+//                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)" +
+//                    " VALUES" +
+//                    " (UUID(), 'monthly', '" + year + "', '2', '" + season + "'," +
+//                    " '" + month_2_start_date + "', '" + month_2_end_date + "', 0, '" + dtOp.getTimestamp() + "');";
+//
+//            ExecuteQuery eq3 = new ExecuteQuery(conn, sql_monthly_2);
+//            eq3.cleanUp();
+//            Log.info("Successfully added month 2 contest");
         } else {
             Log.error("Adding contest: " + year + " " + season +
                          " contest already exist in database with id " + existingContestID);
