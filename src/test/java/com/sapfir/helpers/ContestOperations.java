@@ -115,38 +115,41 @@ public class ContestOperations {
 
                 sql = conn.prepareStatement("INSERT INTO contest \n" +
                         "(id, type, year, month, season, start_date, end_date, is_active, date_created)\n" +
-                        "VALUES (UUID(), 'seasonal', ?, ?, ?, ?, ?, ?, ?);");
+                        "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?);");
 
                 Log.debug("Adding seasonal contest...");
-                sql.setString(1, year);
-                sql.setString(2, null);
-                sql.setString(3, season);
-                sql.setString(4, seasonal_start_date);
-                sql.setString(5, seasonal_end_date);
-                sql.setInt(6, 1);
-                sql.setString(7, dtOp.getTimestamp());
+                sql.setString(1, "seasonal");
+                sql.setString(2, year);
+                sql.setString(3, null);
+                sql.setString(4, season);
+                sql.setString(5, seasonal_start_date);
+                sql.setString(6, seasonal_end_date);
+                sql.setInt(7, 1);
+                sql.setString(8, dtOp.getTimestamp());
                 sql.executeUpdate();
                 Log.info("Successfully added " + season + " " + year + " contest");
 
                 Log.debug("Adding month 1 contest...");
-                sql.setString(1, year);
-                sql.setString(2, "1");
-                sql.setString(3, season);
-                sql.setString(4, month_1_start_date);
-                sql.setString(5, month_1_end_date);
-                sql.setInt(6, 1);
-                sql.setString(7, dtOp.getTimestamp());
+                sql.setString(1, "monthly");
+                sql.setString(2, year);
+                sql.setString(3, "1");
+                sql.setString(4, season);
+                sql.setString(5, month_1_start_date);
+                sql.setString(6, month_1_end_date);
+                sql.setInt(7, 1);
+                sql.setString(8, dtOp.getTimestamp());
                 sql.executeUpdate();
                 Log.info("Successfully added month 1 contest");
 
                 Log.debug("Adding month 2 contest...");
-                sql.setString(1, year);
-                sql.setString(2, "2");
-                sql.setString(3, season);
-                sql.setString(4, month_2_start_date);
-                sql.setString(5, month_2_end_date);
-                sql.setInt(6, 0);
-                sql.setString(7, dtOp.getTimestamp());
+                sql.setString(1, "monthly");
+                sql.setString(2, year);
+                sql.setString(3, "2");
+                sql.setString(4, season);
+                sql.setString(5, month_2_start_date);
+                sql.setString(6, month_2_end_date);
+                sql.setInt(7, 0);
+                sql.setString(8, dtOp.getTimestamp());
                 sql.executeUpdate();
                 Log.info("Successfully added month 2 contest");
 
@@ -159,7 +162,7 @@ public class ContestOperations {
                 Log.trace("Stack trace: ", ex);
                 System.exit(0);
             }
-            
+
         } else {
             Log.error("Adding contest: " + year + " " + season +
                          " contest already exist in database with id " + existingContestID);
