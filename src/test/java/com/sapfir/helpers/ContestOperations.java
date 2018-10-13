@@ -40,8 +40,6 @@ public class ContestOperations {
         if (existingContestID == null) {
 
             PreparedStatement sql;
-            String sql_monthly_1;
-            String sql_monthly_2;
             String seasonal_start_date;
             String seasonal_end_date;
             String month_1_start_date;
