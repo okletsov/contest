@@ -39,7 +39,7 @@ public class ContestOperations {
         //Checking if contest already exist
         if (existingContestID == null) {
 
-            PreparedStatement sql;
+            PreparedStatement sql = null;
             String seasonal_start_date;
             String seasonal_end_date;
             String month_1_start_date;
@@ -158,6 +158,7 @@ public class ContestOperations {
                 Log.fatal("SQLState: " + ex.getSQLState());
                 Log.fatal("VendorError: " + ex.getErrorCode());
                 Log.trace("Stack trace: ", ex);
+                Log.fatal("Failing sql statement: " + sql);
                 System.exit(0);
             }
 
