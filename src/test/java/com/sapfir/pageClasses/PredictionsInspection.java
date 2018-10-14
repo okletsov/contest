@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,54 @@ public class PredictionsInspection {
     private static final Logger Log = LogManager.getLogger(PredictionsInspection.class.getName());
 
     private WebDriver driver;
+
+    private WebElement getCompetitorsElement(String predictionID) {
+        String locator = "#" + predictionID + " .odd a.bold";
+        return driver.findElement(By.cssSelector(locator));
+    }
+
+    private ArrayList<String> getOptionNames(String predictionID) {
+        Log.debug("Getting option names...");
+        ArrayList<String> optionNames = new ArrayList<>();
+
+        List<WebElement> columns = driver.findElements(By.cssSelector("#" + predictionID + " .dark .center"));
+        for (WebElement option : columns) {
+            optionNames.add(option.getText());
+        }
+        Log.debug("Successfully got option names");
+        return optionNames;
+    }
+
+    private ArrayList<String> getOptionValues(String predictionID) {
+        Log.debug("Getting option values...");
+        ArrayList<String> values = new ArrayList<>();
+
+        List<WebElement> columns =  driver.findElements(By.cssSelector("#" + predictionID + " .odds-nowrp"));
+        for (WebElement value : columns) {
+            values.add(value.getText());
+        }
+        Log.debug("Successfully got optoin values");
+        return values;
+    }
+
+    public int getUserPick(String predictionID) {
+        Log.debug("Getting user pick index...");
+        int index = 5;
+
+        List<WebElement> pickColumns = driver.findElements(By.cssSelector(
+                "#" + predictionID + "  [class='pred-usertip'] td"));
+
+        for (int i = 0; i < pickColumns.size(); i++){
+            if (pickColumns.get(i).getText().equals("PICK")) {
+                index = i + 1;
+            }
+        }
+
+        if (index == 5) { Log.error("Unable to find user pick index");
+        } else { Log.debug("Successfully got user pick index"); }
+
+        return index;
+    }
 
     public PredictionsInspection(WebDriver driver){
         this.driver = driver;
@@ -78,67 +127,6 @@ public class PredictionsInspection {
         return region;
     }
 
-    public ArrayList<String> getOptionNames(String predictionID) {
-        Log.debug("Getting option names...");
-        ArrayList<String> optionNames = new ArrayList<>();
-        List<WebElement> columns = driver.findElements(By.cssSelector("#" + predictionID + " .dark .center"));
-
-        for (int i = 0; i < columns.size(); i++) {
-            if (i == 0) {
-                String option1 = columns.get(i).getText();
-                optionNames.add(option1);
-            } else if (i == 1) {
-                String option2 = columns.get(i).getText();
-                optionNames.add(option2);
-            } else if (i == 2) {
-                String option3 = columns.get(i).getText();
-                optionNames.add(option3);
-            }
-        }
-        Log.debug("Successfully got option names");
-        return optionNames;
-    }
-
-    public ArrayList<String> getOptionValues(String predictionID) {
-        Log.debug("Getting option values...");
-        ArrayList<String> values = new ArrayList<>();
-        List<WebElement> columns =  driver.findElements(By.cssSelector("#" + predictionID + " .odds-nowrp"));
-
-        for (int i = 0; i < columns.size(); i++) {
-            if (i == 0) {
-                String value1 = columns.get(i).getAttribute("xodd");
-                values.add(value1);
-            } else if (i == 1) {
-                String value2 = columns.get(i).getAttribute("xodd");
-                values.add(value2);
-            } else if (i == 2) {
-                String value3 = columns.get(i).getAttribute("xodd");
-                values.add(value3);
-            }
-        }
-        Log.debug("Successfully got optoin values");
-        return values;
-    }
-
-    public int getUserPick(String predictionID) {
-        Log.debug("Getting user pick index...");
-        int index = 5;
-
-        List<WebElement> pickColumns = driver.findElements(By.cssSelector(
-                "#" + predictionID + "  [class='pred-usertip'] td"));
-
-        for (int i = 0; i < pickColumns.size(); i++){
-            if (pickColumns.get(i).getText().equals("PICK")) {
-                index = i;
-            }
-        }
-
-        if (index == 5) { Log.error("Unable to find user pick index");
-        } else { Log.debug("Successfully got user pick index"); }
-
-        return index;
-    }
-
     public String getResult(String predictionID) {
         Log.debug("Getting prediction result...");
         String locator = "#" + predictionID + " .odd [class*=\"status-text-\"]";
@@ -150,7 +138,7 @@ public class PredictionsInspection {
             String className = driver.findElement(By.cssSelector(locator)).getAttribute("class");
             result = className.replace("center status-text-", "");
         } else {
-            result = "Not played";
+            result = "not-played";
         }
         Log.debug("Successfully got prediction result: " + result);
         return result;
@@ -218,11 +206,6 @@ public class PredictionsInspection {
         String market = element.getText().trim();
         Log.debug("Successfully got market");
         return market;
-    }
-
-    private WebElement getCompetitorsElement(String predictionID) {
-        String locator = "#" + predictionID + " .odd a.bold";
-        return driver.findElement(By.cssSelector(locator));
     }
 
     public String getMainScore(String predictionID) {
@@ -311,5 +294,47 @@ public class PredictionsInspection {
 
         Log.debug("Successfully got event identifier");
         return identifier;
+    }
+
+    public String getOptionName(String predictionID, int index) {
+        Log.debug("Getting option " + index + " name...");
+        ArrayList<String> names = getOptionNames(predictionID);
+
+        String optionName;
+        if (index == 1) { optionName = names.get(0); }
+        else if (index == 2) {
+            if (names.size() >= 2) { optionName = names.get(1); }
+            else { optionName = null; }
+        } else if (index == 3) {
+            if (names.size() == 3) { optionName = names.get(2); }
+            else { optionName = null; }
+        } else {
+            optionName = null;
+            Log.error("Index " + index + " not supported");
+        }
+        Log.debug("Successfully got option " + index + " name");
+        return optionName;
+    }
+
+    public BigDecimal getOptionValue(String predictionID, int index) {
+        Log.debug("Getting option " + index + " value...");
+        ArrayList<String> values = getOptionValues(predictionID);
+
+        BigDecimal optionValue = null;
+        try {
+            if (index == 1) { optionValue = new BigDecimal(values.get(0)); }
+            else if (index == 2) {
+                if (values.size() >= 2) { optionValue = new BigDecimal(values.get(1)); }
+            } else if (index == 3) {
+                if (values.size() == 3) { optionValue = new BigDecimal(values.get(2)); }
+            } else {
+                Log.error("Index " + index + " not supported");
+            }
+            Log.debug("Successfully got option " + index + " value");
+        } catch(NumberFormatException ex) {
+            Log.error("Prediction " + predictionID + " error: " + ex);
+            Log.error("Message: " + ex.getMessage());
+        }
+        return optionValue;
     }
 }

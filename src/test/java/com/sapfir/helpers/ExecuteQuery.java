@@ -36,6 +36,7 @@ public class ExecuteQuery {
             Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
             Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.fatal("Failing sql: " + sql);
             Log.trace("Stack trace: ", ex);
             System.exit(0);
         }
