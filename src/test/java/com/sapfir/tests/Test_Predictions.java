@@ -57,6 +57,7 @@ public class Test_Predictions {
 
         ProfilePage pp = new ProfilePage(driver);
         PredictionsInspection pi = new PredictionsInspection(driver);
+        PredictionOperations predOp = new PredictionOperations(driver, conn);
 
         pp.viewParticipants();
         pp.clickParticipantUsername(username);
@@ -67,11 +68,16 @@ public class Test_Predictions {
 //        predictions.add("feed_item_3116782503");
 
         for (String predictionID: predictions) {
-            if (!pi.checkIfRemoved(predictionID)){
-                PredictionOperations predOp = new PredictionOperations(driver, conn);
+            boolean predictionRemoved = pi.checkIfRemoved(predictionID);
+            boolean predictionExist = predOp.checkIfExist(predictionID);
+
+            if (!predictionRemoved && !predictionExist){
                 predOp.addPrediction(predictionID, username);
-            } else {
-               Log.warn("Prediction was removed by " + username);
+            } else if (predictionRemoved){
+               Log.warn("Prediction " + predictionID + " was removed by " + username +
+                       ". Exist in db? - " + predictionExist);
+            } else{
+                // Implement a check if existing prediction needs to be updated
             }
         }
         CommonElements ce = new CommonElements(driver);
