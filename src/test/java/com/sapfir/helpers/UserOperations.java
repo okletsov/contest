@@ -96,9 +96,7 @@ public class UserOperations {
                 if CANNOT find - display an error message
                 if CAN find - proceed with method execution:
                   Get userID:
-                    if CAN find: check if userID and contestID pair exist in `user_seasonal_contest_participation` table:
-                            if CAN find - do nothing (debug message logged)
-                            if CANNOT find - insert participation ID into `user_seasonal_contest_participation` table
+                    if CAN find: insert participation ID into `user_seasonal_contest_participation` table
                     if CANNOT find
                         - increase counter
                         - display an error message that user does not exist in database
@@ -112,13 +110,9 @@ public class UserOperations {
         if (contestID != null) {
             int counter = 0;
             for (String username : participants) {
-                String participationID;
                 String userID = getUserID(username);
                 if (userID != null) {
-                    participationID = getParticipationID(contestID, username);
-                    if (participationID != null) {
-                        Log.debug("User " + username + " is already participating in current contest");
-                    } else { addParticipationID(contestID, username); }
+                    addParticipationID(contestID, username);
                 } else {
                     counter = counter + 1;
                     Log.warn("User " + username + " does not exist in database");
@@ -146,16 +140,22 @@ public class UserOperations {
 
     private void addParticipationID(String contestID, String username) {
         /*
-            This method inserts a record into 'user_seasonal_contest_participation' table
+            This method inserts a record (if does not exist) into 'user_seasonal_contest_participation' table
             That table indicate seasonal contests user participated in
          */
         Log.debug("Adding Participation ID for " + username + "...");
-        String userID = getUserID(username);
-        String sqlParticipant_x_Contest = "insert into user_seasonal_contest_participation" +
-                "(id, user_id, contest_id) " +
-                "values (UUID(), '" + userID + "', '" + contestID + "');";
-        ExecuteQuery eq = new ExecuteQuery(conn, sqlParticipant_x_Contest);
-        eq.cleanUp();
-        Log.info("Successfully added Participation ID for " + username);
+        String participationID = getParticipationID(contestID, username);
+        if (participationID == null) {
+            String userID = getUserID(username);
+            String sqlParticipant_x_Contest = "insert into user_seasonal_contest_participation" +
+                    "(id, user_id, contest_id) " +
+                    "values (UUID(), '" + userID + "', '" + contestID + "');";
+            ExecuteQuery eq = new ExecuteQuery(conn, sqlParticipant_x_Contest);
+            eq.cleanUp();
+            Log.info("Successfully added Participation ID for " + username);
+        } else {
+            Log.debug("User " + username + " is already participating in current contest");
+        }
+
     }
 }
