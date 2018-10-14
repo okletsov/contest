@@ -333,6 +333,7 @@ public class PredictionsInspection {
             Log.debug("Successfully got option " + index + " value");
         } catch(NumberFormatException ex) {
             Log.error("Prediction " + predictionID + " error: " + ex);
+            Log.error("Message: " + ex.getMessage());
         }
         return optionValue;
     }
