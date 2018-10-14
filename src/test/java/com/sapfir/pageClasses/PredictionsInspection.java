@@ -320,19 +320,20 @@ public class PredictionsInspection {
         Log.debug("Getting option " + index + " value...");
         ArrayList<String> values = getOptionValues(predictionID);
 
-        BigDecimal optionValue;
-        if (index == 1) { optionValue = new BigDecimal(values.get(0)); }
-        else if (index == 2) {
-            if (values.size() >= 2) { optionValue = new BigDecimal(values.get(1)); }
-            else { optionValue = null; }
-        } else if (index == 3) {
-            if (values.size() == 3) { optionValue = new BigDecimal(values.get(2)); }
-            else { optionValue = null; }
-        } else {
-            optionValue = null;
-            Log.error("Index " + index + " not supported");
+        BigDecimal optionValue = null;
+        try {
+            if (index == 1) { optionValue = new BigDecimal(values.get(0)); }
+            else if (index == 2) {
+                if (values.size() >= 2) { optionValue = new BigDecimal(values.get(1)); }
+            } else if (index == 3) {
+                if (values.size() == 3) { optionValue = new BigDecimal(values.get(2)); }
+            } else {
+                Log.error("Index " + index + " not supported");
+            }
+            Log.debug("Successfully got option " + index + " value");
+        } catch(NumberFormatException ex) {
+            Log.error("Prediction " + predictionID + " error: " + ex);
         }
-        Log.debug("Successfully got option " + index + " value");
         return optionValue;
     }
 }

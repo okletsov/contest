@@ -7,6 +7,8 @@ import org.openqa.selenium.WebDriver;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class PredictionOperations {
 
@@ -27,50 +29,56 @@ public class PredictionOperations {
 
         if (contestID != null) {
             PredictionsInspection pred = new PredictionsInspection(driver);
-
-            String sport = pred.getSport(predictionID);
-            String region = pred.getRegion(predictionID);
-            String tournament_name = pred.getTournament(predictionID);
-            String result = pred.getResult(predictionID);
-            String dateScheduled = pred.getDateScheduled(predictionID);
-            String datePredicted = pred.getDatePredicted(predictionID);
-            String competitors = pred.getCompetitorsText(predictionID);
-            String market = pred.getMarket(predictionID);
-            String mainScore = pred.getMainScore(predictionID);
-            String detailedScore = pred.getDetailedScore(predictionID);
-            String eventIdentifier = pred.getEventIdentifier(predictionID);
-            String option1Name = pred.getOptionName(predictionID, 1);
-            String option2Name = pred.getOptionName(predictionID, 2);
-            String option3Name = pred.getOptionName(predictionID, 3);
-            BigDecimal option1Value = pred.getOptionValue(predictionID, 1);
-            BigDecimal option2Value = pred.getOptionValue(predictionID, 2);
-            BigDecimal option3Value = pred.getOptionValue(predictionID, 3);
-            int userPick = pred.getUserPick(predictionID);
-            String userPickName = pred.getOptionName(predictionID, userPick);
-            BigDecimal userPickValue = pred.getOptionValue(predictionID, userPick);
-
             UserOperations uo = new UserOperations(conn);
-            String userID = uo.getUserID(username);
-
             DateTimeOperations dateOp = new DateTimeOperations();
-            String dateCreated = dateOp.getTimestamp();
+            int userPick = pred.getUserPick(predictionID);
 
-            String sql = "insert into prediction \n" +
-                    "(id, seasonal_contest_id, user_id, event_identifier, sport, region, tournament_name, " +
-                    "main_score, detailed_score, " +
-                    "result, date_scheduled, date_predicted, competitors, market, option1_name, option1_value, " +
-                    "option2_name, option2_value, option3_name, option3_value, user_pick_name, user_pick_value, " +
-                    "date_created) \n" +
-                    "values \n" +
-                    "('" + predictionID + "', '" + contestID + "', '" + userID + "', '" + eventIdentifier +
-                    "', '" + sport + "', '" + region + "', '" + tournament_name + "', '" + mainScore +
-                    "', '" + detailedScore + "', '" + result + "', '" + dateScheduled + "', '" + datePredicted +
-                    "', '" + competitors + "', '" + market + "', '" + option1Name + "', " + option1Value +
-                    ", '" + option2Name + "', " + option2Value + ", '" + option3Name + "', " + option3Value +
-                    ", '" + userPickName + "', " + userPickValue + ", '" + dateCreated + "');";
+            PreparedStatement sql = null;
+            try {
+                sql = conn.prepareStatement(
+                        "insert into prediction \n" +
+                                "(id, seasonal_contest_id, user_id, event_identifier, sport, region, \n" +
+                                "tournament_name, main_score, detailed_score, result, date_scheduled, \n" +
+                                "date_predicted, competitors, market, option1_name, option1_value, \n" +
+                                "option2_name, option2_value, option3_name, option3_value, user_pick_name, \n" +
+                                "user_pick_value, date_created) \n" +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                );
+                sql.setString(1, predictionID);
+                sql.setString(2, cop.getActiveSeasonalContestID());
+                sql.setString(3, uo.getUserID(username));
+                sql.setString(4, pred.getEventIdentifier(predictionID));
+                sql.setString(5, pred.getSport(predictionID));
+                sql.setString(6, pred.getRegion(predictionID));
+                sql.setString(7, pred.getTournament(predictionID));
+                sql.setString(8, pred.getMainScore(predictionID));
+                sql.setString(9, pred.getDetailedScore(predictionID));
+                sql.setString(10, pred.getResult(predictionID));
+                sql.setString(11, pred.getDateScheduled(predictionID));
+                sql.setString(12, pred.getDatePredicted(predictionID));
+                sql.setString(13, pred.getCompetitorsText(predictionID));
+                sql.setString(14, pred.getMarket(predictionID));
+                sql.setString(15, pred.getOptionName(predictionID, 1));
+                sql.setBigDecimal(16, pred.getOptionValue(predictionID, 1));
+                sql.setString(17, pred.getOptionName(predictionID, 2));
+                sql.setBigDecimal(18, pred.getOptionValue(predictionID, 2));
+                sql.setString(19, pred.getOptionName(predictionID, 3));
+                sql.setBigDecimal(20, pred.getOptionValue(predictionID, 3));
+                sql.setString(21, pred.getOptionName(predictionID, userPick));
+                sql.setBigDecimal(22, pred.getOptionValue(predictionID, userPick));
+                sql.setString(23, dateOp.getTimestamp());
 
-            ExecuteQuery eq = new ExecuteQuery(conn, sql);
-            Log.info(eq.getRowsAffected() + " prediction with id " + predictionID + " successfully inserted into db");
+                sql.executeUpdate();
+                sql.close();
+
+                Log.info(username + ": inserted prediction with id: " + predictionID);
+            } catch (SQLException ex) {
+                Log.error("SQLException: " + ex.getMessage());
+                Log.error("SQLState: " + ex.getSQLState());
+                Log.error("VendorError: " + ex.getErrorCode());
+                Log.trace("Stack trace: ", ex);
+                Log.error("Failing sql statement: " + sql);
+            }
 
         } else {
             Log.error("There are no active seasonal contests in database");
