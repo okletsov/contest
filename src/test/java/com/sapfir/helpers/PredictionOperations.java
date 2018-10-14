@@ -31,8 +31,8 @@ public class PredictionOperations {
             PredictionsInspection pred = new PredictionsInspection(driver);
             UserOperations uo = new UserOperations(conn);
             DateTimeOperations dateOp = new DateTimeOperations();
-            int userPick = pred.getUserPick(predictionID);
 
+            int userPick = pred.getUserPick(predictionID);
             PreparedStatement sql = null;
             try {
                 sql = conn.prepareStatement(
@@ -83,5 +83,22 @@ public class PredictionOperations {
         } else {
             Log.error("There are no active seasonal contests in database");
         }
+    }
+
+    public boolean checkIfExist(String predictionID) {
+        /*
+            This method determines if prediction already exist in database
+         */
+        Log.debug("Checking if prediction " + predictionID + " exist on database...");
+
+        String sql = "select id from prediction where id = '" + predictionID + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String id = dbOp.getSingleValue(conn, "id", sql);
+
+        boolean predictionExist;
+        predictionExist = id != null;
+        Log.debug("Result: " + predictionExist);
+        return predictionExist;
     }
 }
