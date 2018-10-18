@@ -84,7 +84,7 @@ public class PredictionsInspection {
         return predictionIDs;
     }
 
-    public boolean checkIfRemoved(String predicitonID) {
+    public boolean predictionRemoved(String predicitonID) {
       /*
             This method will try to search if the following text is present for prediction:
             "Prediction was removed."

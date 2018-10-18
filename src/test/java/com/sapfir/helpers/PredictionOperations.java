@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -100,5 +99,25 @@ public class PredictionOperations {
         predictionExist = id != null;
         Log.debug("Result: " + predictionExist);
         return predictionExist;
+    }
+
+    public boolean predictionFinalized(String predictionID) {
+        /*
+            Prediction is finalized when the event was completed and prediction was written to database after that.
+            It means there are no other changes to prediction can happen on website
+            Prediction is finalized if the value in result column is not "not-played"
+         */
+
+        Log.debug("Checking if prediction " + predictionID + " is finalized...");
+
+        String sql = "select result from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String result = dbOp.getSingleValue(conn, "result", sql);
+
+        boolean predictionFinalized;
+        predictionFinalized = !result.equals("not-played");
+
+        Log.debug("Prediction finalized? - " + predictionFinalized);
+        return predictionFinalized;
     }
 }

@@ -68,7 +68,7 @@ public class Test_Predictions {
 //        predictions.add("feed_item_3116782503");
 
         for (String predictionID: predictions) {
-            boolean predictionRemoved = pi.checkIfRemoved(predictionID);
+            boolean predictionRemoved = pi.predictionRemoved(predictionID);
             boolean predictionExist = predOp.checkIfExist(predictionID);
 
             if (!predictionRemoved && !predictionExist){
@@ -77,7 +77,10 @@ public class Test_Predictions {
                Log.warn("Prediction " + predictionID + " was removed by " + username +
                        ". Exist in db? - " + predictionExist);
             } else{
-                // Implement a check if existing prediction needs to be updated
+                boolean predictionFinalized = predOp.predictionFinalized(predictionID);
+                if (!predictionFinalized) {
+                    // Implement a check if existing prediction needs to be updated
+                }
             }
         }
         CommonElements ce = new CommonElements(driver);
