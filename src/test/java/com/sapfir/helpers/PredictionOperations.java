@@ -14,11 +14,21 @@ public class PredictionOperations {
     private Connection conn;
     private WebDriver driver;
 
+    private String dbPredictionResult;
+
     public PredictionOperations(WebDriver driver, Connection conn) {
         this.conn = conn;
         this.driver = driver;
     }
     private static final Logger Log = LogManager.getLogger(PredictionOperations.class.getName());
+
+    private void getDbPredictionResult(String predictionID) {
+        Log.debug("Getting result written to database for prediction id " + predictionID + "...");
+        String sql = "select result from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        dbPredictionResult = dbOp.getSingleValue(conn, "result", sql);
+        Log.debug("Result = " + dbPredictionResult);
+    }
 
     public void addPrediction(String predictionID, String username) {
         Log.debug("Adding prediction to database...");
@@ -109,15 +119,31 @@ public class PredictionOperations {
          */
 
         Log.debug("Checking if prediction " + predictionID + " is finalized...");
-
-        String sql = "select result from prediction where id = '" + predictionID + "';";
-        DatabaseOperations dbOp = new DatabaseOperations();
-        String result = dbOp.getSingleValue(conn, "result", sql);
-
         boolean predictionFinalized;
-        predictionFinalized = !result.equals("not-played");
-
-        Log.debug("Prediction finalized? - " + predictionFinalized);
+        getDbPredictionResult(predictionID);
+        predictionFinalized = !dbPredictionResult.equals("not-played");
+        Log.info("Prediction finalized? - " + predictionFinalized);
         return predictionFinalized;
+    }
+
+    public void updateResult(String predictionID) {
+        /*
+            This method will compare result written in database for given predictionID
+            with the prediction result from website and update database if needed
+         */
+
+        Log.debug("Updating prediction result for prediction " + predictionID + "...");
+        PredictionsInspection pi = new PredictionsInspection(driver);
+        String webPredictionResult = pi.getResult(predictionID);
+
+        if (!dbPredictionResult.equals(webPredictionResult)) {
+            String sql =
+                    "update prediction set result = '" + webPredictionResult + "' where id = '" + predictionID + "';";
+            ExecuteQuery eq = new ExecuteQuery(conn, sql);
+            eq.cleanUp();
+            Log.debug("Updated: " + webPredictionResult);
+        } else {
+            Log.debug("No update is needed");
+        }
     }
 }
