@@ -169,4 +169,15 @@ public class PredictionOperations {
         eq.cleanUp();
         Log.debug("Updated: " + webDetailedScore);
     }
+
+    public void updateDateScheduled(String predictionID) {
+        Log.debug("Updating date_scheduled for prediction " + predictionID + "...");
+
+        PredictionsInspection pi = new PredictionsInspection(driver);
+        String webDateScheduled = pi.getDateScheduled(predictionID);
+
+        String sql = "select date_scheduled from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String dbDateScheduled = dbOp.getSingleValue(conn, "date_scheduled", sql);
+    }
 }
