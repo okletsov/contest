@@ -146,4 +146,27 @@ public class PredictionOperations {
             Log.debug("No update is needed");
         }
     }
+
+    public void updateMainScore(String predictionID) {
+        Log.debug("Updating main score for prediction " + predictionID + "...");
+        PredictionsInspection pi = new PredictionsInspection(driver);
+        String webMainScore = pi.getMainScore(predictionID);
+
+        String sql = "update prediction set main_score = '" + webMainScore + "' where id = '" + predictionID + "';";
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
+        Log.debug("Updated: " + webMainScore);
+    }
+
+    public void updateDetailedScore(String predictionID) {
+        Log.debug("Updating detailed score for prediction " + predictionID + "...");
+        PredictionsInspection pi = new PredictionsInspection(driver);
+        String webDetailedScore = pi.getMainScore(predictionID);
+
+        String sql =
+                "update prediction set detailed_score = '" + webDetailedScore + "' where id = '" + predictionID + "';";
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
+        Log.debug("Updated: " + webDetailedScore);
+    }
 }
