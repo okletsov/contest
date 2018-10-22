@@ -142,12 +142,15 @@ public class PredictionOperations {
             ExecuteQuery eq = new ExecuteQuery(conn, sql);
             eq.cleanUp();
             Log.debug("Updated: " + webPredictionResult);
+
+            updateMainScore(predictionID);
+            updateDetailedScore(predictionID);
         } else {
             Log.debug("No update is needed");
         }
     }
 
-    public void updateMainScore(String predictionID) {
+    private void updateMainScore(String predictionID) {
         Log.debug("Updating main score for prediction " + predictionID + "...");
         PredictionsInspection pi = new PredictionsInspection(driver);
         String webMainScore = pi.getMainScore(predictionID);
@@ -158,7 +161,7 @@ public class PredictionOperations {
         Log.debug("Updated: " + webMainScore);
     }
 
-    public void updateDetailedScore(String predictionID) {
+    private void updateDetailedScore(String predictionID) {
         Log.debug("Updating detailed score for prediction " + predictionID + "...");
         PredictionsInspection pi = new PredictionsInspection(driver);
         String webDetailedScore = pi.getMainScore(predictionID);
@@ -171,13 +174,37 @@ public class PredictionOperations {
     }
 
     public void updateDateScheduled(String predictionID) {
+        /*
+            This method will compare event date from db with event date on the website
+            If there is difference it will perform two actions:
+                - update date_scheduled column with new date
+                - insert a record in prediction_schedule_changes table to log previous date
+         */
+
         Log.debug("Updating date_scheduled for prediction " + predictionID + "...");
 
         PredictionsInspection pi = new PredictionsInspection(driver);
         String webDateScheduled = pi.getDateScheduled(predictionID);
 
-        String sql = "select date_scheduled from prediction where id = '" + predictionID + "';";
+        String getDbDate = "select date_scheduled from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
-        String dbDateScheduled = dbOp.getSingleValue(conn, "date_scheduled", sql);
+        String dbDateScheduled = dbOp.getSingleValue(conn, "date_scheduled", getDbDate);
+
+        if (!webDateScheduled.equals(dbDateScheduled)) {
+            String insertPreviousDate =
+                            "insert into prediction_schedule_changes (id, prediction_id, previous_date_scheduled) " +
+                            "values (uuid(), '" + predictionID + "', '" + dbDateScheduled + "');";
+            ExecuteQuery executeInsert = new ExecuteQuery(conn, insertPreviousDate);
+            executeInsert.cleanUp();
+            Log.debug("Previous date logged: " + dbDateScheduled);
+
+            String updateDateScheduled =
+                    "update prediction set date_scheduled = '" + webDateScheduled + "' where id = '" + predictionID + "';";
+            ExecuteQuery executeUpdate = new ExecuteQuery(conn, updateDateScheduled);
+            executeUpdate.cleanUp();
+            Log.debug("Updated date_scheduled: " + webDateScheduled);
+        } else {
+            Log.debug("No update needed");
+        }
     }
 }
