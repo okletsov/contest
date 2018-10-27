@@ -79,7 +79,7 @@ public class Test_Predictions {
             } else{
                 boolean predictionFinalized = predOp.predictionFinalized(predictionID);
                 if (!predictionFinalized) {
-                    // Implement a check if existing prediction needs to be updated
+                    predOp.updatePrediction(predictionID);
                 }
             }
         }
