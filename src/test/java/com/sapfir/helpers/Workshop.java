@@ -61,5 +61,6 @@ public class Workshop {
         compArray[49] = "Hibino N. - Shimizu A.";
 
         String betText = "Gavrilova Daria";
+        String[] words = betText.split(" ");
     }
 }
