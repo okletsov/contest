@@ -60,8 +60,7 @@ public class Workshop {
         compArray[48] = "Watson H. - Lu J.";
         compArray[49] = "Hibino N. - Shimizu A.";
 
-        String betText = "Gavrilova Daria.";
-        String[] words = betText.split(" ");
+        String betText = "Gavrilova Daria";
 
 //        for (int j = 0; j < words.length; j++ ) {
 //            System.out.println(words[j]);
@@ -71,6 +70,21 @@ public class Workshop {
         int i = 0;
         while (!matchFound && i < compArray.length) {
             matchFound = compArray[i].contains(betText);
+
+            if (!matchFound) {
+                String[] words = betText.split(" ");
+                int j =0;
+                while (!matchFound && j < words.length) {
+                    char[] letters = words[j].toCharArray();
+                    int k = 0;
+                    while (!matchFound && k < letters.length) {
+                        String newWord = words[j].substring(0, k+1);
+                        matchFound = compArray[i].contains(betText.replace(words[j], newWord));
+                        k++;
+                    }
+                    j++;
+                }
+            }
             i++;
         }
 
