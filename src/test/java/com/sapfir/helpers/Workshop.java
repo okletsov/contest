@@ -62,14 +62,14 @@ public class Workshop {
 
         String betText = "Gavrilova Daria";
 
-//        for (int j = 0; j < words.length; j++ ) {
-//            System.out.println(words[j]);
-//        }
+        /*
+            Check below text with different teams, like Din. Zagreb and Zenit St. Peterburg
+         */
 
         boolean matchFound = false;
         int i = 0;
         while (!matchFound && i < compArray.length) {
-            matchFound = compArray[i].contains(betText);
+            matchFound = compArray[i].replace(".", "").contains(betText);
 
             if (!matchFound) {
                 String[] words = betText.split(" ");
@@ -79,7 +79,7 @@ public class Workshop {
                     int k = 0;
                     while (!matchFound && k < letters.length) {
                         String newWord = words[j].substring(0, k+1);
-                        matchFound = compArray[i].contains(betText.replace(words[j], newWord));
+                        matchFound = compArray[i].replace(".", "").contains(betText.replace(words[j], newWord));
                         k++;
                     }
                     j++;
