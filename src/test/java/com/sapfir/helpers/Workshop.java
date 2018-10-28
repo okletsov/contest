@@ -9,12 +9,12 @@ import java.util.List;
 public class Workshop {
     public static void main(String[] args) {
         String[] compArray = new String[50];
-        compArray[0] = "Wang Q. - Yastremska D.";
+        compArray[0] = "Pliskova Kr. - Yastremska D.";
         compArray[1] = "Wang Q. - Muguruza G.";
         compArray[2] = "Yastremska D. - Zhang S.";
         compArray[3] = "Svitolina E. - Wang Q.";
         compArray[4] = "Muguruza G. - Kumkhum L.";
-        compArray[5] = "Gavrilova D. - Zhang S.";
+        compArray[5] = "Pliskova Ka. - Zhang S.";
         compArray[6] = "Yastremska D. - Kucova K.";
         compArray[7] = "Svitolina E. - Hibino N.";
         compArray[8] = "McHale C. - Wang Q.";
@@ -60,10 +60,11 @@ public class Workshop {
         compArray[48] = "Watson H. - Lu J.";
         compArray[49] = "Hibino N. - Shimizu A.";
 
-        String betText = "Gavrilova Daria";
+        String betText = "Pliskova Karolina";
 
         /*
-            Check below text with different teams, like Din. Zagreb and Zenit St. Peterburg
+            Think how to handle Pliskova example above
+             - user bets on Karolina, but Kristina wins (method will return Kristina's result)
          */
 
         boolean matchFound = false;
