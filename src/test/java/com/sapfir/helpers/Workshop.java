@@ -60,7 +60,21 @@ public class Workshop {
         compArray[48] = "Watson H. - Lu J.";
         compArray[49] = "Hibino N. - Shimizu A.";
 
-        String betText = "Gavrilova Daria";
+        String betText = "Gavrilova Daria.";
         String[] words = betText.split(" ");
+
+//        for (int j = 0; j < words.length; j++ ) {
+//            System.out.println(words[j]);
+//        }
+
+        boolean matchFound = false;
+        int i = 0;
+        while (!matchFound && i < compArray.length) {
+            matchFound = compArray[i].contains(betText);
+            i++;
+        }
+
+        int indexFound = i -1;
+        System.out.println(matchFound + " " + indexFound);
     }
 }
