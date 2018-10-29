@@ -60,31 +60,54 @@ public class Workshop {
         compArray[48] = "Watson H. - FK Crvena zvezda";
         compArray[49] = "Hibino N. - Shimizu A.";
 
-        String betText = "Shakhtar";
+        String betTeam = "Shakhtar";
 
         /*
+            Variables:
+                betTeam - the team/person user predicted to win a tournament (OUTRIGHTS market)
+                compArray - array storing event results for the tournament
+
+            Goal:
+                find index (first occurrence) of betTeam in compArray.
+                The index will be used to determine the datetime event occurred
+
+            How method works:
+                Because team name in OUTRIGHTS and tournament RESULTS pages not always match, method will
+                do the following:
+
+                if betText consist of only one word the method will try to find that word in compaArray
+                if betText consist of > 1 words:
+                    1) it will try to find betText in compArray, if mno match found then
+                    2) it will go word by word in betText and will:
+                        - replace the word in betText with its first letter --> try to find match in compAtrray
+                        - replace the word in betText with its first two letters --> try to find match in compAtrray
+                        - replace the word in betText with its first three letters --> try to find match in compAtrray
+                        - replace the word in betText with its first four letters --> try to find match in compAtrray
+                        - ...
+
+             Can return wrong index if:
+                - betText consists of > 1 words and there are two teams with same first word
+                  Example: Williams Serena and Williams Venus
+
             Think how to handle Pliskova example above
              - user bets on Karolina, but Kristina wins (method will return Kristina's result)
          */
 
         boolean matchFound = false;
-        String[] words = betText.split(" ");
-
-        
-
         int i = 0;
         while (!matchFound && i < compArray.length) {
-            matchFound = compArray[i].replace(".", "").contains(betText);
+            String competitorsLine = compArray[i].replace(".", "");
+            matchFound = competitorsLine.contains(betTeam);
+            String[] words = betTeam.split(" ");
+            if (!matchFound && words.length > 1) {
 
-            if (!matchFound) {
-
-                int j =0;
+                int j = 0;
                 while (!matchFound && j < words.length) {
                     char[] letters = words[j].toCharArray();
                     int k = 0;
                     while (!matchFound && k < letters.length) {
                         String newWord = words[j].substring(0, k);
-                        matchFound = compArray[i].replace(".", "").contains(betText.replace(words[j], newWord));
+                        matchFound = competitorsLine.contains(betTeam.replace(words[j], newWord));
                         k++;
                     }
                     j++;
