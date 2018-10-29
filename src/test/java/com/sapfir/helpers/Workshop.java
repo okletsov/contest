@@ -60,8 +60,6 @@ public class Workshop {
         compArray[48] = "Watson H. - FK Crvena zvezda";
         compArray[49] = "Hibino N. - Shimizu A.";
 
-        String betTeam = "Shakhtar";
-
         /*
             Variables:
                 betTeam - the team/person user predicted to win a tournament (OUTRIGHTS market)
@@ -79,6 +77,7 @@ public class Workshop {
                 if betText consist of > 1 words:
                     1) it will try to find betText in compArray, if mno match found then
                     2) it will go word by word in betText and will:
+                        - replace the word in betText with empty string --> try to find match in compAtrray
                         - replace the word in betText with its first letter --> try to find match in compAtrray
                         - replace the word in betText with its first two letters --> try to find match in compAtrray
                         - replace the word in betText with its first three letters --> try to find match in compAtrray
@@ -86,12 +85,19 @@ public class Workshop {
                         - ...
 
              Can return wrong index if:
-                - betText consists of > 1 words and there are two teams with same first word
-                  Example: Williams Serena and Williams Venus
+                - betText consists of > 1 words
+                  AND one of the words shortened
+                  AND there are two teams with same NOT shortened word playing in tournament
+
+                  Example: betText can be Williams Serena or Williams Venus
+                           compArray is shortened to Williams S. and Williams. V
+                           method will return wrong result if user predicted Williams Serena to win, but Venus advanced
+                           to later stages (her games were after last Serena's) comparing to Serena
 
             Think how to handle Pliskova example above
              - user bets on Karolina, but Kristina wins (method will return Kristina's result)
          */
+        String betTeam = "Shakhtar";
 
         boolean matchFound = false;
         int i = 0;
@@ -100,7 +106,6 @@ public class Workshop {
             matchFound = competitorsLine.contains(betTeam);
             String[] words = betTeam.split(" ");
             if (!matchFound && words.length > 1) {
-
                 int j = 0;
                 while (!matchFound && j < words.length) {
                     char[] letters = words[j].toCharArray();
@@ -116,7 +121,7 @@ public class Workshop {
             i++;
         }
 
-        int indexFound = i -1;
+        int indexFound = i - 1;
         System.out.println(matchFound + " " + indexFound);
     }
 }
