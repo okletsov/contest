@@ -10,7 +10,7 @@ public class Workshop {
     public static void main(String[] args) {
         String[] compArray = new String[50];
         compArray[0] = "Pliskova Kr. - Yastremska D.";
-        compArray[1] = "Wang Q. - Muguruza G.";
+        compArray[1] = "Wang Q. - Novosibirsk";
         compArray[2] = "Yastremska D. - Zhang S.";
         compArray[3] = "Svitolina E. - Wang Q.";
         compArray[4] = "Muguruza G. - Kumkhum L.";
@@ -54,13 +54,13 @@ public class Workshop {
         compArray[42] = "Melnikova M. - Sharipova S.";
         compArray[43] = "Stollar F. - Ng K. Y.";
         compArray[44] = "Kerkhove L. - Liu C.";
-        compArray[45] = "Plipuech P. - Siegemund L.";
+        compArray[45] = "Shakhtar Donetsk - Siegemund L.";
         compArray[46] = "Zhao C. - Mrdeza T.";
         compArray[47] = "Ng M. - Schoofs B.";
-        compArray[48] = "Watson H. - Lu J.";
+        compArray[48] = "Watson H. - FK Crvena zvezda";
         compArray[49] = "Hibino N. - Shimizu A.";
 
-        String betText = "Pliskova Karolina";
+        String betText = "Shakhtar";
 
         /*
             Think how to handle Pliskova example above
@@ -68,18 +68,22 @@ public class Workshop {
          */
 
         boolean matchFound = false;
+        String[] words = betText.split(" ");
+
+        
+
         int i = 0;
         while (!matchFound && i < compArray.length) {
             matchFound = compArray[i].replace(".", "").contains(betText);
 
             if (!matchFound) {
-                String[] words = betText.split(" ");
+
                 int j =0;
                 while (!matchFound && j < words.length) {
                     char[] letters = words[j].toCharArray();
                     int k = 0;
                     while (!matchFound && k < letters.length) {
-                        String newWord = words[j].substring(0, k+1);
+                        String newWord = words[j].substring(0, k);
                         matchFound = compArray[i].replace(".", "").contains(betText.replace(words[j], newWord));
                         k++;
                     }
