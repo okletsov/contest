@@ -38,7 +38,7 @@ public class Workshop {
         compArray[26] = "Kucova K. - Ostapenko J.";
         compArray[27] = "Glushko J. - Cornet A.";
         compArray[28] = "Brady J. - Kumkhum L.";
-        compArray[29] = "Tomova V. - Jakupovic D.";
+        compArray[29] = "Tomova V. - Dyn. Kyiv";
         compArray[30] = "Yastremska D. - Stollar F.";
         compArray[31] = "Niculescu M. - Makarova E.";
         compArray[32] = "Stosur S. - Krunic A.";
@@ -52,7 +52,7 @@ public class Workshop {
         compArray[40] = "Jabeur O. - Tomova V.";
         compArray[41] = "Dolehide C. - Wu Ho C.";
         compArray[42] = "Melnikova M. - Sharipova S.";
-        compArray[43] = "Stollar F. - Ng K. Y.";
+        compArray[43] = "D. Zagreb - Ng K. Y.";
         compArray[44] = "Kerkhove L. - Liu C.";
         compArray[45] = "Shakhtar Donetsk - Siegemund L.";
         compArray[46] = "Zhao C. - Mrdeza T.";
@@ -97,7 +97,7 @@ public class Workshop {
             Think how to handle Pliskova example above
              - user bets on Karolina, but Kristina wins (method will return Kristina's result)
          */
-        String betTeam = "Shakhtar";
+        String betTeam = "Dynamo Kyiv";
 
         boolean matchFound = false;
         int i = 0;
