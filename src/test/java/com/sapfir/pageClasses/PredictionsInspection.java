@@ -18,6 +18,7 @@ public class PredictionsInspection {
     private static final Logger Log = LogManager.getLogger(PredictionsInspection.class.getName());
 
     private WebDriver driver;
+    private boolean resultKnown;
 
     private WebElement getCompetitorsElement(String predictionID) {
         String locator = "#" + predictionID + " .odd a.bold";
@@ -131,7 +132,7 @@ public class PredictionsInspection {
         Log.debug("Getting prediction result...");
         String locator = "#" + predictionID + " .odd [class*=\"status-text-\"]";
         SeleniumMethods sm = new SeleniumMethods(driver);
-        boolean resultKnown = sm.isElementPresent("css", locator);
+        resultKnown = sm.isElementPresent("css", locator);
 
         String result;
         if (resultKnown) {
@@ -145,6 +146,10 @@ public class PredictionsInspection {
     }
 
     public String getDateScheduled(String predictionID) {
+        /*
+            This method should always be called after getResult. It is needed to get correct resultKnow value
+         */
+
         Log.debug("Getting date scheduled...");
         String dateScheduled;
 
@@ -167,8 +172,11 @@ public class PredictionsInspection {
             dateScheduled = dop.convertFromUnix(unixDate);
             Log.debug("Successfully got date scheduled");
 
+        } else if (resultKnown) {
+            // Need to click tournament name, then results and search for competitor's first occurrence in list
+            dateScheduled = null; // change this to implementation
         } else {
-            Log.debug("Event date unknown: null returned");
+            Log.info("Event date unknown: null returned");
             dateScheduled = null;
         }
         return dateScheduled;
