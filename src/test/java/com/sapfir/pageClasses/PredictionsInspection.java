@@ -19,6 +19,7 @@ public class PredictionsInspection {
 
     private WebDriver driver;
     private boolean resultKnown;
+    private String tournamentLink;
 
     private WebElement getCompetitorsElement(String predictionID) {
         String locator = "#" + predictionID + " .odd a.bold";
@@ -47,6 +48,11 @@ public class PredictionsInspection {
         }
         Log.debug("Successfully got optoin values");
         return values;
+    }
+
+    private void openTournamentInNewTab() {
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.openNewTab(tournamentLink);
     }
 
     public int getUserPick(String predictionID) {
@@ -123,9 +129,10 @@ public class PredictionsInspection {
     public String getTournament(String predictionID) {
         Log.debug("Getting tournament of prediction...");
         WebElement element = driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(3)"));
-        String region = element.getText().trim();
-        Log.debug("Successfully got tournament: " + region);
-        return region;
+        String tournament = element.getText().trim();
+        tournamentLink = element.getAttribute("href");
+        Log.debug("Successfully got tournament: " + tournament);
+        return tournament;
     }
 
     public String getResult(String predictionID) {
@@ -147,7 +154,9 @@ public class PredictionsInspection {
 
     public String getDateScheduled(String predictionID) {
         /*
-            This method should always be called after getResult. It is needed to get correct resultKnow value
+            This method should always be called after following methods:
+                - getResult: to get correct resultKnow value
+                - getTournament: to get tournament link to click
          */
 
         Log.debug("Getting date scheduled...");
@@ -173,7 +182,11 @@ public class PredictionsInspection {
             Log.debug("Successfully got date scheduled");
 
         } else if (resultKnown) {
+            TournamentPage tp = new TournamentPage(driver);
             // Need to click tournament name, then results and search for competitor's first occurrence in list
+            openTournamentInNewTab();
+            tp.clickResultsButton();
+
             dateScheduled = null; // change this to implementation
         } else {
             Log.info("Event date unknown: null returned");
