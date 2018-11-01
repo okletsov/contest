@@ -64,8 +64,12 @@ public class PredictionOperations {
         webDateScheduled = pi.getDateScheduled(predictionID);
         getDbDateScheduled(predictionID);
 
-        boolean dateScheduledDifferent;
-        dateScheduledDifferent = !webDateScheduled.equals(dbDateScheduled);
+
+        boolean dateScheduledDifferent = false;
+        if(dbDateScheduled != null && webDateScheduled != null) {
+            dateScheduledDifferent = !webDateScheduled.equals(dbDateScheduled);
+        }
+
         return dateScheduledDifferent;
     }
 

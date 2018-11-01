@@ -110,11 +110,14 @@ public class TournamentPage {
 
     private void clickResultsButton() {
         resultsButton.click();
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.waitForElement(driver.findElement(By.id("tournamentTable")), 10);
     }
 
     public String getWinnerDateScheduled (String winnerPredicted) {
         clickResultsButton();
         int matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
+        System.out.println(matchingGameIndex);
         String className = eventDatesElements.get(matchingGameIndex).getAttribute("class");
 
         //Getting unix timestamp from class name
