@@ -39,40 +39,37 @@ public class TournamentPage {
     private int getMatchingGameIndex (String winnerPredicted, List<WebElement> tournamentGames) {
         /*
             Variables:
-                betTeam - the team/person user predicted to win a tournament (OUTRIGHTS market)
-                compArray - array storing events of the tournament
+                winnerPredicted - the team/person user predicted to win a tournament (OUTRIGHTS market)
+                tournamentGames - array storing events of the tournament
 
             Goal:
-                find index (first occurrence) of betTeam in compArray.
+                find index (first occurrence) of winnerPredicted in tournamentGames.
                 The index will be used to determine the datetime event occurred
 
             How method works:
                 Because team name in OUTRIGHTS and tournament RESULTS pages not always match, method will
                 do the following:
 
-                if betText consist of only one word the method will try to find that word in compaArray
-                if betText consist of > 1 words:
-                    1) it will try to find betText in compArray, if mno match found then
-                    2) it will go word by word in betText and will:
-                        - replace the word in betText with empty string --> try to find match in compAtrray
-                        - replace the word in betText with its first letter --> try to find match in compAtrray
-                        - replace the word in betText with its first two letters --> try to find match in compAtrray
-                        - replace the word in betText with its first three letters --> try to find match in compAtrray
-                        - replace the word in betText with its first four letters --> try to find match in compAtrray
+                if winnerPredicted consist of only one word the method will try to find that word in tournamentGames
+                if winnerPredicted consist of > 1 words:
+                    1) it will try to find betText in tournamentGames, if mno match found then
+                    2) it will go word by word in winnerPredicted and will:
+                        - replace the word in winnerPredicted with empty string --> try to find match in tournamentGames
+                        - replace the word in winnerPredicted with its first letter --> try to find match in tournamentGames
+                        - replace the word in winnerPredicted with its first two letters --> try to find match in tournamentGames
+                        - replace the word in winnerPredicted with its first three letters --> try to find match in tournamentGames
+                        - replace the word in winnerPredicted with its first four letters --> try to find match in tournamentGames
                         - ...
 
              Can return wrong index if:
-                - betText consists of > 1 words
+                - winnerPredicted consists of > 1 words
                   AND one of the words shortened
                   AND there are two teams with same NOT shortened word playing in tournament
 
-                  Example: betText can be Williams Serena or Williams Venus
-                           compArray is shortened to Williams S. and Williams V.
+                  Example: winnerPredicted can be Williams Serena or Williams Venus
+                           tournamentGames is shortened to Williams S. and Williams V.
                            method will return wrong result if user predicted Williams Serena to win, but Venus advanced
                            to later stages (her games were after last Serena's) comparing to Serena
-
-            Think how to handle Pliskova example above
-             - user bets on Karolina, but Kristina wins (method will return Kristina's result)
          */
 
         int gameIndex = -1;
