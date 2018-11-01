@@ -1,5 +1,6 @@
 package com.sapfir.pageClasses;
 
+import com.sapfir.helpers.DateTimeOperations;
 import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +26,12 @@ public class TournamentPage {
     @FindBy(css = ".main-filter a[href*=results]")
     private WebElement resultsButton;
 
+    @FindBy(css = "#tournamentTable  [xeid] .name.table-participant")
+    private List<WebElement> competitorsElements;
+
+    @FindBy(css = "#tournamentTable  [xeid] [class*=\"table-time datet t\"]")
+    private List<WebElement> eventDatesElements;
+
     private boolean paginationExist() {
         SeleniumMethods sm = new SeleniumMethods(driver);
         return  sm.isElementPresent("id", "pagination");
@@ -36,29 +43,29 @@ public class TournamentPage {
         return Integer.parseInt(pageLabel);
     }
 
-    private int getMatchingGameIndex (String winnerPredicted, List<WebElement> tournamentGames) {
+    private int getMatchingGameIndex (String winnerPredicted, List<WebElement> competitorsElements) {
         /*
             Variables:
                 winnerPredicted - the team/person user predicted to win a tournament (OUTRIGHTS market)
-                tournamentGames - array storing events of the tournament
+                competitorsElements - list storing web elements with competitors for each tournament event
 
             Goal:
-                find index (first occurrence) of winnerPredicted in tournamentGames.
+                find index (first occurrence) of winnerPredicted in competitorsElements
                 The index will be used to determine the datetime event occurred
 
             How method works:
                 Because team name in OUTRIGHTS and tournament RESULTS pages not always match, method will
                 do the following:
 
-                if winnerPredicted consist of only one word the method will try to find that word in tournamentGames
+                if winnerPredicted consist of only one word the method will try to find that word in competitorsElements
                 if winnerPredicted consist of > 1 words:
-                    1) it will try to find betText in tournamentGames, if mno match found then
+                    1) it will try to find betText in competitorsElements, if mno match found then
                     2) it will go word by word in winnerPredicted and will:
-                        - replace the word in winnerPredicted with empty string --> try to find match in tournamentGames
-                        - replace the word in winnerPredicted with its first letter --> try to find match in tournamentGames
-                        - replace the word in winnerPredicted with its first two letters --> try to find match in tournamentGames
-                        - replace the word in winnerPredicted with its first three letters --> try to find match in tournamentGames
-                        - replace the word in winnerPredicted with its first four letters --> try to find match in tournamentGames
+                        - replace the word in winnerPredicted with empty string --> try to find match in competitorsElements
+                        - replace the word in winnerPredicted with its first letter --> try to find match in competitorsElements
+                        - replace the word in winnerPredicted with its first two letters --> try to find match in competitorsElements
+                        - replace the word in winnerPredicted with its first three letters --> try to find match in competitorsElements
+                        - replace the word in winnerPredicted with its first four letters --> try to find match in competitorsElements
                         - ...
 
              Can return wrong index if:
@@ -67,7 +74,7 @@ public class TournamentPage {
                   AND there are two teams with same NOT shortened word playing in tournament
 
                   Example: winnerPredicted can be Williams Serena or Williams Venus
-                           tournamentGames is shortened to Williams S. and Williams V.
+                           competitorsElements is shortened to Williams S. and Williams V.
                            method will return wrong result if user predicted Williams Serena to win, but Venus advanced
                            to later stages (her games were after last Serena's) comparing to Serena
          */
@@ -75,8 +82,8 @@ public class TournamentPage {
         int gameIndex = -1;
         boolean matchFound = false;
         int i = 0;
-        while (!matchFound && i < tournamentGames.size()) {
-            String gameCompetitors = tournamentGames.get(i).getText().replace(".", "");
+        while (!matchFound && i < competitorsElements.size()) {
+            String gameCompetitors = competitorsElements.get(i).getText().replace(".", "");
 
             matchFound = gameCompetitors.contains(winnerPredicted);
             String[] words = winnerPredicted.split(" ");
@@ -101,7 +108,21 @@ public class TournamentPage {
         return gameIndex;
     }
 
-    public void clickResultsButton() {
+    private void clickResultsButton() {
         resultsButton.click();
+    }
+
+    public String getWinnerDateScheduled (String winnerPredicted) {
+        clickResultsButton();
+        int matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
+        String className = eventDatesElements.get(matchingGameIndex).getAttribute("class");
+
+        //Getting unix timestamp from class name
+        int startIndex = className.indexOf(" t") + 2;
+        int endIndex = className.indexOf("-", startIndex);
+        String unixDate = className.substring(startIndex, endIndex);
+
+        DateTimeOperations dop = new DateTimeOperations();
+        return dop.convertFromUnix(unixDate);
     }
 }

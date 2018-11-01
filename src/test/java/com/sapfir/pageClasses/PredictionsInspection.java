@@ -182,12 +182,11 @@ public class PredictionsInspection {
             Log.debug("Successfully got date scheduled");
 
         } else if (resultKnown) {
-            TournamentPage tp = new TournamentPage(driver);
-            // Need to click tournament name, then results and search for competitor's first occurrence in list
-            openTournamentInNewTab();
-            tp.clickResultsButton();
 
-            dateScheduled = null; // change this to implementation
+            String winnerPredicted = getCompetitorsText(predictionID);
+            TournamentPage tp = new TournamentPage(driver);
+            openTournamentInNewTab();
+            dateScheduled = tp.getWinnerDateScheduled(winnerPredicted);
         } else {
             Log.info("Event date unknown: null returned");
             dateScheduled = null;
