@@ -103,7 +103,6 @@ public class TournamentPage {
     public String getWinnerDateScheduled (String winnerPredicted) {
         clickResultsButton();
         int matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
-        System.out.println(matchingGameIndex);
         String className = eventDatesElements.get(matchingGameIndex).getAttribute("class");
 
         //Getting unix timestamp from class name
