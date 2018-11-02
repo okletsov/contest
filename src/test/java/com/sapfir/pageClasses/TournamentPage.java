@@ -57,53 +57,39 @@ public class TournamentPage {
                 Because team name in OUTRIGHTS and tournament RESULTS pages not always match, method will
                 do the following:
 
-                if winnerPredicted consist of only one word the method will try to find that word in competitorsElements
-                if winnerPredicted consist of > 1 words:
-                    1) it will try to find betText in competitorsElements, if mno match found then
-                    2) it will go word by word in winnerPredicted and will:
-                        - replace the word in winnerPredicted with empty string --> try to find match in competitorsElements
-                        - replace the word in winnerPredicted with its first letter --> try to find match in competitorsElements
-                        - replace the word in winnerPredicted with its first two letters --> try to find match in competitorsElements
-                        - replace the word in winnerPredicted with its first three letters --> try to find match in competitorsElements
-                        - replace the word in winnerPredicted with its first four letters --> try to find match in competitorsElements
+                1) it will try to find winnerPredicted in competitorsElements, if mno match found then
+                2) it will go word by word in winnerPredicted and will:
+                        - replace the word in winnerPredicted with the word without its last letter
+                        - replace the word in winnerPredicted with the word without its last two letters
+                        - replace the word in winnerPredicted with the word without its last three letters
                         - ...
-
-             Can return wrong index if:
-                - winnerPredicted consists of > 1 words
-                  AND one of the words shortened
-                  AND there are two teams with same NOT shortened word playing in tournament
-
-                  Example: winnerPredicted can be Williams Serena or Williams Venus
-                           competitorsElements is shortened to Williams S. and Williams V.
-                           method will return wrong result if user predicted Williams Serena to win, but Venus advanced
-                           to later stages (her games were after last Serena's) comparing to Serena
+                        - replace the word in winnerPredicted with empty string
+                   After every replacement it will try to find winnerPredicted in competitorsElements and will
+                   stop execution as soon as it finds a match
          */
 
         int gameIndex = -1;
         boolean matchFound = false;
-        int i = 0;
-        while (!matchFound && i < competitorsElements.size()) {
-            String gameCompetitors = competitorsElements.get(i).getText().replace(".", "");
 
-            matchFound = gameCompetitors.contains(winnerPredicted);
-            String[] words = winnerPredicted.split(" ");
-            if (!matchFound && words.length > 1) {
-                int j = 0;
-                while (!matchFound && j < words.length) {
-                    char[] letters = words[j].toCharArray();
-                    int k = 0;
-                    while (!matchFound && k < letters.length) {
-                        String newWord = words[j].substring(0, k);
-                        matchFound = gameCompetitors.contains(winnerPredicted.replace(words[j], newWord));
-                        k++;
+        String[] words = winnerPredicted.split(" ");
+        int j = 0;
+        while (!matchFound && j < words.length) {
+            char[] letters = words[j].toCharArray();
+            int k = letters.length - 1;
+            while (!matchFound && k >= 0) {
+                String newWord = words[j].substring(0, k);
+                int i = 0;
+                while (!matchFound && i < competitorsElements.size()) {
+                    String gameCompetitors = competitorsElements.get(i).getText().replace(".", "");
+                    matchFound = gameCompetitors.contains(winnerPredicted.replace(words[j], newWord));
+                    if (matchFound) {
+                        gameIndex = i;
                     }
-                    j++;
+                    i++;
                 }
+                k--;
             }
-            i++;
-        }
-        if (matchFound) {
-            gameIndex = i - 1;
+            j++;
         }
         return gameIndex;
     }

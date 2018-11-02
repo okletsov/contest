@@ -8,64 +8,64 @@ import java.util.List;
 
 public class Workshop {
     public static void main(String[] args) {
-        String[] compArray = new String[50];
-        compArray[0] = "Pliskova Kr. - Yastremska D.";
-        compArray[1] = "Wang Q. - Novosibirsk";
-        compArray[2] = "Yastremska D. - Zhang S.";
-        compArray[3] = "Svitolina E. - Wang Q.";
-        compArray[4] = "Muguruza G. - Kumkhum L.";
-        compArray[5] = "Pliskova Ka. - Zhang S.";
-        compArray[6] = "Yastremska D. - Kucova K.";
-        compArray[7] = "Svitolina E. - Hibino N.";
-        compArray[8] = "McHale C. - Wang Q.";
-        compArray[9] = "Kerkhove L. - Zhang S.";
-        compArray[10] = "Gavrilova D. - Niculescu M.";
-        compArray[11] = "Muguruza G. - Bogdan A.";
-        compArray[12] = "Tomova V. - Kucova K.";
-        compArray[13] = "Zheng S. - Yastremska D.";
-        compArray[14] = "Kumkhum L. - Cornet A.";
-        compArray[15] = "Svitolina E. - Hon P.";
-        compArray[16] = "Muguruza G. - Sorribes Tormo S.";
-        compArray[17] = "Dolehide C. - Bogdan A.";
-        compArray[18] = "Sharipova S. - Zhang S.";
-        compArray[19] = "Schoofs B. - Kerkhove L.";
-        compArray[20] = "Stosur S. - Hibino N.";
-        compArray[21] = "Zhang L. - Wang Q.";
-        compArray[22] = "Gavrilova D. - Diyas Z.";
-        compArray[23] = "McHale C. - Chong E. W.";
-        compArray[24] = "Niculescu M. - Jabeur O.";
-        compArray[25] = "Krunic A. - Zheng S.";
-        compArray[26] = "Kucova K. - Ostapenko J.";
-        compArray[27] = "Glushko J. - Cornet A.";
-        compArray[28] = "Brady J. - Kumkhum L.";
-        compArray[29] = "Tomova V. - Dynamo Kyiv";
-        compArray[30] = "Yastremska D. - Stollar F.";
-        compArray[31] = "Niculescu M. - Makarova E.";
-        compArray[32] = "Stosur S. - Krunic A.";
-        compArray[33] = "Tsurenko L. - Zheng S.";
-        compArray[34] = "Shakhtar Donetsk - Cornet A.";
-        compArray[35] = "Hibino N. - Zhao C.";
-        compArray[36] = "Dolehide C. - Kerkhove L.";
-        compArray[37] = "Stollar F. - Siegemund L.";
-        compArray[38] = "Lu J. - Sharipova S.";
-        compArray[39] = "Glushko J. - Schoofs B.";
-        compArray[40] = "Jabeur O. - Tomova V.";
-        compArray[41] = "Dolehide C. - Wu Ho C.";
-        compArray[42] = "Melnikova M. - Sharipova S.";
-        compArray[43] = "D. Zagreb - Ng K. Y.";
-        compArray[44] = "Kerkhove L. - Liu C.";
-        compArray[45] = "Glushko J. - Siegemund L.";
-        compArray[46] = "Zhao C. - Mrdeza T.";
-        compArray[47] = "Ng M. - Schoofs B.";
-        compArray[48] = "Watson H. - FK Crvena zvezda";
-        compArray[49] = "Hibino N. - Shimizu A.";
+        String[] competitorsElements = new String[50];
+        competitorsElements[0] = "Pliskova Kr. - Yastremska D.";
+        competitorsElements[1] = "Wang Q. - Novosibirsk";
+        competitorsElements[2] = "Yastremska D. - Zhang S.";
+        competitorsElements[3] = "Svitolina E. - Wang Q.";
+        competitorsElements[4] = "Muguruza G. - Kumkhum L.";
+        competitorsElements[5] = "Pliskova Ka. - Zhang S.";
+        competitorsElements[6] = "Yastremska D. - Kucova K.";
+        competitorsElements[7] = "Svitolina E. - Hibino N.";
+        competitorsElements[8] = "McHale C. - Wang Q.";
+        competitorsElements[9] = "Kerkhove L. - Zhang S.";
+        competitorsElements[10] = "Gavrilova D. - Niculescu M.";
+        competitorsElements[11] = "Muguruza G. - Bogdan A.";
+        competitorsElements[12] = "Tomova V. - Kucova K.";
+        competitorsElements[13] = "Zheng S. - Yastremska D.";
+        competitorsElements[14] = "Kumkhum L. - Cornet A.";
+        competitorsElements[15] = "Svitolina E. - Hon P.";
+        competitorsElements[16] = "Muguruza G. - Sorribes Tormo S.";
+        competitorsElements[17] = "Dolehide C. - Bogdan A.";
+        competitorsElements[18] = "Sharipova S. - Zhang S.";
+        competitorsElements[19] = "Schoofs B. - Kerkhove L.";
+        competitorsElements[20] = "Stosur S. - Hibino N.";
+        competitorsElements[21] = "Zhang L. - Wang Q.";
+        competitorsElements[22] = "Gavrilova D. - Diyas Z.";
+        competitorsElements[23] = "McHale C. - Chong E. W.";
+        competitorsElements[24] = "Niculescu M. - Jabeur O.";
+        competitorsElements[25] = "Krunic A. - Zheng S.";
+        competitorsElements[26] = "Kucova K. - Ostapenko J.";
+        competitorsElements[27] = "Glushko J. - Cornet A.";
+        competitorsElements[28] = "Brady J. - Kumkhum L.";
+        competitorsElements[29] = "Tomova V. - Dynamo Kyiv";
+        competitorsElements[30] = "Yastremska D. - Stollar F.";
+        competitorsElements[31] = "Niculescu M. - Makarova E.";
+        competitorsElements[32] = "Stosur S. - Krunic A.";
+        competitorsElements[33] = "Tsurenko L. - Zheng S.";
+        competitorsElements[34] = "Shakhtar Donetsk - Cornet A.";
+        competitorsElements[35] = "Hibino N. - Zhao C.";
+        competitorsElements[36] = "Dolehide C. - Kerkhove L.";
+        competitorsElements[37] = "Stollar F. - Siegemund L.";
+        competitorsElements[38] = "Lu J. - Sharipova S.";
+        competitorsElements[39] = "Glushko J. - Schoofs B.";
+        competitorsElements[40] = "Jabeur O. - Tomova V.";
+        competitorsElements[41] = "Dolehide C. - Wu Ho C.";
+        competitorsElements[42] = "Melnikova M. - Sharipova S.";
+        competitorsElements[43] = "D. Zagreb - Ng K. Y.";
+        competitorsElements[44] = "Kerkhove L. - Liu C.";
+        competitorsElements[45] = "Glushko J. - Siegemund L.";
+        competitorsElements[46] = "Zhao C. - Mrdeza T.";
+        competitorsElements[47] = "Ng M. - Schoofs B.";
+        competitorsElements[48] = "Watson H. - FK Crvena zvezda";
+        competitorsElements[49] = "Hibino N. - Shimizu A.";
 
-        String betTeam = "Shakhtar".replace(".", "");
+        String winnerPredicted = "Shakhtar".replace(".", "");
 
+        int gameIndex = -1;
         boolean matchFound = false;
-        int indexFound = -1;
 
-        String[] words = betTeam.split(" ");
+        String[] words = winnerPredicted.split(" ");
         int j = 0;
         while (!matchFound && j < words.length) {
             char[] letters = words[j].toCharArray();
@@ -73,11 +73,11 @@ public class Workshop {
             while (!matchFound && k >= 0) {
                 String newWord = words[j].substring(0, k);
                 int i = 0;
-                while (!matchFound && i < compArray.length) {
-                    String competitorsLine = compArray[i].replace(".", "");
-                    matchFound = competitorsLine.contains(betTeam.replace(words[j], newWord));
+                while (!matchFound && i < competitorsElements.length) {
+                    String gameCompetitors = competitorsElements[i].replace(".", "");
+                    matchFound = gameCompetitors.contains(winnerPredicted.replace(words[j], newWord));
                     if (matchFound) {
-                        indexFound = i;
+                        gameIndex = i;
                     }
                     i++;
                 }
@@ -85,6 +85,6 @@ public class Workshop {
             }
             j++;
         }
-        System.out.println(matchFound + " " + indexFound);
+        System.out.println(matchFound + " " + gameIndex);
     }
 }
