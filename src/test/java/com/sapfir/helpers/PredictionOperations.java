@@ -68,6 +68,10 @@ public class PredictionOperations {
         boolean dateScheduledDifferent = false;
         if(dbDateScheduled != null && webDateScheduled != null) {
             dateScheduledDifferent = !webDateScheduled.equals(dbDateScheduled);
+        } else if (dbDateScheduled == null && webDateScheduled != null) {
+            dateScheduledDifferent = true;
+        } else if (dbDateScheduled != null) {
+            dateScheduledDifferent = true;
         }
 
         return dateScheduledDifferent;
