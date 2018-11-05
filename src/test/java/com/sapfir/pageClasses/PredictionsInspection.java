@@ -204,8 +204,7 @@ public class PredictionsInspection {
             TournamentPage tp = new TournamentPage(driver);
             openTournamentInNewTab(predictionID);
             dateScheduled = tp.getWinnerDateScheduled(winnerPredicted);
-            SeleniumMethods sm1 = new SeleniumMethods(driver);
-            sm1.closeTab();
+            sm.closeTab();
 
         } else {
             Log.info("Event date unknown: null returned");
