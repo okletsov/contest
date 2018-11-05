@@ -19,23 +19,20 @@ public class PredictionOperations {
 
     private Connection conn;
     private WebDriver driver;
-    private String dbPredictionResult;
-    private String webPredictionResult;
-    private String dbDateScheduled;
-    private String webDateScheduled;
 
-    private void getDbPredictionResult(String predictionID) {
+    private String getDbPredictionResult(String predictionID) {
         Log.debug("Getting result written to database for prediction id " + predictionID + "...");
         String sql = "select result from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
-        dbPredictionResult = dbOp.getSingleValue(conn, "result", sql);
+        String dbPredictionResult =  dbOp.getSingleValue(conn, "result", sql);
         Log.debug("Result = " + dbPredictionResult);
+        return  dbPredictionResult;
     }
 
-    private void getDbDateScheduled(String predictionID) {
+    private String getDbDateScheduled(String predictionID) {
         String sql = "select date_scheduled from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
-        dbDateScheduled = dbOp.getSingleValue(conn, "date_scheduled", sql);
+        return dbOp.getSingleValue(conn, "date_scheduled", sql);
     }
 
     private boolean resultDifferent(String predictionID) {
@@ -43,11 +40,10 @@ public class PredictionOperations {
             This method compare web prediction result vs db prediction result and returns:
                 true - if result different
                 false - if result match
-
-            Note: db result is already known from predictionFinalized method
          */
         PredictionsInspection pi = new PredictionsInspection(driver);
-        webPredictionResult = pi.getResult(predictionID);
+        String webPredictionResult = pi.getResult(predictionID);
+        String dbPredictionResult = getDbPredictionResult(predictionID);
 
         boolean resultDifferent;
         resultDifferent = !webPredictionResult.equals(dbPredictionResult);
@@ -61,8 +57,8 @@ public class PredictionOperations {
                 false - if result match
          */
         PredictionsInspection pi = new PredictionsInspection(driver);
-        webDateScheduled = pi.getDateScheduled(predictionID);
-        getDbDateScheduled(predictionID);
+        String webDateScheduled = pi.getDateScheduled(predictionID);
+        String dbDateScheduled = getDbDateScheduled(predictionID);
 
 
         boolean dateScheduledDifferent = false;
@@ -102,6 +98,10 @@ public class PredictionOperations {
 
     private void updateResult(String predictionID) {
         Log.debug("Updating prediction result for prediction " + predictionID + "...");
+
+        PredictionsInspection pi = new PredictionsInspection(driver);
+        String webPredictionResult = pi.getResult(predictionID);
+
         String sql = "update prediction set result = '" + webPredictionResult + "' where id = '" + predictionID + "';";
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
         eq.cleanUp();
@@ -109,15 +109,21 @@ public class PredictionOperations {
     }
 
     private void logPreviousDateScheduled(String predictionID) {
-        String sql =
-                "insert into prediction_schedule_changes (id, prediction_id, previous_date_scheduled) " +
-                        "values (uuid(), '" + predictionID + "', '" + dbDateScheduled + "');";
-        ExecuteQuery executeInsert = new ExecuteQuery(conn, sql);
-        executeInsert.cleanUp();
-        Log.info("Previous date logged for prediction: " + predictionID + ". Previous date: " + dbDateScheduled);
+        String dbDateScheduled = getDbDateScheduled(predictionID);
+        if (dbDateScheduled != null) {
+            String sql =
+                    "insert into prediction_schedule_changes (id, prediction_id, previous_date_scheduled) " +
+                            "values (uuid(), '" + predictionID + "', '" + dbDateScheduled + "');";
+            ExecuteQuery executeInsert = new ExecuteQuery(conn, sql);
+            executeInsert.cleanUp();
+            Log.info("Previous date logged for prediction: " + predictionID + ". Previous date: " + dbDateScheduled);
+        }
     }
 
     private void updateDateScheduled(String predictionID) {
+        PredictionsInspection pi = new PredictionsInspection(driver);
+        String webDateScheduled = pi.getDateScheduled(predictionID);
+
         String updateDateScheduled =
                 "update prediction set date_scheduled = '" + webDateScheduled + "' where id = '" + predictionID + "';";
         ExecuteQuery executeUpdate = new ExecuteQuery(conn, updateDateScheduled);
@@ -215,7 +221,7 @@ public class PredictionOperations {
 
         Log.debug("Checking if prediction " + predictionID + " is finalized...");
         boolean predictionFinalized;
-        getDbPredictionResult(predictionID);
+        String dbPredictionResult = getDbPredictionResult(predictionID);
         predictionFinalized = !dbPredictionResult.equals("not-played");
         Log.info("Prediction " + predictionID + " finalized? - " + predictionFinalized);
         return predictionFinalized;
