@@ -60,8 +60,10 @@ public class TournamentPage {
                 Because team name in OUTRIGHTS and tournament RESULTS pages not always match, method will
                 do the following:
 
-                1) it will try to find winnerPredicted in competitorsElements, if mno match found then
-                2) it will go word by word in winnerPredicted and will:
+                if winnerPredicted consist of 1 word:
+
+                    1) it will try to find winnerPredicted in competitorsElements, if mno match found then
+                    2) it will go word by word in winnerPredicted and will:
                         - replace the word in winnerPredicted with the word without its last letter
                         - replace the word in winnerPredicted with the word without its last two letters
                         - replace the word in winnerPredicted with the word without its last three letters
@@ -69,30 +71,46 @@ public class TournamentPage {
                         - replace the word in winnerPredicted with empty string
                    After every replacement it will try to find winnerPredicted in competitorsElements and will
                    stop execution as soon as it finds a match
+
+                if winnerPredicted consist of 2 words:
+                    1) it will try to find winnerPredicted in competitorsElements
          */
 
         int gameIndex = -1;
         boolean matchFound = false;
+        String gameCompetitors;
 
         String[] words = winnerPredicted.split(" ");
-        int j = 0;
-        while (!matchFound && j < words.length) {
-            char[] letters = words[j].toCharArray();
-            int k = letters.length - 1;
-            while (!matchFound && k >= 0) {
-                String newWord = words[j].substring(0, k);
-                int i = 0;
-                while (!matchFound && i < competitorsElements.size()) {
-                    String gameCompetitors = competitorsElements.get(i).getText().replace(".", "");
-                    matchFound = gameCompetitors.contains(winnerPredicted.replace(words[j], newWord));
-                    if (matchFound) {
-                        gameIndex = i;
+        if (words.length > 1) { // If winner predicted consist of > 1 word
+            int j = 0;
+            while (!matchFound && j < words.length) {
+                char[] letters = words[j].toCharArray();
+                int k = letters.length - 1;
+                while (!matchFound && k >= 0) {
+                    String newWord = words[j].substring(0, k);
+                    int i = 0;
+                    while (!matchFound && i < competitorsElements.size()) {
+                        gameCompetitors = competitorsElements.get(i).getText().replace(".", "");
+                        matchFound = gameCompetitors.contains(winnerPredicted.replace(words[j], newWord));
+                        if (matchFound) {
+                            gameIndex = i;
+                        }
+                        i++;
                     }
-                    i++;
+                    k--;
                 }
-                k--;
+                j++;
             }
-            j++;
+        } else { //If winnerPredicted consist of 1 word
+            int t = 0;
+            while (!matchFound && t < competitorsElements.size()) {
+                gameCompetitors = competitorsElements.get(t).getText().replace(".", "");
+                matchFound = gameCompetitors.contains(winnerPredicted);
+                if (matchFound) {
+                    gameIndex = t;
+                }
+                t++;
+            }
         }
         return gameIndex;
     }
