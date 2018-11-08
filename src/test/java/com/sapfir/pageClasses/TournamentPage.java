@@ -128,6 +128,9 @@ public class TournamentPage {
                 driver.findElement(By.cssSelector("#pagination [x-page=\"" + nextPageIndex + "\"]"));
         nextPageElement.click();
 
+        //trying to deal with stale reference exception. Remove the line above if it is not helping
+        PageFactory.initElements(driver, this);
+
         //Waiting for page to load
         SeleniumMethods sm = new SeleniumMethods(driver);
         sm.waitForElement(activePage, 60);
