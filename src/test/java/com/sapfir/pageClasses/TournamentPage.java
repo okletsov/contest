@@ -32,6 +32,9 @@ public class TournamentPage {
     @FindBy(css = "#tournamentTable  [xeid] [class*=\"table-time datet t\"]")
     private List<WebElement> eventDatesElements;
 
+    @FindBy(css = "#pagination .active-page")
+    private WebElement activePage;
+
     private boolean paginationExist() {
         SeleniumMethods sm = new SeleniumMethods(driver);
         return  sm.isElementPresent("id", "pagination");
@@ -100,17 +103,53 @@ public class TournamentPage {
         sm.waitForElement(driver.findElement(By.id("tournamentTable")), 10);
     }
 
+    private void clickNextPage(int currentPage) {
+        //Clicking on the next page
+        int nextPageIndex = currentPage + 1;
+        WebElement nextPageElement =
+                driver.findElement(By.cssSelector("#pagination [x-page=\"" + nextPageIndex + "\"]"));
+        nextPageElement.click();
+
+        //Waiting for page to load
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.waitForElement(activePage, 60);
+        String activePageLabel = activePage.getText();
+        int activePageIndex = Integer.parseInt(activePageLabel);
+        while (activePageIndex != nextPageIndex) {
+            sm.waitForElement(activePage, 60);
+            activePageLabel = activePage.getText();
+            activePageIndex = Integer.parseInt(activePageLabel);
+        }
+    }
+
     public String getWinnerDateScheduled (String winnerPredicted) {
+        String winnerDateScheduled = null;
+
         clickResultsButton();
         int matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
-        String className = eventDatesElements.get(matchingGameIndex).getAttribute("class");
 
-        //Getting unix timestamp from class name
-        int startIndex = className.indexOf(" t") + 2;
-        int endIndex = className.indexOf("-", startIndex);
-        String unixDate = className.substring(startIndex, endIndex);
+        if (paginationExist()) {
+            int currentPage = 1;
+            int numberOfPages = getNumberOfPages();
+            while (matchingGameIndex == -1 && currentPage <= numberOfPages) {
+                clickNextPage(currentPage);
+                matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
+                currentPage++;
+            }
+        }
 
-        DateTimeOperations dop = new DateTimeOperations();
-        return dop.convertFromUnix(unixDate);
+        if (matchingGameIndex != -1) {
+            String className = eventDatesElements.get(matchingGameIndex).getAttribute("class");
+
+            //Getting unix timestamp from class name
+            int startIndex = className.indexOf(" t") + 2;
+            int endIndex = className.indexOf("-", startIndex);
+            String unixDate = className.substring(startIndex, endIndex);
+
+            //Getting a string from unix timestamp
+            DateTimeOperations dop = new DateTimeOperations();
+            winnerDateScheduled = dop.convertFromUnix(unixDate);
+        }
+        return winnerDateScheduled;
     }
 }
