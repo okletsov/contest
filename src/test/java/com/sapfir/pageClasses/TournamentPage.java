@@ -131,7 +131,7 @@ public class TournamentPage {
         if (paginationExist()) {
             int currentPage = 1;
             int numberOfPages = getNumberOfPages();
-            while (matchingGameIndex == -1 && currentPage <= numberOfPages) {
+            while (matchingGameIndex == -1 && currentPage < numberOfPages) {
                 clickNextPage(currentPage);
                 matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
                 currentPage++;
