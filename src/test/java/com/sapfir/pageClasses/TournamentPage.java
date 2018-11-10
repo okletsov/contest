@@ -157,16 +157,10 @@ public class TournamentPage {
         }
 
         if (matchingGameIndex != -1) {
-            String className = eventDatesElements.get(matchingGameIndex).getAttribute("class");
+            WebElement eventDateElement = eventDatesElements.get(matchingGameIndex);
 
-            //Getting unix timestamp from class name
-            int startIndex = className.indexOf(" t") + 2;
-            int endIndex = className.indexOf("-", startIndex);
-            String unixDate = className.substring(startIndex, endIndex);
-
-            //Getting a string from unix timestamp
             DateTimeOperations dop = new DateTimeOperations();
-            winnerDateScheduled = dop.convertFromUnix(unixDate);
+            winnerDateScheduled = dop.getDateTimeFromClassName(eventDateElement);
         }
         return winnerDateScheduled;
     }

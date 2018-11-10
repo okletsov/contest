@@ -185,17 +185,10 @@ public class PredictionsInspection {
         boolean dateExist = sm.isElementPresent("css", locator);
 
         if (dateExist) {
-            //Getting element's class name
-            WebElement element = driver.findElement(By.cssSelector(locator));
-            String className = element.getAttribute("class");
-
-            //Getting unix timestamp from class name
-            int startIndex = className.indexOf(" t") + 2;
-            int endIndex = className.indexOf("-", startIndex);
-            String unixDate = className.substring(startIndex, endIndex);
+            WebElement eventDateElement = driver.findElement(By.cssSelector(locator));
 
             DateTimeOperations dop = new DateTimeOperations();
-            dateScheduled = dop.convertFromUnix(unixDate);
+            dateScheduled = dop.getDateTimeFromClassName(eventDateElement);
             Log.debug("Successfully got date scheduled");
 
         } else if (resultKnown(predictionID)) {
@@ -216,15 +209,11 @@ public class PredictionsInspection {
     public String getDatePredicted(String predictionID) {
         Log.debug("Getting date predicted");
 
-        WebElement element = driver.findElement(By.cssSelector(
+        WebElement predictionDateElement = driver.findElement(By.cssSelector(
                 "#" + predictionID + " .feed-item-controls [class*=\"item-create datet\"]"));
-        String className = element.getAttribute("class");
-        int startIndex = className.indexOf(" t") + 2;
-        int endIndex = className.indexOf("-", startIndex);
-        String unixDate = className.substring(startIndex, endIndex);
 
         DateTimeOperations dop = new DateTimeOperations();
-        String datePredicted = dop.convertFromUnix(unixDate);
+        String datePredicted = dop.getDateTimeFromClassName(predictionDateElement);
 
         Log.debug("Successfully got date predicted");
         return datePredicted;

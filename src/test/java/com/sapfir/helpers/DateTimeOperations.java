@@ -1,5 +1,7 @@
 package com.sapfir.helpers;
 
+import org.openqa.selenium.WebElement;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -9,11 +11,19 @@ public class DateTimeOperations {
 
 	private String datePattern = "yyyy-MM-dd HH:mm:ss";
 
-	public String convertFromUnix(String unixTimeStamp){
+	private String convertFromUnix(String unixTimeStamp){
 		return Instant.ofEpochSecond(Long.parseLong(unixTimeStamp)).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(datePattern));
 	}
 
 	public String getTimestamp() {
 		return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(datePattern));
+	}
+
+	public String getDateTimeFromClassName(WebElement element) {
+		String className = element.getAttribute("class");
+		int startIndex = className.indexOf(" t") + 2;
+		int endIndex = className.indexOf("-", startIndex);
+		String unixDate = className.substring(startIndex, endIndex);
+		return convertFromUnix(unixDate);
 	}
 }
