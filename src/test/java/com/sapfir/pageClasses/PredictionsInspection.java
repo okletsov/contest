@@ -19,6 +19,27 @@ public class PredictionsInspection {
 
     private WebDriver driver;
 
+    private String getResultLocator(String predictionId) {
+        return "#" + predictionId + " .odd [class*=\"status-text-\"]";
+    }
+
+    private String getTournamentLocator(String predictionId) {
+        return "#" + predictionId + "  .first a:nth-of-type(3)";
+    }
+
+    private String getTournamentLink(String predictionId) {
+        String locator = getTournamentLocator(predictionId);
+        WebElement element = driver.findElement(By.cssSelector(locator));
+        return element.getAttribute("href");
+    }
+
+    private boolean resultKnown(String predictionId) {
+        String locator = getResultLocator(predictionId);
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        return sm.isElementPresent("css", locator);
+    }
+
     private WebElement getCompetitorsElement(String predictionID) {
         String locator = "#" + predictionID + " .odd a.bold";
         return driver.findElement(By.cssSelector(locator));
@@ -46,6 +67,11 @@ public class PredictionsInspection {
         }
         Log.debug("Successfully got optoin values");
         return values;
+    }
+
+    private void openTournamentInNewTab(String predictionId) {
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.openNewTab(getTournamentLink(predictionId));
     }
 
     public int getUserPick(String predictionID) {
@@ -121,20 +147,19 @@ public class PredictionsInspection {
 
     public String getTournament(String predictionID) {
         Log.debug("Getting tournament of prediction...");
-        WebElement element = driver.findElement(By.cssSelector("#" + predictionID + "  .first a:nth-of-type(3)"));
-        String region = element.getText().trim();
-        Log.debug("Successfully got tournament: " + region);
-        return region;
+        String locator = getTournamentLocator(predictionID);
+        WebElement element = driver.findElement(By.cssSelector(locator));
+        String tournament = element.getText().trim();
+        Log.debug("Successfully got tournament: " + tournament);
+        return tournament;
     }
 
     public String getResult(String predictionID) {
         Log.debug("Getting prediction result...");
-        String locator = "#" + predictionID + " .odd [class*=\"status-text-\"]";
-        SeleniumMethods sm = new SeleniumMethods(driver);
-        boolean resultKnown = sm.isElementPresent("css", locator);
 
         String result;
-        if (resultKnown) {
+        if (resultKnown(predictionID)) {
+            String locator = getResultLocator(predictionID);
             String className = driver.findElement(By.cssSelector(locator)).getAttribute("class");
             result = className.replace("center status-text-", "");
         } else {
@@ -145,6 +170,12 @@ public class PredictionsInspection {
     }
 
     public String getDateScheduled(String predictionID) {
+        /*
+            This method should always be called after following methods:
+                - getResult: to get correct resultKnow value
+                - getTournament: to get tournament link to click
+         */
+
         Log.debug("Getting date scheduled...");
         String dateScheduled;
 
@@ -167,8 +198,16 @@ public class PredictionsInspection {
             dateScheduled = dop.convertFromUnix(unixDate);
             Log.debug("Successfully got date scheduled");
 
+        } else if (resultKnown(predictionID)) {
+
+            String winnerPredicted = getCompetitorsText(predictionID);
+            TournamentPage tp = new TournamentPage(driver);
+            openTournamentInNewTab(predictionID);
+            dateScheduled = tp.getWinnerDateScheduled(winnerPredicted);
+            sm.closeTab();
+
         } else {
-            Log.debug("Event date unknown: null returned");
+            Log.info("Event date unknown: null returned");
             dateScheduled = null;
         }
         return dateScheduled;

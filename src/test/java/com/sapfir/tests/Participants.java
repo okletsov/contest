@@ -33,7 +33,7 @@ public class Participants {
         }
 
 //        Object[][] testData = new Object[][]{
-//                {"Deagle"}
+//                {"TestUser2018"}
 //        };
 
         dbOp.closeConnection(conn);
