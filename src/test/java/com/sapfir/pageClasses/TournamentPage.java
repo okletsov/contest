@@ -35,6 +35,13 @@ public class TournamentPage {
     @FindBy(css = "#pagination .active-page")
     private WebElement activePage;
 
+    private void clickResultsButton() {
+        resultsButton.click();
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.waitForElement(driver.findElement(By.id("tournamentTable")), 10);
+        PageFactory.initElements(driver, this);
+    }
+
     private boolean paginationExist() {
         SeleniumMethods sm = new SeleniumMethods(driver);
         return  sm.isElementPresent("id", "pagination");
@@ -46,81 +53,6 @@ public class TournamentPage {
         return Integer.parseInt(pageLabel);
     }
 
-    private int getMatchingGameIndex (String winnerPredicted, List<WebElement> competitorsElements) {
-        /*
-            Variables:
-                winnerPredicted - the team/person user predicted to win a tournament (OUTRIGHTS market)
-                competitorsElements - list storing web elements with competitors for each tournament event
-
-            Goal:
-                find index (first occurrence) of winnerPredicted in competitorsElements
-                The index will be used to determine the datetime event occurred
-
-            How method works:
-                Because team name in OUTRIGHTS and tournament RESULTS pages not always match, method will
-                do the following:
-
-                if winnerPredicted consist of 1 word:
-
-                    1) it will try to find winnerPredicted in competitorsElements, if mno match found then
-                    2) it will go word by word in winnerPredicted and will:
-                        - replace the word in winnerPredicted with the word without its last letter
-                        - replace the word in winnerPredicted with the word without its last two letters
-                        - replace the word in winnerPredicted with the word without its last three letters
-                        - ...
-                        - replace the word in winnerPredicted with empty string
-                   After every replacement it will try to find winnerPredicted in competitorsElements and will
-                   stop execution as soon as it finds a match
-
-                if winnerPredicted consist of 2 words:
-                    1) it will try to find winnerPredicted in competitorsElements
-         */
-
-        int gameIndex = -1;
-        boolean matchFound = false;
-        String gameCompetitors;
-
-        String[] words = winnerPredicted.split(" ");
-        if (words.length > 1) { // If winner predicted consist of > 1 word
-            int j = 0;
-            while (!matchFound && j < words.length) {
-                char[] letters = words[j].toCharArray();
-                int k = letters.length - 1;
-                while (!matchFound && k >= 0) {
-                    String newWord = words[j].substring(0, k);
-                    int i = 0;
-                    while (!matchFound && i < competitorsElements.size()) {
-                        gameCompetitors = competitorsElements.get(i).getText().replace(".", "");
-                        matchFound = gameCompetitors.contains(winnerPredicted.replace(words[j], newWord));
-                        if (matchFound) {
-                            gameIndex = i;
-                        }
-                        i++;
-                    }
-                    k--;
-                }
-                j++;
-            }
-        } else { //If winnerPredicted consist of 1 word
-            int t = 0;
-            while (!matchFound && t < competitorsElements.size()) {
-                gameCompetitors = competitorsElements.get(t).getText().replace(".", "");
-                matchFound = gameCompetitors.contains(winnerPredicted);
-                if (matchFound) {
-                    gameIndex = t;
-                }
-                t++;
-            }
-        }
-        return gameIndex;
-    }
-
-    private void clickResultsButton() {
-        resultsButton.click();
-        SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(driver.findElement(By.id("tournamentTable")), 10);
-    }
-
     private void clickNextPage(int currentPage) {
         //Clicking on the next page
         int nextPageIndex = currentPage + 1;
@@ -128,7 +60,7 @@ public class TournamentPage {
                 driver.findElement(By.cssSelector("#pagination [x-page=\"" + nextPageIndex + "\"]"));
         nextPageElement.click();
 
-        //trying to deal with stale reference exception. Remove the line above if it is not helping
+        //trying to deal with stale reference exception. Remove the line below if it is not helping
         PageFactory.initElements(driver, this);
 
         //Waiting for page to load
@@ -143,19 +75,84 @@ public class TournamentPage {
         }
     }
 
+    private int searchForDirectMatch(String winnerPredicted) {
+
+        boolean matchFound = false;
+        int gameIndex = -1;
+
+        int i = 0;
+        while (!matchFound && i < competitorsElements.size()) {
+            String gameCompetitors = competitorsElements.get(i).getText();
+            matchFound = gameCompetitors.contains(winnerPredicted);
+            if (matchFound) {
+                gameIndex = i;
+            }
+            i++;
+        }
+        return gameIndex;
+    }
+
+    private int searchForShortenedMatch(String winnerPredicted) {
+
+        int gameIndex = -1;
+        boolean matchFound = false;
+        String gameCompetitors;
+        winnerPredicted = winnerPredicted.replace(".", "");
+
+        String[] words = winnerPredicted.split(" ");
+        int j = 0;
+        while (!matchFound && j < words.length) {
+            char[] letters = words[j].toCharArray();
+            int k = letters.length - 1;
+            while (!matchFound && k >= 0) {
+                String newWord = words[j].substring(0, k);
+                int i = 0;
+                while (!matchFound && i < competitorsElements.size()) {
+                    gameCompetitors = competitorsElements.get(i).getText().replace(".", "");
+                    matchFound = gameCompetitors.contains(winnerPredicted.replace(words[j], newWord));
+                    if (matchFound) {
+                        gameIndex = i;
+                    }
+                    i++;
+                }
+                k--;
+            }
+            j++;
+        }
+        return gameIndex;
+    }
+
     public String getWinnerDateScheduled (String winnerPredicted) {
         String winnerDateScheduled = null;
+        int matchingGameIndex = -1;
+        int currentPage;
 
         clickResultsButton();
-        int matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
+        int numberOfPages = getNumberOfPages();
 
         if (paginationExist()) {
-            int currentPage = 1;
-            int numberOfPages = getNumberOfPages();
-            while (matchingGameIndex == -1 && currentPage < numberOfPages) {
+
+            currentPage = 1;
+            matchingGameIndex = searchForDirectMatch(winnerPredicted);
+            while (matchingGameIndex == -1 && currentPage < numberOfPages) { //Searching for direct match on every page
                 clickNextPage(currentPage);
-                matchingGameIndex = getMatchingGameIndex(winnerPredicted, competitorsElements);
+                matchingGameIndex = searchForDirectMatch(winnerPredicted);
                 currentPage++;
+            }
+
+            if (matchingGameIndex == -1) { clickResultsButton(); } //Go back to results if match not found
+
+            currentPage = 1;
+            matchingGameIndex = searchForShortenedMatch(winnerPredicted);
+            while (matchingGameIndex == -1 && currentPage < numberOfPages) { //Searching for shortened match on every page
+                clickNextPage(currentPage);
+                matchingGameIndex = searchForShortenedMatch(winnerPredicted);
+                currentPage++;
+            }
+        } else { //If there is no pagination search for direct match
+            matchingGameIndex = searchForDirectMatch(winnerPredicted);
+            if (matchingGameIndex == -1) { //If match not found search for shortened match
+                searchForShortenedMatch(winnerPredicted);
             }
         }
 
