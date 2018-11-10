@@ -11,6 +11,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import java.lang.reflect.Array;
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 public class TournamentPage {
@@ -128,9 +129,9 @@ public class TournamentPage {
         int currentPage;
 
         clickResultsButton();
-        int numberOfPages = getNumberOfPages();
 
         if (paginationExist()) {
+            int numberOfPages = getNumberOfPages();
 
             currentPage = 1;
             matchingGameIndex = searchForDirectMatch(winnerPredicted);
@@ -152,7 +153,7 @@ public class TournamentPage {
         } else { //If there is no pagination search for direct match
             matchingGameIndex = searchForDirectMatch(winnerPredicted);
             if (matchingGameIndex == -1) { //If match not found search for shortened match
-                searchForShortenedMatch(winnerPredicted);
+                matchingGameIndex = searchForShortenedMatch(winnerPredicted);
             }
         }
 
