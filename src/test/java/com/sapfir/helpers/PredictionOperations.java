@@ -132,6 +132,18 @@ public class PredictionOperations {
         Log.info("Updated date_scheduled for prediction: " + predictionID + ". New date: " + webDateScheduled);
     }
 
+    private void updateUnitOutcome(String predictionID) {
+        Log.debug("Updating unit outcome for prediction " + predictionID + "...");
+
+        PredictionsInspection pi = new PredictionsInspection(driver);
+        BigDecimal unitOutcome = pi.getUnitOutcome(predictionID);
+
+        String sql = "update prediction set unit_outcome = '" + unitOutcome + "' where id = '" + predictionID + "';";
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
+        Log.info("Updated unit outcome for " + predictionID + ". New unit outcome: " + unitOutcome);
+    }
+
     public void addPrediction(String predictionID, String username) {
         Log.debug("Adding prediction to database...");
 
@@ -152,8 +164,8 @@ public class PredictionOperations {
                                 "tournament_name, main_score, detailed_score, result, date_scheduled, \n" +
                                 "date_predicted, competitors, market, option1_name, option1_value, \n" +
                                 "option2_name, option2_value, option3_name, option3_value, user_pick_name, \n" +
-                                "user_pick_value, date_created) \n" +
-                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                                "user_pick_value, unit_outcome, date_created) \n" +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
                 );
                 sql.setString(1, predictionID);
                 sql.setString(2, cop.getActiveSeasonalContestID());
@@ -177,7 +189,8 @@ public class PredictionOperations {
                 sql.setBigDecimal(20, pred.getOptionValue(predictionID, 3));
                 sql.setString(21, pred.getOptionName(predictionID, userPick));
                 sql.setBigDecimal(22, pred.getOptionValue(predictionID, userPick));
-                sql.setString(23, dateOp.getTimestamp());
+                sql.setBigDecimal(23, pred.getUnitOutcome(predictionID));
+                sql.setString(24, dateOp.getTimestamp());
 
                 sql.executeUpdate();
                 sql.close();
@@ -235,6 +248,7 @@ public class PredictionOperations {
                 - result
                 - main_score
                 - detailed_score
+                - unit_outcome
          */
 
         Log.debug("Updating date_scheduled for prediction " + predictionID + "...");
@@ -248,6 +262,7 @@ public class PredictionOperations {
             updateResult(predictionID);
             updateMainScore(predictionID);
             updateDetailedScore(predictionID);
+            updateUnitOutcome(predictionID);
         } else {Log.debug("No update needed"); }
     }
 }
