@@ -132,32 +132,6 @@ public class PredictionOperations {
         Log.info("Updated date_scheduled for prediction: " + predictionID + ". New date: " + webDateScheduled);
     }
 
-    private BigDecimal calculateUnitOutcome(BigDecimal userPickValue, String result) {
-        BigDecimal unitOutcome = new BigDecimal("0");
-        BigDecimal betUnits = new BigDecimal("1");
-        BigDecimal betUnitsQuarterGoal = new BigDecimal("0.5");
-
-        switch (result) {
-            case "won":
-                unitOutcome = userPickValue.subtract(betUnits);
-                break;
-            case "lost":
-                unitOutcome = unitOutcome.subtract(betUnits);
-                break;
-            case "void-won":
-                unitOutcome = betUnitsQuarterGoal.multiply(userPickValue).add(betUnitsQuarterGoal).subtract(betUnits);
-                break;
-            case "void-lost":
-                unitOutcome = unitOutcome.subtract(betUnitsQuarterGoal);
-                break;
-            case "void":
-                break;
-            default:
-                Log.error("Result not supported");
-        }
-        return unitOutcome;
-    }
-
     public void addPrediction(String predictionID, String username) {
         Log.debug("Adding prediction to database...");
 

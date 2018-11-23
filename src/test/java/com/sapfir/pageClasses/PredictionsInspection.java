@@ -74,6 +74,32 @@ public class PredictionsInspection {
         sm.openNewTab(getTournamentLink(predictionId));
     }
 
+    private BigDecimal calculateUnitOutcome(BigDecimal userPickValue, String result) {
+        BigDecimal unitOutcome = new BigDecimal("0");
+        BigDecimal betUnits = new BigDecimal("1");
+        BigDecimal betUnitsQuarterGoal = new BigDecimal("0.5");
+
+        switch (result) {
+            case "won":
+                unitOutcome = userPickValue.subtract(betUnits);
+                break;
+            case "lost":
+                unitOutcome = unitOutcome.subtract(betUnits);
+                break;
+            case "void-won":
+                unitOutcome = betUnitsQuarterGoal.multiply(userPickValue).add(betUnitsQuarterGoal).subtract(betUnits);
+                break;
+            case "void-lost":
+                unitOutcome = unitOutcome.subtract(betUnitsQuarterGoal);
+                break;
+            case "void":
+                break;
+            default:
+                Log.error("Result not supported");
+        }
+        return unitOutcome;
+    }
+
     public int getUserPick(String predictionID) {
         Log.debug("Getting user pick index...");
         int index = 5;
@@ -364,5 +390,20 @@ public class PredictionsInspection {
             Log.error("Message: " + ex.getMessage());
         }
         return optionValue;
+    }
+
+    public BigDecimal getUnitOutcome(String predictionID) {
+        Log.debug("Getting unit outcome...");
+
+        BigDecimal unitOutcome = new BigDecimal("0");
+        String result = getResult(predictionID);
+
+        if (!result.equals("not-played")) {
+            int userPickIndex = getUserPick(predictionID);
+            BigDecimal userPickValue = getOptionValue(predictionID, userPickIndex);
+            unitOutcome = calculateUnitOutcome(userPickValue, result);
+        }
+        Log.debug("Successfully got unit outcome: " + unitOutcome);
+        return unitOutcome;
     }
 }
