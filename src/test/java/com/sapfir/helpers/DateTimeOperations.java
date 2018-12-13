@@ -3,6 +3,7 @@ package com.sapfir.helpers;
 import org.openqa.selenium.WebElement;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,5 +26,10 @@ public class DateTimeOperations {
 		int endIndex = className.indexOf("-", startIndex);
 		String unixDate = className.substring(startIndex, endIndex);
 		return convertFromUnix(unixDate);
+	}
+
+	public LocalDateTime convertToDateTimeFromString (String stringDateTime) {
+		String convertableString = stringDateTime.replace(" ", "T");
+		return LocalDateTime.parse(convertableString);
 	}
 }

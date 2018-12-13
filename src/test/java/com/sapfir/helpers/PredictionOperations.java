@@ -17,6 +17,9 @@ public class PredictionOperations {
         this.conn = conn;
         this.driver = driver;
     }
+    public PredictionOperations(Connection conn) {
+        this.conn = conn;
+    }
 
     private Connection conn;
     private WebDriver driver;
@@ -30,7 +33,7 @@ public class PredictionOperations {
         return  dbPredictionResult;
     }
 
-    private String getDbDateScheduled(String predictionID) {
+    public String getDbDateScheduled(String predictionID) {
         String sql = "select date_scheduled from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
         return dbOp.getSingleValue(conn, "date_scheduled", sql);
