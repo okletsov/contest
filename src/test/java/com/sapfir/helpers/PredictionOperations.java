@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class PredictionOperations {
 
@@ -307,5 +308,16 @@ public class PredictionOperations {
             updateUnitOutcome(predictionID);
             updateMonthlyContestId(predictionID);
         } else {Log.debug("No update needed"); }
+    }
+
+    public ArrayList<String> getPredictionsToValidate(String contestId) {
+        String sqlToGetPredictionsToInspect =
+                "select p.id" +
+                "from prediction p" +
+                "join contest c on c.id = p.seasonal_contest_id" +
+                "where c.id = '" + contestId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getArray(conn, "id", sqlToGetPredictionsToInspect);
     }
 }

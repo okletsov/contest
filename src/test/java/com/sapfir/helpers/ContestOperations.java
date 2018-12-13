@@ -220,16 +220,5 @@ public class ContestOperations {
 
         return contestID;
     }
-
-    public String getActiveSeasonalContestEndDate() {
-        Log.trace("Getting active seasonal contest end date...");
-        String sql = "select end_date from contest where is_active = 1 and type = 'seasonal';";
-        DatabaseOperations dbOp = new DatabaseOperations();
-        String endDate = dbOp.getSingleValue(conn,"end_date", sql);
-
-        if (endDate != null) {Log.trace("Successfully got active seasonal contest end_date"); }
-        else { Log.trace("There is no active seasonal contests end_date found"); }
-
-        return endDate;
-    }
+    
 }

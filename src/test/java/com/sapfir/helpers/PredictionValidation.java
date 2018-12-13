@@ -10,38 +10,31 @@ import java.util.ArrayList;
 public class PredictionValidation {
 
     private static final Logger Log = LogManager.getLogger(PredictionValidation.class.getName());
-    private DatabaseOperations dbOp = new DatabaseOperations();
+    private Connection conn;
+    private String contestId;
 
     public PredictionValidation(Connection conn) {
         this.conn = conn;
 
-        String sqlToGetPredictionsToInspect =
-                        "select \n" +
-                        "p.id\n" +
-                        "from prediction p\n" +
-                        "join contest c on c.id = p.seasonal_contest_id\n" +
-                        "where\n" +
-                        "c.is_active = 1;";
-        this.predictionsToInspect = dbOp.getArray(conn, "id", sqlToGetPredictionsToInspect);
-    }
+        ContestOperations contOp = new ContestOperations(conn);
+        this.contestId = contOp.getActiveSeasonalContestID();
 
-    private Connection conn;
-    private ArrayList<String> predictionsToInspect;
+    }
 
     private boolean validateDateScheduled(String predictionId) {
         Log.debug("Validating date_scheduled for " + predictionId + "...");
         boolean dateScheduledValid = true;
 
         PredictionOperations predOp = new PredictionOperations(conn);
-        ContestOperations contOp = new ContestOperations(conn);
         DateTimeOperations dtOp = new DateTimeOperations();
+        Contest cont = new Contest(conn, contestId);
 
         String dateScheduled = predOp.getDbDateScheduled(predictionId);
-        LocalDateTime seasonalContestEndDate = dtOp.convertToDateTimeFromString(contOp.getActiveSeasonalContestEndDate());
+        LocalDateTime seasContEndDate = cont.getSeasEndDate();
 
         if (dateScheduled == null) {
             LocalDateTime timestamp = dtOp.convertToDateTimeFromString(dtOp.getTimestamp());
-            if (timestamp.isAfter(seasonalContestEndDate)) {
+            if (timestamp.isAfter(seasContEndDate)) {
 
                 // Implement updating validity status here
 
@@ -59,7 +52,11 @@ public class PredictionValidation {
     public boolean validatePredictions() {
         boolean newInvalidPredictionsFound = false;
 
-        for (String predictionId: predictionsToInspect ) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        ArrayList<String> predictionsToValidate = predOp.getPredictionsToValidate(contestId);
+
+
+        for (String predictionId: predictionsToValidate ) {
             // add individual validation methods here
             // check if prediction validity status differs from db. This is needed to determine if it's a new invalid prediction or not
         }
