@@ -66,10 +66,4 @@ public class Contest {
 		LocalDateTime monEndDate = getMonEndDate(monthIndex);
 		return monEndDate.plusMinutes(1439);
 	}
-
-	/*Add following methods:
-		getSeasEndDate24
-		getMonEndDate23
-	*/
-
 }
