@@ -21,32 +21,54 @@ public class PredictionValidation {
 
     }
 
-    private boolean validateDateScheduled(String predictionId) {
-        Log.debug("Validating date_scheduled for " + predictionId + "...");
-        boolean dateScheduledValid = true;
+    private void updateValidityStatus(String predictionId, int validityStatus) {
+        String sql = "update prediction " +
+                "set validity_status = " + validityStatus + " " +
+                "where id = '" + predictionId + "';";
 
-        PredictionOperations predOp = new PredictionOperations(conn);
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
+    }
+
+    private void validateUnknownDateScheduled(String predictionId) {
+        /*
+            When user places a bet on tournament winner, date_scheduled will be null until the bet is settled
+            date_scheduled can be determined only after that
+
+            This method checks if contest is already over to see if predictions without date_scheduled should be marked invalid
+         */
+
         DateTimeOperations dtOp = new DateTimeOperations();
-        Contest cont = new Contest(conn, contestId);
+        LocalDateTime timestamp = dtOp.convertToDateTimeFromString(dtOp.getTimestamp());
 
-        String dateScheduled = predOp.getDbDateScheduled(predictionId);
+        Contest cont = new Contest(conn, contestId);
         LocalDateTime seasContEndDate = cont.getSeasEndDate();
 
+        if (timestamp.isAfter(seasContEndDate)) {
+            updateValidityStatus(predictionId,10);
+            Log.warn("Prediction " + predictionId + " is not valid. Status 10");
+            Log.warn("Additional info: prediction does not have date scheduled and seasonal contest is already over");
+        } else {
+            Log.debug("date_scheduled unknown, but contest is not over yet");
+        }
+
+    }
+
+    private void validateDateScheduled(String predictionId) {
+        Log.debug("Validating date_scheduled for " + predictionId + "...");
+
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String dateScheduled = predOp.getDbDateScheduled(predictionId);
+
         if (dateScheduled == null) {
-            LocalDateTime timestamp = dtOp.convertToDateTimeFromString(dtOp.getTimestamp());
-            if (timestamp.isAfter(seasContEndDate)) {
-
-                // Implement updating validity status here
-
-                dateScheduledValid = false;
-                Log.warn("Prediction " + predictionId + " is not valid. Status 10");
-                Log.warn("Additional info: prediction does not have date scheduled and seasonal contest is already over");
-            }
+            validateUnknownDateScheduled(predictionId);
         } else {
             // Implement all crazy logic here
         }
-        if (dateScheduledValid) { Log.debug("Date scheduled valid"); }
-        return dateScheduledValid;
+
+        // In the end see if there is any debug logging needed for notifying about validity (try to have that in sub-methods)
+        // might need debug logging to say that date_scheduled is valid. Need to think about it because validating unknownDateScheduled
+        // method already have some logging for successful validation
     }
 
     public boolean validatePredictions() {
