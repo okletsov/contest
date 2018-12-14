@@ -56,6 +56,17 @@ public class Contest {
 		return dtOp.convertToDateTimeFromString(stringStartDate);
 	}
 
+	public LocalDateTime getSeasEndDate24() {
+		LocalDateTime seasEndDate = getSeasEndDate();
+		return seasEndDate.plusHours(24);
+	}
+
+	public LocalDateTime getMonEndDate23(int monthIndex) {
+		// This method adds 23hr 59min to month end date
+		LocalDateTime monEndDate = getMonEndDate(monthIndex);
+		return monEndDate.plusMinutes(1439);
+	}
+
 	/*Add following methods:
 		getSeasEndDate24
 		getMonEndDate23

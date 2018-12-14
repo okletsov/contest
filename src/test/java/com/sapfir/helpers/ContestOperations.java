@@ -220,5 +220,5 @@ public class ContestOperations {
 
         return contestID;
     }
-    
+
 }
