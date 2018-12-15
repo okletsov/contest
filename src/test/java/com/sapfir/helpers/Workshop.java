@@ -38,6 +38,7 @@ public class Workshop {
         System.out.println(cont.getMonEndDate24(1));
         System.out.println(cont.getMonLastDayStart(1));
 
+        System.out.println(predOp.getDbOriginalDateScheduled("feed_item_3191037203"));
 
     }
 }

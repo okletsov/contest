@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class PredictionOperations {
@@ -38,6 +39,18 @@ public class PredictionOperations {
         String sql = "select date_scheduled from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
         return dbOp.getSingleValue(conn, "date_scheduled", sql);
+    }
+
+    public LocalDateTime getDbOriginalDateScheduled(String predictionId) {
+        String sql = "select min(previous_date_scheduled) as original_date_scheduled " +
+                "from prediction_schedule_changes " +
+                "where prediction_id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringOriginalDateScheduled = dbOp.getSingleValue(conn, "original_date_scheduled", sql);
+
+        DateTimeOperations dtOp = new DateTimeOperations();
+        return dtOp.convertToDateTimeFromString(stringOriginalDateScheduled);
     }
 
     private boolean resultDifferent(String predictionID) {
