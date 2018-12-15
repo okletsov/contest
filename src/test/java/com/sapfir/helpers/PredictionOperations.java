@@ -78,6 +78,21 @@ public class PredictionOperations {
         return dateScheduledDifferent;
     }
 
+    public boolean eventPostponed(String predictionId) {
+        boolean wasPostponed;
+
+        String sql = "select count(id) as count " +
+                "from prediction_schedule_changes " +
+                "where prediction_id = '" + predictionId + "' " +
+                "group by prediction_id;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String count = dbOp.getSingleValue(conn, "count", sql);
+
+        wasPostponed = count != null;
+        return wasPostponed;
+    }
+
     private void updateMainScore(String predictionID) {
         Log.debug("Updating main score for prediction " + predictionID + "...");
         PredictionsInspection pi = new PredictionsInspection(driver);

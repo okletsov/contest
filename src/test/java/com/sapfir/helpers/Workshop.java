@@ -33,6 +33,8 @@ public class Workshop {
         boolean timestampAfter = convertedTimeStamp.isAfter(convertedDateTime);
         System.out.println(timestampAfter);
 
+        System.out.println(predOp.eventPostponed("feed_item_3191037203"));
+
 
     }
 }
