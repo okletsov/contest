@@ -16,6 +16,7 @@ public class Workshop {
         DateTimeOperations dtOp = new DateTimeOperations();
         DatabaseOperations dbOp = new DatabaseOperations();
         Connection conn = dbOp.connectToDatabase();
+        Contest cont = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
 
         PredictionOperations predOp = new PredictionOperations(conn);
 //        String dbDateTime = predOp.getDbDateScheduled("feed_item_3191037203");
@@ -33,7 +34,9 @@ public class Workshop {
         boolean timestampAfter = convertedTimeStamp.isAfter(convertedDateTime);
         System.out.println(timestampAfter);
 
-        System.out.println(predOp.eventPostponed("feed_item_3191037203"));
+        System.out.println(cont.getMonEndDate(1));
+        System.out.println(cont.getMonEndDate24(1));
+        System.out.println(cont.getMonLastDayStart(1));
 
 
     }

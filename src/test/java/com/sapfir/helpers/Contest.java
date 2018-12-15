@@ -32,12 +32,22 @@ public class Contest {
 		return dtOp.convertToDateTimeFromString(stringEndDate);
 	}
 
+	public LocalDateTime getSeasEndDate24() {
+		LocalDateTime seasEndDate = getSeasEndDate();
+		return seasEndDate.plusHours(24);
+	}
+
+	public LocalDateTime getSeasLastDayStart() {
+		LocalDateTime seasEndDate = getSeasEndDate();
+		return seasEndDate.minusHours(24);
+	}
+
 	public LocalDateTime getMonStartDate(int monthIndex){
-		String sql = "select c2.start_date" +
-				"from contest c1" +
-				"join contest c2 on c1.year = c2.year" +
-				"and c1.season = c2.season" +
-				"where c1.id = '" + contestId + "'" +
+		String sql = "select c2.start_date " +
+				"from contest c1 " +
+				"join contest c2 on c1.year = c2.year " +
+				"and c1.season = c2.season " +
+				"where c1.id = '" + contestId + "' " +
 				"and c2.month = " + monthIndex + "; ";
 
 		String stringStartDate = dbOp.getSingleValue(conn, "start_date", sql);
@@ -45,25 +55,26 @@ public class Contest {
 	}
 
 	public LocalDateTime getMonEndDate(int monthIndex){
-		String sql = "select c2.end_date" +
-				"from contest c1" +
-				"join contest c2 on c1.year = c2.year" +
-				"and c1.season = c2.season" +
-				"where c1.id = '" + contestId + "'" +
+		String sql = "select c2.end_date " +
+				"from contest c1 " +
+				"join contest c2 on c1.year = c2.year " +
+				"and c1.season = c2.season " +
+				"where c1.id = '" + contestId + "' " +
 				"and c2.month = " + monthIndex + "; ";
 
 		String stringStartDate = dbOp.getSingleValue(conn, "end_date", sql);
 		return dtOp.convertToDateTimeFromString(stringStartDate);
 	}
 
-	public LocalDateTime getSeasEndDate24() {
-		LocalDateTime seasEndDate = getSeasEndDate();
-		return seasEndDate.plusHours(24);
+	public LocalDateTime getMonEndDate24(int monthIndex) {
+		// This method adds 24h to month end date
+		LocalDateTime monEndDate = getMonEndDate(monthIndex);
+		return monEndDate.plusHours(24);
 	}
 
-	public LocalDateTime getMonEndDate23(int monthIndex) {
-		// This method adds 23hr 59min to month end date
+	public LocalDateTime getMonLastDayStart(int monthIndex) {
+		//This method subtracts 23hr 59m 59s from month end date
 		LocalDateTime monEndDate = getMonEndDate(monthIndex);
-		return monEndDate.plusMinutes(1439);
+		return monEndDate.minusSeconds(86399);
 	}
 }
