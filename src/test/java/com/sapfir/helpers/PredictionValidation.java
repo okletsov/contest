@@ -64,7 +64,7 @@ public class PredictionValidation {
         DateTimeOperations dtOp = new DateTimeOperations();
         LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
 
-        isWithinLimit = seasEndDate.isAfter(dateScheduled) && seasStartDate.isBefore(dateScheduled);
+        isWithinLimit = !seasStartDate.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
         return isWithinLimit;
     }
 

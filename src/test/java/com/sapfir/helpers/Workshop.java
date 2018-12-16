@@ -17,6 +17,7 @@ public class Workshop {
         DatabaseOperations dbOp = new DatabaseOperations();
         Connection conn = dbOp.connectToDatabase();
         Contest cont = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
+        PredictionValidation predVal = new PredictionValidation(conn);
 
         PredictionOperations predOp = new PredictionOperations(conn);
 //        String dbDateTime = predOp.getDbDateScheduled("feed_item_3191037203");
@@ -38,7 +39,8 @@ public class Workshop {
         System.out.println(cont.getMonEndDate24(1));
         System.out.println(cont.getMonLastDayStart(1));
 
-        System.out.println(predOp.getDbOriginalDateScheduled("feed_item_3191037203"));
+       // System.out.println(predOp.getDbOriginalDateScheduled("feed_item_3191037203"));
+        //System.out.println(predVal.dateScheduledWithinSeasLimit("2018-08-31 21:00:00"));
 
     }
 }
