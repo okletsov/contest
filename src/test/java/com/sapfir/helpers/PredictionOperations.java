@@ -53,6 +53,13 @@ public class PredictionOperations {
         return dtOp.convertToDateTimeFromString(stringOriginalDateScheduled);
     }
 
+    public String getDbUserId(String predictionId) {
+        String sql = "select user_id from prediction where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "user_id", sql);
+    }
+
     private boolean resultDifferent(String predictionID) {
         /*
             This method compare web prediction result vs db prediction result and returns:
