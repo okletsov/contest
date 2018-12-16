@@ -68,6 +68,20 @@ public class PredictionValidation {
         return isWithinLimit;
     }
 
+    public boolean dateScheduledWithinSeasEndDate24 (String stringDateScheduled) {
+        boolean isWithinLimit;
+
+        Contest cont = new Contest(conn, contestId);
+        LocalDateTime seasEndDate = cont.getSeasEndDate();
+        LocalDateTime seasEndDate24 = cont.getSeasEndDate24();
+
+        DateTimeOperations dtOp = new DateTimeOperations();
+        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        isWithinLimit = !seasEndDate.isAfter(dateScheduled) && !seasEndDate24.isBefore(dateScheduled);
+        return isWithinLimit;
+    }
+
     private void validateDateScheduled(String predictionId) {
         Log.debug("Validating date_scheduled for " + predictionId + "...");
 

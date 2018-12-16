@@ -23,7 +23,7 @@ public class Workshop {
 //        String dbDateTime = predOp.getDbDateScheduled("feed_item_3191037203");
 //        String timeStamp = dtOp.getTimestamp();
 
-        String dbDateTime = "2018-11-30 22:00:00";
+        String dbDateTime = "2018-11-30 21:59";
         String timeStamp = "2018-11-30 22:00:00";
 
         LocalDateTime convertedDateTime = dtOp.convertToDateTimeFromString(dbDateTime);
@@ -35,14 +35,18 @@ public class Workshop {
         boolean timestampAfter = convertedTimeStamp.isAfter(convertedDateTime);
         System.out.println(timestampAfter);
 
-        System.out.println(cont.getMonEndDate(1));
-        System.out.println(cont.getMonEndDate24(1));
-        System.out.println(cont.getMonLastDayStart(1));
+//        System.out.println(cont.getMonEndDate(1));
+//        System.out.println(cont.getMonEndDate24(1));
+//        System.out.println(cont.getMonLastDayStart(1));
 
        // System.out.println(predOp.getDbOriginalDateScheduled("feed_item_3191037203"));
         //System.out.println(predVal.dateScheduledWithinSeasLimit("2018-08-31 21:00:00"));
 
         System.out.println(predOp.getDbUserId("feed_item_3241285903"));
         System.out.println(predOp.getCountValidPredictionsExclCurrent("feed_item_3088105003"));
+//
+//        System.out.println(cont.getSeasEndDate());
+//        System.out.println(cont.getSeasEndDate24());
+//        System.out.println(predVal.dateScheduledWithinSeasEndDate24(dbDateTime));
     }
 }
