@@ -43,6 +43,6 @@ public class Workshop {
         //System.out.println(predVal.dateScheduledWithinSeasLimit("2018-08-31 21:00:00"));
 
         System.out.println(predOp.getDbUserId("feed_item_3241285903"));
-
+        System.out.println(predOp.getCountValidPredictionsExclCurrent("feed_item_3088105003"));
     }
 }
