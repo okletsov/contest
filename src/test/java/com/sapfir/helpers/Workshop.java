@@ -42,8 +42,8 @@ public class Workshop {
        // System.out.println(predOp.getDbOriginalDateScheduled("feed_item_3191037203"));
         //System.out.println(predVal.dateScheduledWithinSeasLimit("2018-08-31 21:00:00"));
 
-        System.out.println(predOp.getDbUserId("feed_item_3241285903"));
-        System.out.println(predOp.getCountValidPredictionsExclCurrent("feed_item_3088105003"));
+//        System.out.println(predOp.getDbUserId("feed_item_3241285903"));
+//        System.out.println(predVal.getCountValidPredictionsExclCurrent("feed_item_3088105003"));
 //
 //        System.out.println(cont.getSeasEndDate());
 //        System.out.println(cont.getSeasEndDate24());
@@ -52,5 +52,9 @@ public class Workshop {
 //        System.out.println(cont.getSeasLastDayStart());
 //        System.out.println(cont.getSeasEndDate());
 //        System.out.println(predVal.origDateScheduledOnLastSeasDate("2018-11-30 18:01"));
+
+        System.out.println("Does not count:\n" +
+                "- date_scheduled not in range\n" +
+                "- event was not postponed");
     }
 }

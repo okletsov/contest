@@ -67,6 +67,12 @@ public class PredictionValidation {
                             - original_date_scheduled is on the last day of seasonal contest
                             - user made additional prediction instead of this one
                          */
+                        updateValidityStatus(predictionId, 13);
+                        Log.warn("Prediction " + predictionId + " does not count with status 13:\n" +
+                                "- date_scheduled NOT in range\n" +
+                                "- event was postponed\n" +
+                                "- original_date_scheduled is on the last day of contest\n" +
+                                "- user made additional prediction instead of this one");
                     } else {
                         if (dateScheduledWithinSeasEndDate24(dateScheduled)) {
                             /* Count:
@@ -74,38 +80,61 @@ public class PredictionValidation {
                                 - event was postponed
                                 - original_date_scheduled on last day of seasonal contest
                                 - user DID NOT make additional prediction instead of this one
-                                - this prediction is scheduled within 24 hours of contest end date
-                                - !!! prediction settles according to event result
+                                - new date_scheduled within 24 hours of contest end date
+                                - !!! prediction settles according to event result, just like any usual prediction
                              */
+                            updateValidityStatus(predictionId, 2);
+                            Log.debug("Prediction count with status 2:\n" +
+                                    "- date_scheduled NOT in range\n" +
+                                    "- event was postponed\n" +
+                                    "- original_date_scheduled is on the last day of contest\n" +
+                                    "- user DID NOT make additional prediction instead of this one\n" +
+                                    "- new date_scheduled within 24 hours of contest end date\n" +
+                                    "- !!! prediction settles according to event result, just like a usual prediction");
                         } else {
                             /* Count:
                                 - date_scheduled not in range
                                 - event was postponed
                                 - original_date_scheduled on last day of seasonal contest
                                 - user DID NOT make additional prediction instead of this one
-                                - this prediction is NOT scheduled within 24 hours of contest end date
-                                - !!! prediction settles according to event result
+                                - new date_scheduled is NOT within 24 hours of contest end date
+                                - !!! prediction should be VOID no matter the result
                              */
+                            updateValidityStatus(predictionId, 3);
+                            Log.debug("Prediction count with status 3:\n" +
+                                    "- date_scheduled NOT in range\n" +
+                                    "- event was postponed\n" +
+                                    "- original_date_scheduled is on the last day of contest\n" +
+                                    "- user DID NOT make additional prediction instead of this one\n" +
+                                    "- new date_scheduled is NOT within 24 hours of contest end date\n" +
+                                    "- !!! prediction should be VOID no matter the result");
                         }
                     }
                 } else {
                     /* Does not count:
-                        - date_scheduled not in range
+                        - date_scheduled NOT in range
                         - event was postponed
                         - original_date_scheduled was NOT on the last day of contest
                      */
+                    updateValidityStatus(predictionId, 12);
+                    Log.warn("Prediction " + predictionId + " does not count with status 12:\n" +
+                            "- date_scheduled NOT in range\n" +
+                            "- event was postponed\n" +
+                            "- original_date_scheduled was NOT on the last day of contest");
                 }
             } else {
-                /* Does not count:
-                    - date_scheduled not in range
+                /* Status 11: does not count:
+                    - date_scheduled NOT in range
                     - event was NOT postponed
                  */
+                updateValidityStatus(predictionId,11);
+                Log.warn("Prediction " + predictionId + " does not count with status 11:\n" +
+                        "- date_scheduled NOT in range\n" +
+                        "- event was NOT postponed");
             }
         } else {
-            /*
-                Count:
-                    - date_scheduled in range
-             */
+            // Count: date_scheduled in range
+            Log.debug("Count: date_scheduled is within range");
         }
     }
 
