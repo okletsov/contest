@@ -67,24 +67,6 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "seasonal_contest_id", sql);
     }
 
-    public int getCountValidPredictionsExclCurrent(String predictionId) {
-        // !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
-        String contestId = getDbSeasContestId(predictionId);
-        String userId = getDbUserId(predictionId);
-
-        String sql = "select count(id) as count " +
-                "from prediction " +
-                "where seasonal_contest_id = '" + contestId + "' " +
-                "and user_id = '" + userId + "' " +
-                "and id != '" + predictionId + "' " +
-                "and (validity_status is null or validity_status not in (10)) " +
-                "group by user_id;";
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        String stringCount = dbOp.getSingleValue(conn, "count", sql);
-        return Integer.parseInt(stringCount);
-    }
-
     private boolean resultDifferent(String predictionID) {
         /*
             This method compare web prediction result vs db prediction result and returns:

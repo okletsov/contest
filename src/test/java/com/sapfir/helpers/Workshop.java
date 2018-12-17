@@ -48,5 +48,9 @@ public class Workshop {
 //        System.out.println(cont.getSeasEndDate());
 //        System.out.println(cont.getSeasEndDate24());
 //        System.out.println(predVal.dateScheduledWithinSeasEndDate24(dbDateTime));
+
+//        System.out.println(cont.getSeasLastDayStart());
+//        System.out.println(cont.getSeasEndDate());
+//        System.out.println(predVal.origDateScheduledOnLastSeasDate("2018-11-30 18:01"));
     }
 }

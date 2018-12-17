@@ -54,6 +54,61 @@ public class PredictionValidation {
 
     }
 
+    private void validateKnownDateScheduled(String dateScheduled, String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+
+        if (!dateScheduledWithinSeasLimit(dateScheduled)){
+            if (predOp.eventPostponed(predictionId)){
+                if (origDateScheduledOnLastSeasDate(dateScheduled)){
+                    if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
+                        /* Does not count:
+                            - date_scheduled not in range
+                            - event was postponed
+                            - original_date_scheduled is on the last day of seasonal contest
+                            - user made additional prediction instead of this one
+                         */
+                    } else {
+                        if (dateScheduledWithinSeasEndDate24(dateScheduled)) {
+                            /* Count:
+                                - date_scheduled not in range
+                                - event was postponed
+                                - original_date_scheduled on last day of seasonal contest
+                                - user DID NOT make additional prediction instead of this one
+                                - this prediction is scheduled within 24 hours of contest end date
+                                - !!! prediction settles according to event result
+                             */
+                        } else {
+                            /* Count:
+                                - date_scheduled not in range
+                                - event was postponed
+                                - original_date_scheduled on last day of seasonal contest
+                                - user DID NOT make additional prediction instead of this one
+                                - this prediction is NOT scheduled within 24 hours of contest end date
+                                - !!! prediction settles according to event result
+                             */
+                        }
+                    }
+                } else {
+                    /* Does not count:
+                        - date_scheduled not in range
+                        - event was postponed
+                        - original_date_scheduled was NOT on the last day of contest
+                     */
+                }
+            } else {
+                /* Does not count:
+                    - date_scheduled not in range
+                    - event was NOT postponed
+                 */
+            }
+        } else {
+            /*
+                Count:
+                    - date_scheduled in range
+             */
+        }
+    }
+
     private boolean dateScheduledWithinSeasLimit(String stringDateScheduled) {
         boolean isWithinLimit;
 
@@ -68,7 +123,7 @@ public class PredictionValidation {
         return isWithinLimit;
     }
 
-    public boolean dateScheduledWithinSeasEndDate24 (String stringDateScheduled) {
+    private boolean dateScheduledWithinSeasEndDate24(String stringDateScheduled) {
         boolean isWithinLimit;
 
         Contest cont = new Contest(conn, contestId);
@@ -82,6 +137,40 @@ public class PredictionValidation {
         return isWithinLimit;
     }
 
+    private boolean origDateScheduledOnLastSeasDate(String stringDateScheduled) {
+        boolean isOnLastDay;
+
+        Contest cont = new Contest(conn, contestId);
+        LocalDateTime seasLastDayStart = cont.getSeasLastDayStart();
+        LocalDateTime seasEndDate = cont.getSeasEndDate();
+
+        DateTimeOperations dtOp = new DateTimeOperations();
+        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        isOnLastDay = !seasLastDayStart.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
+        return isOnLastDay;
+    }
+
+    private int getCountValidPredictionsExclCurrent(String predictionId) {
+        // !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
+        PredictionOperations predOp = new PredictionOperations(conn);
+
+        String contestId = predOp.getDbSeasContestId(predictionId);
+        String userId = predOp.getDbUserId(predictionId);
+
+        String sql = "select count(id) as count " +
+                "from prediction " +
+                "where seasonal_contest_id = '" + contestId + "' " +
+                "and user_id = '" + userId + "' " +
+                "and id != '" + predictionId + "' " +
+                "and (validity_status is null or validity_status not in (10)) " +
+                "group by user_id;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringCount = dbOp.getSingleValue(conn, "count", sql);
+        return Integer.parseInt(stringCount);
+    }
+
     private void validateDateScheduled(String predictionId) {
         Log.debug("Validating date_scheduled for " + predictionId + "...");
 
@@ -91,7 +180,7 @@ public class PredictionValidation {
         if (dateScheduled == null) {
             validateUnknownDateScheduled(predictionId);
         } else {
-            // Implement all crazy logic here
+//            validateKnownDateScheduled(dateScheduled, predictionId);
         }
 
         // In the end see if there is any debug logging needed for notifying about validity (try to have that in sub-methods)
