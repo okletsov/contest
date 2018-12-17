@@ -46,10 +46,11 @@ public class PredictionValidation {
 
         if (timestamp.isAfter(seasContEndDate)) {
             updateValidityStatus(predictionId,10);
-            Log.warn("Prediction " + predictionId + " is not valid. Status 10");
-            Log.warn("Additional info: prediction does not have date scheduled and seasonal contest is already over");
+            Log.warn("Prediction " + predictionId + " does not count with status 10:\n" +
+                    "- date_scheduled unknown\n" +
+                    "- contest is already over");
         } else {
-            Log.debug("date_scheduled unknown, but contest is not over yet");
+            Log.debug("Count: date_scheduled unknown, but contest is not over yet");
         }
 
     }
@@ -209,12 +210,8 @@ public class PredictionValidation {
         if (dateScheduled == null) {
             validateUnknownDateScheduled(predictionId);
         } else {
-//            validateKnownDateScheduled(dateScheduled, predictionId);
+            validateKnownDateScheduled(dateScheduled, predictionId);
         }
-
-        // In the end see if there is any debug logging needed for notifying about validity (try to have that in sub-methods)
-        // might need debug logging to say that date_scheduled is valid. Need to think about it because validating unknownDateScheduled
-        // method already have some logging for successful validation
     }
 
     public boolean validatePredictions() {
@@ -222,7 +219,6 @@ public class PredictionValidation {
 
         PredictionOperations predOp = new PredictionOperations(conn);
         ArrayList<String> predictionsToValidate = predOp.getPredictionsToValidate(contestId);
-
 
         for (String predictionId: predictionsToValidate ) {
             // add individual validation methods here
