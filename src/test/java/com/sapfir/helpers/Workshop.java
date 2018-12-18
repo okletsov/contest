@@ -23,17 +23,17 @@ public class Workshop {
 //        String dbDateTime = predOp.getDbDateScheduled("feed_item_3191037203");
 //        String timeStamp = dtOp.getTimestamp();
 
-        String dbDateTime = "2018-11-30 21:59";
-        String timeStamp = "2018-11-30 22:00:00";
-
-        LocalDateTime convertedDateTime = dtOp.convertToDateTimeFromString(dbDateTime);
-        LocalDateTime convertedTimeStamp = dtOp.convertToDateTimeFromString(timeStamp);
-
-        System.out.println(convertedDateTime);
-        System.out.println(convertedTimeStamp);
-
-        boolean timestampAfter = convertedTimeStamp.isAfter(convertedDateTime);
-        System.out.println(timestampAfter);
+//        String dbDateTime = "2018-11-30 21:59";
+//        String timeStamp = "2018-11-30 22:00:00";
+//
+//        LocalDateTime convertedDateTime = dtOp.convertToDateTimeFromString(dbDateTime);
+//        LocalDateTime convertedTimeStamp = dtOp.convertToDateTimeFromString(timeStamp);
+//
+//        System.out.println(convertedDateTime);
+//        System.out.println(convertedTimeStamp);
+//
+//        boolean timestampAfter = convertedTimeStamp.isAfter(convertedDateTime);
+//        System.out.println(timestampAfter);
 
 //        System.out.println(cont.getMonEndDate(1));
 //        System.out.println(cont.getMonEndDate24(1));
@@ -49,12 +49,16 @@ public class Workshop {
 //        System.out.println(cont.getSeasEndDate24());
 //        System.out.println(predVal.dateScheduledWithinSeasEndDate24(dbDateTime));
 
-//        System.out.println(cont.getSeasLastDayStart());
-//        System.out.println(cont.getSeasEndDate());
-//        System.out.println(predVal.origDateScheduledOnLastSeasDate("2018-11-30 18:01"));
+        System.out.println(cont.getSeasLastDayStart());
+        System.out.println(cont.getSeasEndDate());
+        System.out.println(cont.getSeasEndDate24());
+//        System.out.println(predVal.origDateScheduledOnLastSeasDate("2018-11-29 22:00:00"));
 
-        System.out.println("Does not count:\n" +
-                "- date_scheduled not in range\n" +
-                "- event was not postponed");
+//        predVal.validateDateScheduled("feed_item_2954314703");
+//        System.out.println(predVal.getCountValidPredictionsExclCurrent("feed_item_16123403"));
+
+//        System.out.println(cont.getSeasLastDayStart());
+
+        dbOp.closeConnection(conn);
     }
 }

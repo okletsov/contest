@@ -60,7 +60,8 @@ public class PredictionValidation {
 
         if (!dateScheduledWithinSeasLimit(dateScheduled)){
             if (predOp.eventPostponed(predictionId)){
-                if (origDateScheduledOnLastSeasDate(dateScheduled)){
+                String origDateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
+                if (origDateScheduledOnLastSeasDate(origDateScheduled)){
                     if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
                         /* Does not count:
                             - date_scheduled not in range
@@ -85,7 +86,7 @@ public class PredictionValidation {
                                 - !!! prediction settles according to event result, just like any usual prediction
                              */
                             updateValidityStatus(predictionId, 2);
-                            Log.debug("Prediction count with status 2:\n" +
+                            Log.warn("Prediction count with status 2:\n" +
                                     "- date_scheduled NOT in range\n" +
                                     "- event was postponed\n" +
                                     "- original_date_scheduled is on the last day of contest\n" +
@@ -102,7 +103,7 @@ public class PredictionValidation {
                                 - !!! prediction should be VOID no matter the result
                              */
                             updateValidityStatus(predictionId, 3);
-                            Log.debug("Prediction count with status 3:\n" +
+                            Log.warn("Prediction count with status 3:\n" +
                                     "- date_scheduled NOT in range\n" +
                                     "- event was postponed\n" +
                                     "- original_date_scheduled is on the last day of contest\n" +
