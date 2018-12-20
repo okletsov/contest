@@ -57,7 +57,7 @@ public class Workshop {
 //        predVal.validateDateScheduled("feed_item_2954314703");
 //        System.out.println(predVal.getCountValidPredictionsExclCurrent("feed_item_16123403"));
 
-//        System.out.println(cont.getSeasLastDayStart());
+//        System.out.println(predVal.getCountPredictionsOver10ExclCurrent("feed_item_3239678003"));
 
         dbOp.closeConnection(conn);
     }

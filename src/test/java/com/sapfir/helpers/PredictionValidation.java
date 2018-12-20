@@ -202,6 +202,40 @@ public class PredictionValidation {
         return Integer.parseInt(stringCount);
     }
 
+    private int getCountPredictionsOver10ExclCurrent(String predictionId) {
+        /*
+            !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
+
+            This method returns count of valid predictions made by user with odds < 10 and <=15
+            in month prediction being inspected is placed (kiev time zone)
+         */
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String contestId = predOp.getDbSeasContestId(predictionId);
+        String userId = predOp.getDbUserId(predictionId);
+        String datePredicted = predOp.getDbDatePredicted(predictionId);
+
+        String sql = "select count(id) as count\n" +
+                "from prediction\n" +
+                "where seasonal_contest_id = '" + contestId + "'\n" +
+                "and user_id = '" + userId + "'\n" +
+                "and id != '" + predictionId + "'\n" +
+                "and month(date(convert_tz(date_predicted, 'UTC', 'Europe/Kiev'))) = " +
+                "month(date(convert_tz('" + datePredicted + "', 'UTC', 'Europe/Kiev')))\n" +
+                "and (validity_status is null or validity_status not in (10))\n" +
+                "and user_pick_value > 10\n" +
+                "and user_pick_value <= 15\n" +
+                "group by user_id;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringCount = dbOp.getSingleValue(conn, "count", sql);
+
+        if (stringCount == null){
+            return 0;
+        } else {
+            return Integer.parseInt(stringCount);
+        }
+    }
+
     private void validateDateScheduled(String predictionId) {
         Log.debug("Validating date_scheduled for " + predictionId + "...");
 

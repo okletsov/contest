@@ -41,6 +41,12 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "date_scheduled", sql);
     }
 
+    public String getDbDatePredicted(String predictionID) {
+        String sql = "select date_predicted from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "date_predicted", sql);
+    }
+
     public String getDbOriginalDateScheduled(String predictionId) {
         String sql = "select min(previous_date_scheduled) as original_date_scheduled " +
                 "from prediction_schedule_changes " +
