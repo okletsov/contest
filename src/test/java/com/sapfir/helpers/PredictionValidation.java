@@ -182,6 +182,12 @@ public class PredictionValidation {
         return isOnLastDay;
     }
 
+//    private boolean isQuarterGoal(String predictionId) {
+//        PredictionOperations predOp = new PredictionOperations(conn);
+//
+//        String market
+//    }
+
     private int getCountValidPredictionsExclCurrent(String predictionId) {
         // !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
         PredictionOperations predOp = new PredictionOperations(conn);

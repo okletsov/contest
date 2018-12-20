@@ -70,6 +70,13 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "seasonal_contest_id", sql);
     }
 
+    public String getDbMarket(String predictionId) {
+        String sql = "select market from prediction where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "market", sql);
+    }
+
     private boolean resultDifferent(String predictionID) {
         /*
             This method compare web prediction result vs db prediction result and returns:

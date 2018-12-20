@@ -60,5 +60,17 @@ public class Workshop {
 //        System.out.println(predVal.getCountPredictionsOver10ExclCurrent("feed_item_3239678003"));
 
         dbOp.closeConnection(conn);
+
+        String quarterGoal = "O/U 77.5, 1st Half";
+        quarterGoal = quarterGoal.replaceAll("[^\\d.]", "");
+//        System.out.println(quarterGoal);
+//        BigDecimal quarter = new BigDecimal(quarterGoal);
+//        System.out.println(quarter);
+
+        float doub = Float.parseFloat(quarterGoal);
+
+        System.out.println(doub % 0.5);
+
+        System.out.println(doub % 0.5 == 0);
     }
 }
