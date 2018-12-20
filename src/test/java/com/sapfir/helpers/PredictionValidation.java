@@ -202,7 +202,7 @@ public class PredictionValidation {
         return Integer.parseInt(stringCount);
     }
 
-    private int getCountPredictionsOver10ExclCurrent(String predictionId) {
+    private int getCountValidPredictionsOver10ExclCurrent(String predictionId) {
         /*
             !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
 
