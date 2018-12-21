@@ -66,6 +66,8 @@ public class Workshop {
 
         if (market.startsWith("AH ") || market.startsWith("O/U " )) {
             String stringValue = market.replaceAll("[^\\d.]", "");
+            // Find a way to ony select necessary numbers, e.g. 1 in "1st Half" is not necessary
+
             float value = Float.parseFloat(stringValue);
 
             System.out.println(value % 0.5);
