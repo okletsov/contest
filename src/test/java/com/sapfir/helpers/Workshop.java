@@ -61,13 +61,14 @@ public class Workshop {
 
         dbOp.closeConnection(conn);
 
-        String market = ("O/U 77.5, 1st Half").replaceAll("[^\\d.]", "");
+        String market = "O/U 77.5, 1st Half";
         System.out.println(market);
 
-        if (market.startsWith("AH ") || market.startsWith("O/U" )) {
+        if (market.startsWith("AH ") || market.startsWith("O/U " )) {
             String stringValue = market.replaceAll("[^\\d.]", "");
             float value = Float.parseFloat(stringValue);
 
+            System.out.println(value % 0.5);
             if (value % 0.5 == 0) {
                 System.out.println("Quarter goal = false");
             } else {
