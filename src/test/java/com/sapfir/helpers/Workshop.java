@@ -49,9 +49,9 @@ public class Workshop {
 //        System.out.println(cont.getSeasEndDate24());
 //        System.out.println(predVal.dateScheduledWithinSeasEndDate24(dbDateTime));
 
-        System.out.println(cont.getSeasLastDayStart());
-        System.out.println(cont.getSeasEndDate());
-        System.out.println(cont.getSeasEndDate24());
+//        System.out.println(cont.getSeasLastDayStart());
+//        System.out.println(cont.getSeasEndDate());
+//        System.out.println(cont.getSeasEndDate24());
 //        System.out.println(predVal.origDateScheduledOnLastSeasDate("2018-11-29 22:00:00"));
 
 //        predVal.validateDateScheduled("feed_item_2954314703");
@@ -61,16 +61,20 @@ public class Workshop {
 
         dbOp.closeConnection(conn);
 
-        String quarterGoal = "O/U 77.5, 1st Half";
-        quarterGoal = quarterGoal.replaceAll("[^\\d.]", "");
-//        System.out.println(quarterGoal);
-//        BigDecimal quarter = new BigDecimal(quarterGoal);
-//        System.out.println(quarter);
+        String market = ("O/U 77.5, 1st Half").replaceAll("[^\\d.]", "");
+        System.out.println(market);
 
-        float doub = Float.parseFloat(quarterGoal);
+        if (market.startsWith("AH ") || market.startsWith("O/U" )) {
+            String stringValue = market.replaceAll("[^\\d.]", "");
+            float value = Float.parseFloat(stringValue);
 
-        System.out.println(doub % 0.5);
-
-        System.out.println(doub % 0.5 == 0);
+            if (value % 0.5 == 0) {
+                System.out.println("Quarter goal = false");
+            } else {
+                System.out.println("Quarter goal = true");
+            }
+        } else {
+            System.out.println("Do nothing");
+        }
     }
 }

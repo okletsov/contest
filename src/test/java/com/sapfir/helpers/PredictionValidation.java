@@ -182,7 +182,7 @@ public class PredictionValidation {
         return isOnLastDay;
     }
 
-//    private boolean isQuarterGoal(String predictionId) {
+//    private boolean isPredictionQuarterGoal(String predictionId) {
 //        PredictionOperations predOp = new PredictionOperations(conn);
 //
 //        String market
