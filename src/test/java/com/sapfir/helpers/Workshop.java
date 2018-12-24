@@ -9,6 +9,8 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Workshop {
     public static void main(String[] args) {
@@ -61,23 +63,20 @@ public class Workshop {
 
         dbOp.closeConnection(conn);
 
-        String market = "O/U 77.5, 1st Half";
+        String market = "O/U 0.25, 1st Half";
+        String stringValue = "";
         System.out.println(market);
 
         if (market.startsWith("AH ") || market.startsWith("O/U " )) {
-            String stringValue = market.replaceAll("[^\\d.]", "");
-            // Find a way to ony select necessary numbers, e.g. 1 in "1st Half" is not necessary
+            Pattern myPattern = Pattern.compile("(\\.25)|(\\.75)");
+            Matcher myMatcher = myPattern.matcher(market);
 
-            float value = Float.parseFloat(stringValue);
+            if (myMatcher.find()) {
+                System.out.println("Found");
 
-            System.out.println(value % 0.5);
-            if (value % 0.5 == 0) {
-                System.out.println("Quarter goal = false");
             } else {
-                System.out.println("Quarter goal = true");
+                System.out.println("Not Found");
             }
-        } else {
-            System.out.println("Do nothing");
         }
     }
 }
