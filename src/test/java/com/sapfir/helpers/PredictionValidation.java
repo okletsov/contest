@@ -182,11 +182,16 @@ public class PredictionValidation {
         return isOnLastDay;
     }
 
-//    private boolean isPredictionQuarterGoal(String predictionId) {
-//        PredictionOperations predOp = new PredictionOperations(conn);
-//
-//        String market
-//    }
+    private boolean isPredictionQuarterGoal(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String market = predOp.getDbMarket(predictionId);
+
+        if (market.startsWith("AH ") || market.startsWith("O/U " )) {
+            return  market.contains("0.25") || market.contains("0.75");
+        } else {
+            return false;
+        }
+    }
 
     private int getCountValidPredictionsExclCurrent(String predictionId) {
         // !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!

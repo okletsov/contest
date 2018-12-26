@@ -62,21 +62,5 @@ public class Workshop {
 //        System.out.println(predVal.getCountPredictionsOver10ExclCurrent("feed_item_3239678003"));
 
         dbOp.closeConnection(conn);
-
-        String market = "O/U 0.25, 1st Half";
-        String stringValue = "";
-        System.out.println(market);
-
-        if (market.startsWith("AH ") || market.startsWith("O/U " )) {
-            Pattern myPattern = Pattern.compile("(\\.25)|(\\.75)");
-            Matcher myMatcher = myPattern.matcher(market);
-
-            if (myMatcher.find()) {
-                System.out.println("Found");
-
-            } else {
-                System.out.println("Not Found");
-            }
-        }
     }
 }
