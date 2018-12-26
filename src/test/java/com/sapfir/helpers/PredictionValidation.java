@@ -218,7 +218,7 @@ public class PredictionValidation {
             !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
 
             This method returns count of valid predictions made by user with user_pick_value < 10 and <=15
-            in month prediction being inspected is placed (kiev time zone)
+            made before current prediction in month prediction being inspected is placed (kiev time zone)
          */
         PredictionOperations predOp = new PredictionOperations(conn);
         String contestId = predOp.getDbSeasContestId(predictionId);
@@ -235,6 +235,7 @@ public class PredictionValidation {
                 "and (validity_status is null or validity_status not in (10))\n" +
                 "and user_pick_value > 10\n" +
                 "and user_pick_value <= 15\n" +
+                "and date_predicted < '" + datePredicted + "'\n" +
                 "group by user_id;";
 
         DatabaseOperations dbOp = new DatabaseOperations();
@@ -262,7 +263,7 @@ public class PredictionValidation {
 
     private void validateUserPickValue(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
-        int userPickValue = predOp.getDbUserPickValue(predictionId);
+        float userPickValue = predOp.getDbUserPickValue(predictionId);
 
         if (userPickValue < 1.5) {
             updateValidityStatus(predictionId, 20);
