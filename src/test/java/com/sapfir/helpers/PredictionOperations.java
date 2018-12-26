@@ -77,6 +77,14 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "market", sql);
     }
 
+    public int getDbUserPickValue(String predictionId) {
+        String sql = "select user_pick_value from prediction where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringUserPickValue = dbOp.getSingleValue(conn, "user_pick_value", sql);
+        return Integer.parseInt(stringUserPickValue);
+    }
+
     private boolean resultDifferent(String predictionID) {
         /*
             This method compare web prediction result vs db prediction result and returns:

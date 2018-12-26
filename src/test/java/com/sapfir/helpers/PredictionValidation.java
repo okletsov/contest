@@ -260,6 +260,40 @@ public class PredictionValidation {
         }
     }
 
+    private void validateOdd(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        int odd = predOp.getDbUserPickValue(predictionId);
+        String market = predOp.getDbMarket(predictionId);
+
+        if (odd < 1.5) {
+            updateValidityStatus(predictionId, 14);
+            Log.warn("Prediction " + predictionId + " count-invalid with status 14: \n- odd < 1.5");
+        } else if(odd >= 1.5 && odd < 2) {
+            if (isPredictionQuarterGoal(predictionId)) {
+                updateValidityStatus(predictionId, 15);
+                Log.warn("Prediction " + predictionId + " count-invalid with status 15: \n- quarter-goal odd < 2");
+            } else {
+                Log.debug("Odd is within range");
+            }
+        } else if (odd >= 2 && odd <= 10) {
+            Log.debug("Odd is within range");
+        } else if (odd > 10 && odd <= 15) {
+            int predictionsOver10 = getCountValidPredictionsOver10ExclCurrent(predictionId);
+            if (predictionsOver10 > 0) {
+                updateValidityStatus(predictionId, 16);
+                Log.warn("Prediction " + predictionId + " count-invalid with status 16: \n" +
+                        "- prediction with odd > 10 was already placed this month");
+            } else {
+                Log.debug("Odd is within range. First prediction with odd > 10 this month");
+            }
+        } else if(odd > 15) {
+            updateValidityStatus(predictionId, 17);
+            Log.warn("Prediction " + predictionId + " count-invalid with status 14: \n- odd > 15");
+        } else {
+            Log.error("Unknown odd value!");
+        }
+    }
+
     public boolean validatePredictions() {
         boolean newInvalidPredictionsFound = false;
 
