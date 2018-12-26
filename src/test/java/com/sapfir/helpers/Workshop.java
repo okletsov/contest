@@ -60,6 +60,7 @@ public class Workshop {
 //        System.out.println(predVal.getCountValidPredictionsExclCurrent("feed_item_16123403"));
 
 //        System.out.println(predVal.getCountPredictionsOver10ExclCurrent("feed_item_3239678003"));
+//        System.out.println(predVal.isPredictionQuarterGoal("feed_item_3009903303"));
 
         dbOp.closeConnection(conn);
     }

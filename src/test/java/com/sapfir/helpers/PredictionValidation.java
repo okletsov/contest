@@ -187,7 +187,7 @@ public class PredictionValidation {
         String market = predOp.getDbMarket(predictionId);
 
         if (market.startsWith("AH ") || market.startsWith("O/U " )) {
-            return  market.contains("0.25") || market.contains("0.75");
+            return  market.contains(".25") || market.contains(".75");
         } else {
             return false;
         }
@@ -263,7 +263,6 @@ public class PredictionValidation {
     private void validateOdd(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
         int odd = predOp.getDbUserPickValue(predictionId);
-        String market = predOp.getDbMarket(predictionId);
 
         if (odd < 1.5) {
             updateValidityStatus(predictionId, 14);
