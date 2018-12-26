@@ -217,7 +217,7 @@ public class PredictionValidation {
         /*
             !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
 
-            This method returns count of valid predictions made by user with odds < 10 and <=15
+            This method returns count of valid predictions made by user with user_pick_value < 10 and <=15
             in month prediction being inspected is placed (kiev time zone)
          */
         PredictionOperations predOp = new PredictionOperations(conn);
@@ -260,36 +260,36 @@ public class PredictionValidation {
         }
     }
 
-    private void validateOdd(String predictionId) {
+    private void validateUserPickValue(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
-        int odd = predOp.getDbUserPickValue(predictionId);
+        int userPickValue = predOp.getDbUserPickValue(predictionId);
 
-        if (odd < 1.5) {
-            updateValidityStatus(predictionId, 14);
-            Log.warn("Prediction " + predictionId + " count-invalid with status 14: \n- odd < 1.5");
-        } else if(odd >= 1.5 && odd < 2) {
+        if (userPickValue < 1.5) {
+            updateValidityStatus(predictionId, 20);
+            Log.warn("Prediction " + predictionId + " count-invalid with status 20: \n- user_pick_value < 1.5");
+        } else if(userPickValue >= 1.5 && userPickValue < 2) {
             if (isPredictionQuarterGoal(predictionId)) {
-                updateValidityStatus(predictionId, 15);
-                Log.warn("Prediction " + predictionId + " count-invalid with status 15: \n- quarter-goal odd < 2");
+                updateValidityStatus(predictionId, 21);
+                Log.warn("Prediction " + predictionId + " count-invalid with status 21: \n- quarter-goal user_pick_value < 2");
             } else {
-                Log.debug("Odd is within range");
+                Log.debug("user_pick_value is within range");
             }
-        } else if (odd >= 2 && odd <= 10) {
-            Log.debug("Odd is within range");
-        } else if (odd > 10 && odd <= 15) {
+        } else if (userPickValue >= 2 && userPickValue <= 10) {
+            Log.debug("user_pick_value is within range");
+        } else if (userPickValue > 10 && userPickValue <= 15) {
             int predictionsOver10 = getCountValidPredictionsOver10ExclCurrent(predictionId);
             if (predictionsOver10 > 0) {
-                updateValidityStatus(predictionId, 16);
-                Log.warn("Prediction " + predictionId + " count-invalid with status 16: \n" +
-                        "- prediction with odd > 10 was already placed this month");
+                updateValidityStatus(predictionId, 22);
+                Log.warn("Prediction " + predictionId + " count-invalid with status 22: \n" +
+                        "- prediction with user_pick_value > 10 and <= 15 was already placed this month");
             } else {
-                Log.debug("Odd is within range. First prediction with odd > 10 this month");
+                Log.debug("user_pick_value is within range. First prediction with user_pick_value > 10 this month");
             }
-        } else if(odd > 15) {
-            updateValidityStatus(predictionId, 17);
-            Log.warn("Prediction " + predictionId + " count-invalid with status 14: \n- odd > 15");
+        } else if(userPickValue > 15) {
+            updateValidityStatus(predictionId, 23);
+            Log.warn("Prediction " + predictionId + " count-invalid with status 23: \n- user_pick_value > 15");
         } else {
-            Log.error("Unknown odd value!");
+            Log.error("Unknown user_pick_value!");
         }
     }
 
