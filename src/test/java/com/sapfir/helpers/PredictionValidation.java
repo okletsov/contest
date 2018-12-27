@@ -140,6 +140,26 @@ public class PredictionValidation {
         }
     }
 
+    private void validateVoidResult(String predictionId) {
+
+        if (isVoidDueToCancellation(predictionId)){
+            PredictionOperations predOp = new PredictionOperations(conn);
+            String dateScheduled = predOp.getDbDateScheduled(predictionId);
+
+            if (origDateScheduledOnLastSeasDate(dateScheduled)) {
+                if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
+                    // bet invalid
+                } else {
+                    // bet valid
+                }
+            } else {
+                // bet invalid
+            }
+        } else {
+            // bet valid
+        }
+    }
+
     private boolean dateScheduledWithinSeasLimit(String stringDateScheduled) {
         boolean isWithinLimit;
 
@@ -191,6 +211,16 @@ public class PredictionValidation {
         } else {
             return false;
         }
+    }
+
+    private boolean isVoidDueToCancellation(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String mainScore = predOp.getDbMainScore(predictionId);
+
+        return mainScore.contains("abn.") ||
+                mainScore.contains(" w.o.") ||
+                mainScore.contains(" ret.") ||
+                mainScore.contains("canc.");
     }
 
     private int getCountValidPredictionsExclCurrent(String predictionId) {
@@ -291,6 +321,17 @@ public class PredictionValidation {
             Log.warn("Prediction " + predictionId + " count-invalid with status 23: \n- user_pick_value > 15");
         } else {
             Log.error("Unknown user_pick_value!");
+        }
+    }
+
+    private void validateResult(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String result = predOp.getDbPredictionResult(predictionId);
+
+        if (result.equals("void")) {
+            validateVoidResult(predictionId);
+        } else {
+            Log.debug("result is valid");
         }
     }
 

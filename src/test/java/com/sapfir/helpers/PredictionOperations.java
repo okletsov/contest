@@ -26,7 +26,7 @@ public class PredictionOperations {
     private Connection conn;
     private WebDriver driver;
 
-    private String getDbPredictionResult(String predictionID) {
+    public String getDbPredictionResult(String predictionID) {
         Log.debug("Getting result written to database for prediction id " + predictionID + "...");
         String sql = "select result from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
@@ -75,6 +75,12 @@ public class PredictionOperations {
 
         DatabaseOperations dbOp = new DatabaseOperations();
         return dbOp.getSingleValue(conn, "market", sql);
+    }
+
+    public String getDbMainScore(String predictionID) {
+        String sql = "select main_score from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "main_score", sql);
     }
 
     public float getDbUserPickValue(String predictionId) {
