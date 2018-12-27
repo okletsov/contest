@@ -189,7 +189,6 @@ public class PredictionValidation {
     }
 
     private boolean dateScheduledOnLastSeasDate(String stringDateScheduled) {
-        boolean isOnLastDay;
 
         Contest cont = new Contest(conn, contestId);
         LocalDateTime seasLastDayStart = cont.getSeasLastDayStart();
@@ -198,8 +197,7 @@ public class PredictionValidation {
         DateTimeOperations dtOp = new DateTimeOperations();
         LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
 
-        isOnLastDay = !seasLastDayStart.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
-        return isOnLastDay;
+        return  !seasLastDayStart.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
     }
 
     private boolean isPredictionQuarterGoal(String predictionId) {
