@@ -61,7 +61,7 @@ public class PredictionValidation {
         if (!dateScheduledWithinSeasLimit(dateScheduled)){
             if (predOp.eventPostponed(predictionId)){
                 String origDateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
-                if (origDateScheduledOnLastSeasDate(origDateScheduled)){
+                if (dateScheduledOnLastSeasDate(origDateScheduled)){
                     if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
                         /* Does not count:
                             - date_scheduled not in range
@@ -146,7 +146,7 @@ public class PredictionValidation {
             PredictionOperations predOp = new PredictionOperations(conn);
             String dateScheduled = predOp.getDbDateScheduled(predictionId);
 
-            if (origDateScheduledOnLastSeasDate(dateScheduled)) {
+            if (dateScheduledOnLastSeasDate(dateScheduled)) {
                 if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
                     // bet invalid
                 } else {
@@ -188,7 +188,7 @@ public class PredictionValidation {
         return isWithinLimit;
     }
 
-    private boolean origDateScheduledOnLastSeasDate(String stringDateScheduled) {
+    private boolean dateScheduledOnLastSeasDate(String stringDateScheduled) {
         boolean isOnLastDay;
 
         Contest cont = new Contest(conn, contestId);
