@@ -148,15 +148,27 @@ public class PredictionValidation {
 
             if (dateScheduledOnLastSeasDate(dateScheduled)) {
                 if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
-                    // bet invalid
+                    updateValidityStatus(predictionId, 15);
+                    Log.warn("Prediction " + predictionId + " does not count with status 15:\n" +
+                            "- result is void due to cancellation, retirement etc\n" +
+                            "- date_scheduled is on the last day of contest\n" +
+                            "- user made additional prediction instead of this one");
                 } else {
-                    // bet valid
+                    updateValidityStatus(predictionId, 4);
+                    Log.warn("result is valid:\n" +
+                            "- result is void due to cancellation, retirement etc\n" +
+                            "- date_scheduled is on the last day of contest\n" +
+                            "- user DID NOT make additional prediction instead of this one");
                 }
             } else {
+                updateValidityStatus(predictionId, 14);
+                Log.warn("Prediction " + predictionId + " does not count with status 14:\n" +
+                        "- result is void due to cancellation, retirement etc\n" +
+                        "- date_scheduled is NOT on the last day of contest");
                 // bet invalid
             }
         } else {
-            // bet valid
+            Log.debug("result is valid");
         }
     }
 
