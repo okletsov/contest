@@ -64,6 +64,9 @@ public class Workshop {
 
 //        predVal.validateUserPickValue("feed_item_3016017903");
 
+//        System.out.println(predVal.isVoidDueToCancellation("feed_item_1058014903"));
+//        predVal.validateResult("feed_item_3014605903");
+
         dbOp.closeConnection(conn);
     }
 }
