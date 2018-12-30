@@ -345,6 +345,32 @@ public class PredictionValidation {
         }
     }
 
+    private void checkForAnomalyOdd(String predictionId) {
+        /*
+            Anomaly odd = bagovaya stavka
+            Until a better solution is implemented we will manually inspect odds with payout > 105%
+
+            To know what bets have a payout value we will need to see the db value for option2_value
+            if it exists (> 0) the payout value can be calculated
+         */
+
+        PredictionOperations predOp = new PredictionOperations(conn);
+        float option2Value = predOp.getDbOption2Value(predictionId);
+
+        if (option2Value > 0) {
+            float payout = predOp.getPayout(predictionId);
+            if (payout > 1.05) {
+                updateValidityStatus(predictionId, 16);
+                Log.warn("potentially does not count. Status 16:\n" +
+                        "- payout > 1.05. Check prediction for anomaly odd");
+            } else {
+                Log.debug("Payout is ok");
+            }
+        } else {
+            Log.debug("Single value prediction. Payout N/A");
+        }
+    }
+
     public boolean validatePredictions() {
         boolean newInvalidPredictionsFound = false;
 

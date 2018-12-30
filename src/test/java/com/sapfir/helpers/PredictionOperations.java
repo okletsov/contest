@@ -91,14 +91,6 @@ public class PredictionOperations {
         return Float.parseFloat(stringUserPickValue);
     }
 
-    public float getDbOption1Value(String predictionId) {
-        String sql = "select option1_value from prediction where id = '" + predictionId + "';";
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        String stringOption1Value = dbOp.getSingleValue(conn, "option1_value", sql);
-        return Float.parseFloat(stringOption1Value);
-    }
-
     public float getDbOption2Value(String predictionId) {
         String sql = "select option2_value from prediction where id = '" + predictionId + "';";
 
@@ -112,17 +104,18 @@ public class PredictionOperations {
         }
     }
 
-    public float getDbOption3Value(String predictionId) {
-        String sql = "select option3_value from prediction where id = '" + predictionId + "';";
+    public float getPayout(String predictionId) {
+        String sql = "select \n" +
+                "round(" +
+                "(1-((1/option1_value + 1/option2_value + if(option3_value is null, 0, 1/option3_value)) - 1))" +
+                ", 4) as payout\n" +
+                "from prediction\n" +
+                "where id = '" + predictionId + "';";
 
         DatabaseOperations dbOp = new DatabaseOperations();
-        String stringOption3Value = dbOp.getSingleValue(conn, "option3_value", sql);
+        String payout =  dbOp.getSingleValue(conn, "payout", sql);
 
-        if (stringOption3Value != null) {
-            return Float.parseFloat(stringOption3Value);
-        } else {
-            return 0;
-        }
+        return Float.parseFloat(payout);
     }
 
     private boolean resultDifferent(String predictionID) {
