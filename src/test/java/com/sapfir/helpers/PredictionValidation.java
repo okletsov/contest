@@ -46,7 +46,7 @@ public class PredictionValidation {
 
         if (timestamp.isAfter(seasContEndDate)) {
             updateValidityStatus(predictionId,10);
-            Log.warn("Prediction " + predictionId + " does not count with status 10:\n" +
+            Log.debug("Prediction " + predictionId + " does not count with status 10:\n" +
                     "- date_scheduled unknown\n" +
                     "- contest is already over");
         } else {
@@ -70,7 +70,7 @@ public class PredictionValidation {
                             - user made additional prediction instead of this one
                          */
                         updateValidityStatus(predictionId, 13);
-                        Log.warn("Prediction " + predictionId + " does not count with status 13:\n" +
+                        Log.debug("Prediction " + predictionId + " does not count with status 13:\n" +
                                 "- date_scheduled NOT in range\n" +
                                 "- event was postponed\n" +
                                 "- original_date_scheduled is on the last day of contest\n" +
@@ -86,7 +86,7 @@ public class PredictionValidation {
                                 - !!! prediction settles according to event result, just like any usual prediction
                              */
                             updateValidityStatus(predictionId, 2);
-                            Log.warn("Prediction count with status 2:\n" +
+                            Log.debug("Prediction count with status 2:\n" +
                                     "- date_scheduled NOT in range\n" +
                                     "- event was postponed\n" +
                                     "- original_date_scheduled is on the last day of contest\n" +
@@ -103,7 +103,7 @@ public class PredictionValidation {
                                 - !!! prediction should be VOID no matter the result
                              */
                             updateValidityStatus(predictionId, 3);
-                            Log.warn("Prediction count with status 3:\n" +
+                            Log.debug("Prediction count with status 3:\n" +
                                     "- date_scheduled NOT in range\n" +
                                     "- event was postponed\n" +
                                     "- original_date_scheduled is on the last day of contest\n" +
@@ -119,7 +119,7 @@ public class PredictionValidation {
                         - original_date_scheduled was NOT on the last day of contest
                      */
                     updateValidityStatus(predictionId, 12);
-                    Log.warn("Prediction " + predictionId + " does not count with status 12:\n" +
+                    Log.debug("Prediction " + predictionId + " does not count with status 12:\n" +
                             "- date_scheduled NOT in range\n" +
                             "- event was postponed\n" +
                             "- original_date_scheduled was NOT on the last day of contest");
@@ -130,7 +130,7 @@ public class PredictionValidation {
                     - event was NOT postponed
                  */
                 updateValidityStatus(predictionId,11);
-                Log.warn("Prediction " + predictionId + " does not count with status 11:\n" +
+                Log.debug("Prediction " + predictionId + " does not count with status 11:\n" +
                         "- date_scheduled NOT in range\n" +
                         "- event was NOT postponed");
             }
@@ -149,20 +149,20 @@ public class PredictionValidation {
             if (dateScheduledOnLastSeasDate(dateScheduled)) {
                 if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
                     updateValidityStatus(predictionId, 15);
-                    Log.warn("Prediction " + predictionId + " does not count with status 15:\n" +
+                    Log.debug("Prediction " + predictionId + " does not count with status 15:\n" +
                             "- result is void due to cancellation, retirement etc\n" +
                             "- date_scheduled is on the last day of contest\n" +
                             "- user made additional prediction instead of this one");
                 } else {
                     updateValidityStatus(predictionId, 4);
-                    Log.warn("result is valid:\n" +
+                    Log.debug("result is valid:\n" +
                             "- result is void due to cancellation, retirement etc\n" +
                             "- date_scheduled is on the last day of contest\n" +
                             "- user DID NOT make additional prediction instead of this one");
                 }
             } else {
                 updateValidityStatus(predictionId, 14);
-                Log.warn("Prediction " + predictionId + " does not count with status 14:\n" +
+                Log.debug("Prediction " + predictionId + " does not count with status 14:\n" +
                         "- result is void due to cancellation, retirement etc\n" +
                         "- date_scheduled is NOT on the last day of contest");
                 // bet invalid
@@ -307,11 +307,11 @@ public class PredictionValidation {
 
         if (userPickValue < 1.5) {
             updateValidityStatus(predictionId, 20);
-            Log.warn("Prediction " + predictionId + " count-invalid with status 20: \n- user_pick_value < 1.5");
+            Log.debug("Prediction " + predictionId + " count-invalid with status 20: \n- user_pick_value < 1.5");
         } else if(userPickValue >= 1.5 && userPickValue < 2) {
             if (isPredictionQuarterGoal(predictionId)) {
                 updateValidityStatus(predictionId, 21);
-                Log.warn("Prediction " + predictionId + " count-invalid with status 21: \n- quarter-goal user_pick_value < 2");
+                Log.debug("Prediction " + predictionId + " count-invalid with status 21: \n- quarter-goal user_pick_value < 2");
             } else {
                 Log.debug("user_pick_value is within range");
             }
@@ -321,14 +321,14 @@ public class PredictionValidation {
             int predictionsOver10 = getCountValidPredictionsOver10ExclCurrent(predictionId);
             if (predictionsOver10 > 0) {
                 updateValidityStatus(predictionId, 22);
-                Log.warn("Prediction " + predictionId + " count-invalid with status 22: \n" +
+                Log.debug("Prediction " + predictionId + " count-invalid with status 22: \n" +
                         "- prediction with user_pick_value > 10 and <= 15 was already placed this month");
             } else {
                 Log.debug("user_pick_value is within range. First prediction with user_pick_value > 10 this month");
             }
         } else if(userPickValue > 15) {
             updateValidityStatus(predictionId, 23);
-            Log.warn("Prediction " + predictionId + " count-invalid with status 23: \n- user_pick_value > 15");
+            Log.debug("Prediction " + predictionId + " count-invalid with status 23: \n- user_pick_value > 15");
         } else {
             Log.error("Unknown user_pick_value!");
         }
