@@ -91,6 +91,40 @@ public class PredictionOperations {
         return Float.parseFloat(stringUserPickValue);
     }
 
+    public float getDbOption1Value(String predictionId) {
+        String sql = "select option1_value from prediction where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringOption1Value = dbOp.getSingleValue(conn, "option1_value", sql);
+        return Float.parseFloat(stringOption1Value);
+    }
+
+    public float getDbOption2Value(String predictionId) {
+        String sql = "select option2_value from prediction where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringOption2Value = dbOp.getSingleValue(conn, "option2_value", sql);
+
+        if (stringOption2Value != null) {
+            return Float.parseFloat(stringOption2Value);
+        } else {
+            return 0;
+        }
+    }
+
+    public float getDbOption3Value(String predictionId) {
+        String sql = "select option3_value from prediction where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringOption3Value = dbOp.getSingleValue(conn, "option3_value", sql);
+
+        if (stringOption3Value != null) {
+            return Float.parseFloat(stringOption3Value);
+        } else {
+            return 0;
+        }
+    }
+
     private boolean resultDifferent(String predictionID) {
         /*
             This method compare web prediction result vs db prediction result and returns:
