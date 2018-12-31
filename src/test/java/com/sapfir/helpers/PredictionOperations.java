@@ -83,6 +83,30 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "main_score", sql);
     }
 
+    public String getDbEventIdentifier(String predictionID) {
+        String sql = "select event_identifier from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "event_identifier", sql);
+    }
+
+    public String getFirstPredictionByUserForEvent(String eventIdentifier, String userId) {
+        // Update sql to include validity statuses !!!
+
+        String sql = "select id\n" +
+                "from prediction\n" +
+                "where date_predicted = (\n" +
+                "                        select min(date_predicted)\n" +
+                "                        from prediction \n" +
+                "                        where event_identifier = '" + eventIdentifier + "'\n" +
+                "                        and user_id = '" + userId + "'\n" +
+                "                        and (validity_status is null or validity_status not in (10))\n" +
+                "                        )\n" +
+                ";";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "id", sql);
+    }
+
     public float getDbUserPickValue(String predictionId) {
         String sql = "select user_pick_value from prediction where id = '" + predictionId + "';";
 

@@ -307,11 +307,11 @@ public class PredictionValidation {
 
         if (userPickValue < 1.5) {
             updateValidityStatus(predictionId, 20);
-            Log.debug("Prediction " + predictionId + " count-invalid with status 20: \n- user_pick_value < 1.5");
+            Log.debug("Prediction " + predictionId + " count-lost with status 20: \n- user_pick_value < 1.5");
         } else if(userPickValue >= 1.5 && userPickValue < 2) {
             if (isPredictionQuarterGoal(predictionId)) {
                 updateValidityStatus(predictionId, 21);
-                Log.debug("Prediction " + predictionId + " count-invalid with status 21: \n- quarter-goal user_pick_value < 2");
+                Log.debug("Prediction " + predictionId + " count-lost with status 21: \n- quarter-goal user_pick_value < 2");
             } else {
                 Log.debug("user_pick_value is within range");
             }
@@ -321,14 +321,14 @@ public class PredictionValidation {
             int predictionsOver10 = getCountValidPredictionsOver10ExclCurrent(predictionId);
             if (predictionsOver10 > 0) {
                 updateValidityStatus(predictionId, 22);
-                Log.debug("Prediction " + predictionId + " count-invalid with status 22: \n" +
+                Log.debug("Prediction " + predictionId + " count-lost with status 22: \n" +
                         "- prediction with user_pick_value > 10 and <= 15 was already placed this month");
             } else {
                 Log.debug("user_pick_value is within range. First prediction with user_pick_value > 10 this month");
             }
         } else if(userPickValue > 15) {
             updateValidityStatus(predictionId, 23);
-            Log.debug("Prediction " + predictionId + " count-invalid with status 23: \n- user_pick_value > 15");
+            Log.debug("Prediction " + predictionId + " count-lost with status 23: \n- user_pick_value > 15");
         } else {
             Log.error("Unknown user_pick_value!");
         }
@@ -368,6 +368,22 @@ public class PredictionValidation {
             }
         } else {
             Log.debug("Single value prediction. Payout N/A");
+        }
+    }
+
+    private void checkIfOneBetForEventByUser(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+
+        String userId = predOp.getDbUserId(predictionId);
+        String eventIdentifier = predOp.getDbEventIdentifier(predictionId);
+        String firstPredictionId = predOp.getFirstPredictionByUserForEvent(eventIdentifier, userId);
+
+        if (predictionId.equals(firstPredictionId)) {
+            Log.debug("It is the first prediction made by user for this event");
+        } else {
+            updateValidityStatus(predictionId, 24);
+            Log.debug("Prediction " + predictionId + " count-lost with status 24:\n" +
+                    "- current prediction is not the first valid prediction for this event");
         }
     }
 
