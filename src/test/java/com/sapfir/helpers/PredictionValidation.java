@@ -383,7 +383,7 @@ public class PredictionValidation {
         } else {
             updateValidityStatus(predictionId, 24);
             Log.debug("Prediction " + predictionId + " count-lost with status 24:\n" +
-                    "- current prediction is not the first valid prediction for this event");
+                    "- current prediction is not the first valid prediction made by user for this event");
         }
     }
 
