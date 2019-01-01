@@ -24,10 +24,10 @@ public class Properties {
         java.util.Properties properties = new java.util.Properties();
 
         try{
-            Log.debug("Reading properties file...");
+            Log.trace("Reading properties file...");
             FileInputStream fileStream = new FileInputStream("config.properties");
             properties.load(fileStream);
-            Log.debug("Successfully read properties file...");
+            Log.trace("Successfully read properties file...");
         } catch (IOException ex){
             Log.error(ex.getMessage());
             Log.trace("Stack trace: ", ex);

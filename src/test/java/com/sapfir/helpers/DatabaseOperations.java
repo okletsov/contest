@@ -17,12 +17,12 @@ public class DatabaseOperations {
         Connection conn = null;
 
         try {
-            Log.debug("Connecting to database...");
+            Log.trace("Connecting to database...");
             conn = DriverManager.getConnection(
                     prop.getDatabaseURL(),
                     prop.getDatabaseUsername(),
                     prop.getDatabasePassword());
-            Log.info("Successfully connected to database...");
+            Log.trace("Successfully connected to database...");
 
         } catch (SQLException ex) {
 

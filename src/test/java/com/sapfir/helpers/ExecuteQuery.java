@@ -22,9 +22,9 @@ public class ExecuteQuery {
         try{
             stmt = conn.createStatement();
 
-            Log.debug("Executing sql statement...");
+            Log.trace("Executing sql statement...");
             isSelect = stmt.execute(sql);
-            Log.debug("Statement executed successfully");
+            Log.trace("Statement executed successfully");
 
             if (isSelect){
                 selectResult = stmt.getResultSet();
