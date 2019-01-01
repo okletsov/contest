@@ -71,6 +71,7 @@ public class Workshop {
 
 //        predVal.checkForAnomalyOdd("feed_item_3224113803");
 //        predVal.checkIfOneBetForEventByUser("feed_item_3010205603");
+//        predVal.checkIfMoreThan10EventsPerDayByUser("feed_item_3236140703");
 
         dbOp.closeConnection(conn);
     }

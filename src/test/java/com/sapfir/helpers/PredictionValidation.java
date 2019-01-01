@@ -387,6 +387,33 @@ public class PredictionValidation {
         }
     }
 
+    private void checkIfMoreThan10EventsPerDayByUser(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        boolean eventPostponed = predOp.eventPostponed(predictionId);
+        String dateScheduled;
+
+        if (eventPostponed) {
+            dateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
+        } else {
+            dateScheduled = predOp.getDbDateScheduled(predictionId);
+        }
+
+        if (dateScheduled != null) {
+            int predictionIndexOnDayByUser = predOp.getPredictionIndexOnGivenDayByUser(predictionId, dateScheduled);
+            if (predictionIndexOnDayByUser > 10) {
+                updateValidityStatus(predictionId, 25);
+                Log.debug("Prediction " + predictionId + " count-lost with status 25:\n" +
+                        "- user placed predictions on more than 10 events per day\n" +
+                        "- current prediction is #" + predictionIndexOnDayByUser + " on that day");
+            } else {
+                Log.debug("The prediction is within <= 10 allowed predictions(events) per day\n" +
+                        "- current prediction is #" + predictionIndexOnDayByUser + " on that day");
+            }
+        } else {
+            Log.debug("date_scheduled unknown");
+        }
+    }
+
     public boolean validatePredictions() {
         boolean newInvalidPredictionsFound = false;
 

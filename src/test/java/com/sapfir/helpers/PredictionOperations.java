@@ -107,6 +107,29 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "id", sql);
     }
 
+    public int getPredictionIndexOnGivenDayByUser (String predictionId, String dateScheduled) {
+        int predictionIndex = -1;
+        String userId = getDbUserId(predictionId);
+
+        String sql = "select id\n" +
+                "from prediction\n" +
+                "where user_id = '" + userId + "'\n" +
+                "and date(convert_tz(date_scheduled, 'UTC', 'Europe/Kiev')) = " +
+                "date(convert_tz('" + dateScheduled + "', 'UTC', 'Europe/Kiev'))\n" +
+                "order by date_scheduled, date_predicted;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        ArrayList<String> predictionOnDayByUser = dbOp.getArray(conn, "id", sql);
+
+        for (int i = 0; i < predictionOnDayByUser.size(); i++) {
+            String prediction = predictionOnDayByUser.get(i);
+            if (prediction.equals(predictionId)) {
+                predictionIndex = i + 1;
+            }
+        }
+        return predictionIndex;
+    }
+
     public float getDbUserPickValue(String predictionId) {
         String sql = "select user_pick_value from prediction where id = '" + predictionId + "';";
 
