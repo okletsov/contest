@@ -108,12 +108,15 @@ public class PredictionOperations {
     }
 
     public int getPredictionIndexOnGivenDayByUser (String predictionId, String dateScheduled) {
+        // update sql to include validity statuses !!!
+
         int predictionIndex = -1;
         String userId = getDbUserId(predictionId);
 
         String sql = "select id\n" +
                 "from prediction\n" +
                 "where user_id = '" + userId + "'\n" +
+                "and (validity_status is null or validity_status not in (10))\n" +
                 "and date(convert_tz(date_scheduled, 'UTC', 'Europe/Kiev')) = " +
                 "date(convert_tz('" + dateScheduled + "', 'UTC', 'Europe/Kiev'))\n" +
                 "order by date_scheduled, date_predicted;";
