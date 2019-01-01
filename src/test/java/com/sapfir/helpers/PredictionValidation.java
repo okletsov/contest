@@ -379,7 +379,7 @@ public class PredictionValidation {
         String firstPredictionId = predOp.getFirstPredictionByUserForEvent(eventIdentifier, userId);
 
         if (predictionId.equals(firstPredictionId)) {
-            Log.debug("It is the first prediction made by user for this event");
+            Log.debug("It is the first valid prediction made by user for this event");
         } else {
             updateValidityStatus(predictionId, 24);
             Log.debug("Prediction " + predictionId + " count-lost with status 24:\n" +

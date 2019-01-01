@@ -70,6 +70,7 @@ public class Workshop {
 //        System.out.println(predOp.getDbOption2Value("feed_item_3087581803"));
 
 //        predVal.checkForAnomalyOdd("feed_item_3224113803");
+//        predVal.checkIfOneBetForEventByUser("feed_item_3010205603");
 
         dbOp.closeConnection(conn);
     }
