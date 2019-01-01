@@ -455,10 +455,11 @@ public class PredictionOperations {
 
     public ArrayList<String> getPredictionsToValidate(String contestId) {
         String sqlToGetPredictionsToInspect =
-                "select p.id" +
-                "from prediction p" +
-                "join contest c on c.id = p.seasonal_contest_id" +
-                "where c.id = '" + contestId + "';";
+                "select p.id\n" +
+                "from prediction p\n" +
+                "join contest c on c.id = p.seasonal_contest_id\n" +
+                "where c.id = '" + contestId + "'\n" +
+                "order by user_id, date_scheduled, date_predicted;";
 
         DatabaseOperations dbOp = new DatabaseOperations();
         return dbOp.getArray(conn, "id", sqlToGetPredictionsToInspect);
