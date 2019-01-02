@@ -414,6 +414,21 @@ public class PredictionValidation {
         }
     }
 
+    private void checkIfMoreThan100BetsByUser(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        int predictionIndex = predOp.getPredictionIndexInSeasContest(predictionId, contestId);
+
+        if (predictionIndex > 100) {
+            updateValidityStatus(predictionId, 17);
+            Log.debug("Prediction " + predictionId + " does not count with status 17:\n" +
+                    "- user already placed 100 predictions in contest\n" +
+                    "- current prediction is #" + predictionIndex + " in contest");
+        } else {
+            Log.debug("The prediction is within <= 100 allowed predictions per contest\n" +
+                    "- current prediction is #" + predictionIndex);
+        }
+    }
+
     public boolean validatePredictions() {
         boolean newInvalidPredictionsFound = false;
 

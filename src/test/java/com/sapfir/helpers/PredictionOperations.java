@@ -107,7 +107,7 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "id", sql);
     }
 
-    public int getPredictionIndexOnGivenDayByUser (String predictionId, String dateScheduled) {
+    public int getPredictionIndexOnGivenDayByUser(String predictionId, String dateScheduled) {
         // update sql to include validity statuses !!!
 
         int predictionIndex = -1;
@@ -126,6 +126,32 @@ public class PredictionOperations {
 
         for (int i = 0; i < predictionOnDayByUser.size(); i++) {
             String prediction = predictionOnDayByUser.get(i);
+            if (prediction.equals(predictionId)) {
+                predictionIndex = i + 1;
+            }
+        }
+        return predictionIndex;
+    }
+
+    public int getPredictionIndexInSeasContest(String predictionId, String contestId) {
+        // update sql to include validity statuses !!!
+        // make sure to include status for void due to canc etc.
+
+        int predictionIndex = -1;
+        String userId = getDbUserId(predictionId);
+
+        String sql = "select id\n" +
+                "from prediction\n" +
+                "where user_id = '" + userId + "'\n" +
+                "and seasonal_contest_id = '" + contestId + "'\n" +
+                "and (validity_status is null or validity_status not in (10))\n" +
+                "order by date_scheduled, date_predicted;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        ArrayList<String> predictionsInContestByUser = dbOp.getArray(conn, "id", sql);
+
+        for (int i = 0; i < predictionsInContestByUser.size(); i++) {
+            String prediction = predictionsInContestByUser.get(i);
             if (prediction.equals(predictionId)) {
                 predictionIndex = i + 1;
             }
