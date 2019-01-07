@@ -140,7 +140,7 @@ public class PredictionValidation {
         }
     }
 
-    private void validateVoidResult(String predictionId) {
+    private void validateVoidResultSeas(String predictionId) {
 
         if (isVoidDueToCancellation(predictionId)){
             PredictionOperations predOp = new PredictionOperations(conn);
@@ -448,12 +448,12 @@ public class PredictionValidation {
         }
     }
 
-    private void validateSeasResult(String predictionId) {
+    private void validateResultSeas(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
         String result = predOp.getDbPredictionResult(predictionId);
 
         if (result.equals("void")) {
-            validateVoidResult(predictionId);
+            validateVoidResultSeas(predictionId);
         } else {
             Log.debug("result is valid");
         }
