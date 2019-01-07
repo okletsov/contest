@@ -353,12 +353,17 @@ public class PredictionValidation {
 
        if (dateScheduledWithinMonLimit(dateScheduled, month)) {
             predOp.updateMonthlyContestId(predictionId, monContestId);
+            Log.debug("Prediction belong to month " + month + " contest");
        } else {
            if (predOp.eventPostponed(predictionId)) {
                String origDateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
                if (dateScheduledOnLastMonDate(origDateScheduled, month)) {
                    if (dateScheduledWithinMonEndDate24(predictionId, month)) {
                        predOp.updateMonthlyContestId(predictionId, monContestId);
+                       Log.debug("Prediction belong to month " + month + " contest:\n" +
+                               "- date_scheduled NOT in month range\n" +
+                               "- event was postponed\n" +
+                               "- - new date_scheduled is within 24 hours of month contest end date");
                    } else {
                        int validityStatus = predOp.getDbValidityStatus(predictionId);
                        if (validityStatus == 1) { // the only expected here  "valid" status
