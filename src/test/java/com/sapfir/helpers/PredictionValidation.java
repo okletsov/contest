@@ -448,7 +448,7 @@ public class PredictionValidation {
         }
     }
 
-    private void validateResult(String predictionId) {
+    private void validateSeasResult(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
         String result = predOp.getDbPredictionResult(predictionId);
 
