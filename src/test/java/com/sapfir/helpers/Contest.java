@@ -20,6 +20,22 @@ public class Contest {
 		this.contestId = contestId;
 	}
 
+	public String getMonContestId(int month) {
+		DatabaseOperations dbOp = new DatabaseOperations();
+
+		String sql = "select c1.id \n" +
+				"from contest c1\n" +
+				"	join contest c2 \n" +
+				"		on c1.year = c2.year \n" +
+				"		and c1.season = c2.season\n" +
+				"where c1.type = 'monthly' \n" +
+				"	and c2.type = 'seasonal'\n" +
+				"	and c2.id = '" + contestId + "'\n" +
+				"	and c1.month = " + month + ";";
+
+		return dbOp.getSingleValue(conn, "id", sql);
+	}
+
 	public LocalDateTime getSeasStartDate() {
 		String sql = "select start_date from contest where id = '" + contestId + "';";
 		String stringStartDate = dbOp.getSingleValue(conn, "start_date", sql);
