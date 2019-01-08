@@ -172,6 +172,10 @@ public class PredictionValidation {
         }
     }
 
+    private void validateVoidResultMon(String predictionId, int month) {
+
+    }
+
     private boolean dateScheduledWithinSeasLimit(String stringDateScheduled) {
         boolean isWithinLimit;
 
@@ -454,6 +458,17 @@ public class PredictionValidation {
 
         if (result.equals("void")) {
             validateVoidResultSeas(predictionId);
+        } else {
+            Log.debug("result is valid");
+        }
+    }
+
+    private void validateResultMon(String predictionId, int month) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String result = predOp.getDbPredictionResult(predictionId);
+
+        if (result.equals("void")) {
+            validateVoidResultMon(predictionId, month);
         } else {
             Log.debug("result is valid");
         }

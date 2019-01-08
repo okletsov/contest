@@ -166,7 +166,6 @@ public class PredictionOperations {
         return Integer.parseInt(dbOp.getSingleValue(conn, "validity_status", sql));
     }
 
-
     public float getDbUserPickValue(String predictionId) {
         String sql = "select user_pick_value from prediction where id = '" + predictionId + "';";
 
@@ -458,6 +457,13 @@ public class PredictionOperations {
             updateDetailedScore(predictionID);
             updateUnitOutcome(predictionID);
         } else {Log.debug("No update needed"); }
+    }
+
+    public void setMonthContestIdToNull(String predictionId) {
+        String sql = "update prediction set monthly_contest_id = null where id = '" + predictionId + "';";
+
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
     }
 
     public ArrayList<String> getPredictionsToValidate(String contestId) {
