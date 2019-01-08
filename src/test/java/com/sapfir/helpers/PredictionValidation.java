@@ -392,7 +392,7 @@ public class PredictionValidation {
                                    "- prediction should NOT count in seasonal contest\n" +
                                    "- !!! prediction should NOT count for seasonal contest and" +
                                    " count-VOID for month contest no matter the result");
-                       } else if(validityStatus == 14 || validityStatus == 17) {
+                       } else if(validityStatus == 14 || validityStatus == 17 || validityStatus == 18) {
                            predOp.updateMonthlyContestId(predictionId, monContestId);
                            Log.debug("No status update needed yet:\n" +
                                    "- date_scheduled NOT in month range\n" +
@@ -400,7 +400,16 @@ public class PredictionValidation {
                                    "- original_date_scheduled is on the last day of monthly contest\n" +
                                    "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
                                    "- prediction should NOT count in seasonal contest\n" +
-                                   "- statuses 14 and 17 will be handled separately");
+                                   "- statuses 14, 17 and 18 will be handled separately");
+                       } else if (validityStatus >=20 && validityStatus < 30) {
+                           predOp.updateMonthlyContestId(predictionId, monContestId);
+                           Log.debug("No status update needed:\n" +
+                                   "- date_scheduled NOT in month range\n" +
+                                   "- event was postponed\n" +
+                                   "- original_date_scheduled is on the last day of monthly contest\n" +
+                                   "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
+                                   "- prediction should count in month contest" +
+                                   "- statuses >=20 and <30 will be handled separately");
                        } else {
                            Log.warn("Validity status " + validityStatus + " not expected here!");
                        }
