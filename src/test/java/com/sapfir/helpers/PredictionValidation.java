@@ -411,6 +411,7 @@ public class PredictionValidation {
                                    "- prediction should count in month contest" +
                                    "- statuses >=20 and <30 will be handled separately");
                        } else {
+                           predOp.updateMonthlyContestId(predictionId, monContestId);
                            Log.warn("Validity status " + validityStatus + " not expected here!");
                        }
                    }
