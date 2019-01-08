@@ -74,6 +74,21 @@ public class Workshop {
 //        predVal.checkIfMoreThan10EventsPerDayByUser("feed_item_3236140703");
 //        predVal.checkIfMoreThan100BetsByUser("feed_item_3169561903");
 
+        System.out.println("Month start date     : " + cont.getMonStartDate(1));
+        System.out.println("Month last day start : " + cont.getMonLastDayStart(1));
+        System.out.println("Month end date       : " + cont.getMonEndDate(1));
+        System.out.println("Month mon end date 24: " + cont.getMonEndDate24(1));
+
+        /*
+            Conditoins for status field update:
+                - date_scheduled NOT within month limits (after 2018-10-01T20:59:59)
+                - event was postponed
+                - event was scheduled on the last month day (after 2018-09-29T21:00)
+                - new date_scheduled is NOT within 24hrs (after 2018-10-01T20:59:59)
+
+                check the above conditoin for statuses 1, 12, 14, 17:
+         */
+
         dbOp.closeConnection(conn);
     }
 }
