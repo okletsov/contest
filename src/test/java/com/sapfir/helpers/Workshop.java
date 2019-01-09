@@ -82,6 +82,7 @@ public class Workshop {
 //        System.out.println("Month mon end date 24: " + cont.getMonEndDate24(1));
 
 //        predVal.validateMonDateScheduled("feed_item_3241285903", 1);
+//        System.out.println(predVal.getCountValidPredictionsInMonthExclCurrent("feed_item_1005884403", 1));
 
         dbOp.closeConnection(conn);
     }

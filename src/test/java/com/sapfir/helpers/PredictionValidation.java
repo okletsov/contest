@@ -173,7 +173,35 @@ public class PredictionValidation {
     }
 
     private void validateVoidResultMon(String predictionId, int month) {
+        if (isVoidDueToCancellation(predictionId)) {
+            PredictionOperations predOp = new PredictionOperations(conn);
+            String dateScheduled = predOp.getDbDateScheduled(predictionId);
 
+            if (dateScheduledOnLastMonDate(dateScheduled, month)) {
+                if (getCountValidPredictionsInMonthExclCurrent(predictionId, month) == 29) {
+                    updateValidityStatus(predictionId, 52);
+                    Log.debug("Prediction status 52:\n" +
+                            "- result is void due to cancellation, retirement etc\n" +
+                            "- date_scheduled is on the last day of month contest\n" +
+                            "- count of valid prediction made by user this month = 29\n" +
+                            "- !!! prediction should NOT count for seasonal contest and count-VOID for month contest");
+                } else {
+                    predOp.setMonthContestIdToNull(predictionId);
+                    Log.debug("Prediction does not belong to month:" +
+                            "- result is void due to cancellation, retirement etc\n" +
+                            "- date_scheduled is on the last day of month contest\n" +
+                            "- count of valid prediction made by user this month != 29\n" +
+                            "- !!! setting monthly_contest_id to NULL");
+                }
+            } else {
+                predOp.setMonthContestIdToNull(predictionId);
+                Log.debug("Prediction does not belong to month:" +
+                        "- result is void due to cancellation, retirement etc\n" +
+                        "- date_scheduled is NOT on the last day of month contest");
+            }
+        } else {
+            Log.debug("Result is valid");
+        }
     }
 
     private boolean dateScheduledWithinSeasLimit(String stringDateScheduled) {
@@ -328,6 +356,32 @@ public class PredictionValidation {
         }
     }
 
+    private int getCountValidPredictionsInMonthExclCurrent(String predictionId, int month) {
+        String monContestId, userId, sql, stringCount;
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        Contest cont = new Contest(conn, contestId);
+        PredictionOperations predOp = new PredictionOperations(conn);
+
+        monContestId = cont.getMonContestId(month);
+        userId = predOp.getDbUserId(predictionId);
+
+        sql = "select count(id) as count\n" +
+                "from prediction\n" +
+                "where monthly_contest_id = '" + monContestId + "'\n" +
+                "and user_id = '" + userId + "'\n" +
+                "and id != '" + predictionId + "'\n" +
+                "and (validity_status is null or validity_status not in (10));";
+
+        stringCount = dbOp.getSingleValue(conn, "count", sql);
+
+        if (stringCount == null) {
+            return 0;
+        } else {
+            return Integer.parseInt(stringCount);
+        }
+    }
+
     private void validateSeasDateScheduled(String predictionId) {
         Log.debug("Validating date_scheduled for " + predictionId + "...");
 
@@ -362,7 +416,7 @@ public class PredictionValidation {
            if (predOp.eventPostponed(predictionId)) {
                String origDateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
                if (dateScheduledOnLastMonDate(origDateScheduled, month)) {
-                   if (dateScheduledWithinMonEndDate24(dateScheduled,1)) {
+                   if (dateScheduledWithinMonEndDate24(dateScheduled,month)) {
                        predOp.updateMonthlyContestId(predictionId, monContestId);
                        Log.debug("Prediction belong to month " + month + " contest:\n" +
                                "- date_scheduled NOT in month range\n" +
