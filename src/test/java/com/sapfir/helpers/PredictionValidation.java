@@ -21,6 +21,10 @@ public class PredictionValidation {
 
     }
 
+    /******************************************
+        COMMON methods
+     ******************************************/
+
     private void updateValidityStatus(String predictionId, int validityStatus) {
         String sql = "update prediction " +
                 "set validity_status = " + validityStatus + " " +
@@ -28,6 +32,238 @@ public class PredictionValidation {
 
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
         eq.cleanUp();
+    }
+
+    private boolean isPredictionQuarterGoal(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String market = predOp.getDbMarket(predictionId);
+
+        if (market.startsWith("AH ") || market.startsWith("O/U " )) {
+            return  market.contains(".25") || market.contains(".75");
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isVoidDueToCancellation(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String mainScore = predOp.getDbMainScore(predictionId);
+
+        return mainScore.contains("abn.") ||
+                mainScore.contains(" w.o.") ||
+                mainScore.contains(" ret.") ||
+                mainScore.contains("canc.");
+    }
+
+    private int getCountValidPredictionsOver10ExclCurrent(String predictionId) {
+        /*
+            !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
+
+            This method returns count of valid predictions made by user with user_pick_value < 10 and <=15
+            made before current prediction in month prediction being inspected is placed (kiev time zone)
+         */
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String contestId = predOp.getDbSeasContestId(predictionId);
+        String userId = predOp.getDbUserId(predictionId);
+        String datePredicted = predOp.getDbDatePredicted(predictionId);
+
+        String sql = "select count(id) as count\n" +
+                "from prediction\n" +
+                "where seasonal_contest_id = '" + contestId + "'\n" +
+                "and user_id = '" + userId + "'\n" +
+                "and id != '" + predictionId + "'\n" +
+                "and month(date(convert_tz(date_predicted, 'UTC', 'Europe/Kiev'))) = " +
+                "month(date(convert_tz('" + datePredicted + "', 'UTC', 'Europe/Kiev')))\n" +
+                "and (validity_status is null or validity_status not in (10))\n" +
+                "and user_pick_value > 10\n" +
+                "and user_pick_value <= 15\n" +
+                "and date_predicted < '" + datePredicted + "'\n" +
+                "group by user_id;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringCount = dbOp.getSingleValue(conn, "count", sql);
+
+        if (stringCount == null){
+            return 0;
+        } else {
+            return Integer.parseInt(stringCount);
+        }
+    }
+
+    /******************************************
+        TIER 1 methods
+     ******************************************/
+
+        // Season
+
+    private boolean dateScheduledWithinSeasLimit(String stringDateScheduled) {
+        boolean isWithinLimit;
+
+        Contest cont = new Contest(conn, contestId);
+        LocalDateTime seasStartDate = cont.getSeasStartDate();
+        LocalDateTime seasEndDate = cont.getSeasEndDate();
+
+        DateTimeOperations dtOp = new DateTimeOperations();
+        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        isWithinLimit = !seasStartDate.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
+        return isWithinLimit;
+    }
+
+    private boolean dateScheduledWithinSeasEndDate24(String stringDateScheduled) {
+        boolean isWithinLimit;
+
+        Contest cont = new Contest(conn, contestId);
+        LocalDateTime seasEndDate = cont.getSeasEndDate();
+        LocalDateTime seasEndDate24 = cont.getSeasEndDate24();
+
+        DateTimeOperations dtOp = new DateTimeOperations();
+        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        isWithinLimit = !seasEndDate.isAfter(dateScheduled) && !seasEndDate24.isBefore(dateScheduled);
+        return isWithinLimit;
+    }
+
+    private boolean dateScheduledOnLastSeasDate(String stringDateScheduled) {
+
+        Contest cont = new Contest(conn, contestId);
+        LocalDateTime seasLastDayStart = cont.getSeasLastDayStart();
+        LocalDateTime seasEndDate = cont.getSeasEndDate();
+
+        DateTimeOperations dtOp = new DateTimeOperations();
+        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        return  !seasLastDayStart.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
+    }
+
+    private int getCountSeasValidPredictionsExclCurrent(String predictionId) {
+        // !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
+        /// add if count is null --> return 0
+        PredictionOperations predOp = new PredictionOperations(conn);
+
+        String contestId = predOp.getDbSeasContestId(predictionId);
+        String userId = predOp.getDbUserId(predictionId);
+
+        String sql = "select count(id) as count " +
+                "from prediction " +
+                "where seasonal_contest_id = '" + contestId + "' " +
+                "and user_id = '" + userId + "' " +
+                "and id != '" + predictionId + "' " +
+                "and (validity_status is null or validity_status not in (10)) " +
+                "group by user_id;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringCount = dbOp.getSingleValue(conn, "count", sql);
+
+        if (stringCount == null) {
+            return 0;
+        } else {
+            return Integer.parseInt(stringCount);
+        }
+    }
+
+        // Month
+
+    private boolean dateScheduledWithinMonLimit(String stringDateScheduled, int month) {
+        LocalDateTime monStartDate, monEndDate, dateScheduled;
+        DateTimeOperations dtOp = new DateTimeOperations();
+        Contest cont = new Contest(conn, contestId);
+
+        monStartDate = cont.getMonStartDate(month);
+        monEndDate = cont.getMonEndDate(month);
+        dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        return !monStartDate.isAfter(dateScheduled) && !monEndDate.isBefore(dateScheduled);
+    }
+
+    private boolean dateScheduledWithinMonEndDate24(String stringDateScheduled, int month) {
+        LocalDateTime monEndDate, monEndDate24, dateScheduled;
+        Contest cont = new Contest(conn, contestId);
+        DateTimeOperations dtOp = new DateTimeOperations();
+
+        monEndDate = cont.getMonEndDate(month);
+        monEndDate24 = cont.getMonEndDate24(month);
+        dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        return !monEndDate.isAfter(dateScheduled) && !monEndDate24.isBefore(dateScheduled);
+    }
+
+    private boolean dateScheduledOnLastMonDate(String stringDateScheduled, int month) {
+        LocalDateTime monLastDayStart, monEndDate, dateScheduled;
+        Contest cont = new Contest(conn, contestId);
+        DateTimeOperations dtOp = new DateTimeOperations();
+
+        monLastDayStart = cont.getMonLastDayStart(month);
+        monEndDate = cont.getMonEndDate(month);
+        dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
+
+        return  !monLastDayStart.isAfter(dateScheduled) && !monEndDate.isBefore(dateScheduled);
+    }
+
+    private int getCountMonValidPredictionsExclCurrent(String predictionId, int month) {
+        String monContestId, userId, sql, stringCount;
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        Contest cont = new Contest(conn, contestId);
+        PredictionOperations predOp = new PredictionOperations(conn);
+
+        monContestId = cont.getMonContestId(month);
+        userId = predOp.getDbUserId(predictionId);
+
+        sql = "select count(id) as count\n" +
+                "from prediction\n" +
+                "where monthly_contest_id = '" + monContestId + "'\n" +
+                "and user_id = '" + userId + "'\n" +
+                "and id != '" + predictionId + "'\n" +
+                "and (validity_status is null or validity_status not in (10));";
+
+        stringCount = dbOp.getSingleValue(conn, "count", sql);
+
+        if (stringCount == null) {
+            return 0;
+        } else {
+            return Integer.parseInt(stringCount);
+        }
+    }
+
+        // Common
+
+    /******************************************
+        TIER 2 methods
+     ******************************************/
+
+        // Season
+
+    private void validateVoidResultSeas(String predictionId) {
+
+        if (isVoidDueToCancellation(predictionId)){
+            PredictionOperations predOp = new PredictionOperations(conn);
+            String dateScheduled = predOp.getDbDateScheduled(predictionId);
+
+            if (dateScheduledOnLastSeasDate(dateScheduled)) {
+                if (getCountSeasValidPredictionsExclCurrent(predictionId) >= 100) {
+                    updateValidityStatus(predictionId, 15);
+                    Log.debug("Prediction " + predictionId + " does not count with status 15:\n" +
+                            "- result is void due to cancellation, retirement etc\n" +
+                            "- date_scheduled is on the last day of contest\n" +
+                            "- user made additional prediction instead of this one");
+                } else {
+                    updateValidityStatus(predictionId, 4);
+                    Log.debug("result is valid:\n" +
+                            "- result is void due to cancellation, retirement etc\n" +
+                            "- date_scheduled is on the last day of contest\n" +
+                            "- user DID NOT make additional prediction instead of this one");
+                }
+            } else {
+                updateValidityStatus(predictionId, 14);
+                Log.debug("Prediction " + predictionId + " does not count with status 14:\n" +
+                        "- result is void due to cancellation, retirement etc\n" +
+                        "- date_scheduled is NOT on the last day of contest");
+                // bet invalid
+            }
+        } else {
+            Log.debug("result is valid");
+        }
     }
 
     private void validateUnknownDateScheduled(String predictionId) {
@@ -62,7 +298,7 @@ public class PredictionValidation {
             if (predOp.eventPostponed(predictionId)){
                 String origDateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
                 if (dateScheduledOnLastSeasDate(origDateScheduled)){
-                    if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
+                    if (getCountSeasValidPredictionsExclCurrent(predictionId) >= 100) {
                         /* Does not count:
                             - date_scheduled not in range
                             - event was postponed
@@ -140,37 +376,7 @@ public class PredictionValidation {
         }
     }
 
-    private void validateVoidResultSeas(String predictionId) {
-
-        if (isVoidDueToCancellation(predictionId)){
-            PredictionOperations predOp = new PredictionOperations(conn);
-            String dateScheduled = predOp.getDbDateScheduled(predictionId);
-
-            if (dateScheduledOnLastSeasDate(dateScheduled)) {
-                if (getCountValidPredictionsExclCurrent(predictionId) >= 100) {
-                    updateValidityStatus(predictionId, 15);
-                    Log.debug("Prediction " + predictionId + " does not count with status 15:\n" +
-                            "- result is void due to cancellation, retirement etc\n" +
-                            "- date_scheduled is on the last day of contest\n" +
-                            "- user made additional prediction instead of this one");
-                } else {
-                    updateValidityStatus(predictionId, 4);
-                    Log.debug("result is valid:\n" +
-                            "- result is void due to cancellation, retirement etc\n" +
-                            "- date_scheduled is on the last day of contest\n" +
-                            "- user DID NOT make additional prediction instead of this one");
-                }
-            } else {
-                updateValidityStatus(predictionId, 14);
-                Log.debug("Prediction " + predictionId + " does not count with status 14:\n" +
-                        "- result is void due to cancellation, retirement etc\n" +
-                        "- date_scheduled is NOT on the last day of contest");
-                // bet invalid
-            }
-        } else {
-            Log.debug("result is valid");
-        }
-    }
+        // Month
 
     private void validateVoidResultMon(String predictionId, int month) {
         if (isVoidDueToCancellation(predictionId)) {
@@ -178,7 +384,7 @@ public class PredictionValidation {
             String dateScheduled = predOp.getDbDateScheduled(predictionId);
 
             if (dateScheduledOnLastMonDate(dateScheduled, month)) {
-                if (getCountValidPredictionsInMonthExclCurrent(predictionId, month) == 29) {
+                if (getCountMonValidPredictionsExclCurrent(predictionId, month) == 29) {
                     updateValidityStatus(predictionId, 52);
                     Log.debug("Prediction status 52:\n" +
                             "- result is void due to cancellation, retirement etc\n" +
@@ -204,183 +410,11 @@ public class PredictionValidation {
         }
     }
 
-    private boolean dateScheduledWithinSeasLimit(String stringDateScheduled) {
-        boolean isWithinLimit;
+    /******************************************
+        TIER 3 methods
+     ******************************************/
 
-        Contest cont = new Contest(conn, contestId);
-        LocalDateTime seasStartDate = cont.getSeasStartDate();
-        LocalDateTime seasEndDate = cont.getSeasEndDate();
-
-        DateTimeOperations dtOp = new DateTimeOperations();
-        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
-
-        isWithinLimit = !seasStartDate.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
-        return isWithinLimit;
-    }
-
-    private boolean dateScheduledWithinMonLimit(String stringDateScheduled, int month) {
-        LocalDateTime monStartDate, monEndDate, dateScheduled;
-        DateTimeOperations dtOp = new DateTimeOperations();
-        Contest cont = new Contest(conn, contestId);
-
-        monStartDate = cont.getMonStartDate(month);
-        monEndDate = cont.getMonEndDate(month);
-        dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
-
-        return !monStartDate.isAfter(dateScheduled) && !monEndDate.isBefore(dateScheduled);
-    }
-
-    private boolean dateScheduledWithinSeasEndDate24(String stringDateScheduled) {
-        boolean isWithinLimit;
-
-        Contest cont = new Contest(conn, contestId);
-        LocalDateTime seasEndDate = cont.getSeasEndDate();
-        LocalDateTime seasEndDate24 = cont.getSeasEndDate24();
-
-        DateTimeOperations dtOp = new DateTimeOperations();
-        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
-
-        isWithinLimit = !seasEndDate.isAfter(dateScheduled) && !seasEndDate24.isBefore(dateScheduled);
-        return isWithinLimit;
-    }
-
-    private boolean dateScheduledWithinMonEndDate24(String stringDateScheduled, int month) {
-        LocalDateTime monEndDate, monEndDate24, dateScheduled;
-        Contest cont = new Contest(conn, contestId);
-        DateTimeOperations dtOp = new DateTimeOperations();
-
-        monEndDate = cont.getMonEndDate(month);
-        monEndDate24 = cont.getMonEndDate24(month);
-        dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
-
-        return !monEndDate.isAfter(dateScheduled) && !monEndDate24.isBefore(dateScheduled);
-    }
-
-    private boolean dateScheduledOnLastSeasDate(String stringDateScheduled) {
-
-        Contest cont = new Contest(conn, contestId);
-        LocalDateTime seasLastDayStart = cont.getSeasLastDayStart();
-        LocalDateTime seasEndDate = cont.getSeasEndDate();
-
-        DateTimeOperations dtOp = new DateTimeOperations();
-        LocalDateTime dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
-
-        return  !seasLastDayStart.isAfter(dateScheduled) && !seasEndDate.isBefore(dateScheduled);
-    }
-
-    private boolean dateScheduledOnLastMonDate(String stringDateScheduled, int month) {
-        LocalDateTime monLastDayStart, monEndDate, dateScheduled;
-        Contest cont = new Contest(conn, contestId);
-        DateTimeOperations dtOp = new DateTimeOperations();
-
-        monLastDayStart = cont.getMonLastDayStart(month);
-        monEndDate = cont.getMonEndDate(month);
-        dateScheduled = dtOp.convertToDateTimeFromString(stringDateScheduled);
-
-        return  !monLastDayStart.isAfter(dateScheduled) && !monEndDate.isBefore(dateScheduled);
-    }
-
-    private boolean isPredictionQuarterGoal(String predictionId) {
-        PredictionOperations predOp = new PredictionOperations(conn);
-        String market = predOp.getDbMarket(predictionId);
-
-        if (market.startsWith("AH ") || market.startsWith("O/U " )) {
-            return  market.contains(".25") || market.contains(".75");
-        } else {
-            return false;
-        }
-    }
-
-    private boolean isVoidDueToCancellation(String predictionId) {
-        PredictionOperations predOp = new PredictionOperations(conn);
-        String mainScore = predOp.getDbMainScore(predictionId);
-
-        return mainScore.contains("abn.") ||
-                mainScore.contains(" w.o.") ||
-                mainScore.contains(" ret.") ||
-                mainScore.contains("canc.");
-    }
-
-    private int getCountValidPredictionsExclCurrent(String predictionId) {
-        // !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
-        PredictionOperations predOp = new PredictionOperations(conn);
-
-        String contestId = predOp.getDbSeasContestId(predictionId);
-        String userId = predOp.getDbUserId(predictionId);
-
-        String sql = "select count(id) as count " +
-                "from prediction " +
-                "where seasonal_contest_id = '" + contestId + "' " +
-                "and user_id = '" + userId + "' " +
-                "and id != '" + predictionId + "' " +
-                "and (validity_status is null or validity_status not in (10)) " +
-                "group by user_id;";
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        String stringCount = dbOp.getSingleValue(conn, "count", sql);
-        return Integer.parseInt(stringCount);
-    }
-
-    private int getCountValidPredictionsOver10ExclCurrent(String predictionId) {
-        /*
-            !!! Add other invalid statuses for "not in" clause or replace "not in" only with valid statuses !!!
-
-            This method returns count of valid predictions made by user with user_pick_value < 10 and <=15
-            made before current prediction in month prediction being inspected is placed (kiev time zone)
-         */
-        PredictionOperations predOp = new PredictionOperations(conn);
-        String contestId = predOp.getDbSeasContestId(predictionId);
-        String userId = predOp.getDbUserId(predictionId);
-        String datePredicted = predOp.getDbDatePredicted(predictionId);
-
-        String sql = "select count(id) as count\n" +
-                "from prediction\n" +
-                "where seasonal_contest_id = '" + contestId + "'\n" +
-                "and user_id = '" + userId + "'\n" +
-                "and id != '" + predictionId + "'\n" +
-                "and month(date(convert_tz(date_predicted, 'UTC', 'Europe/Kiev'))) = " +
-                "month(date(convert_tz('" + datePredicted + "', 'UTC', 'Europe/Kiev')))\n" +
-                "and (validity_status is null or validity_status not in (10))\n" +
-                "and user_pick_value > 10\n" +
-                "and user_pick_value <= 15\n" +
-                "and date_predicted < '" + datePredicted + "'\n" +
-                "group by user_id;";
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        String stringCount = dbOp.getSingleValue(conn, "count", sql);
-
-        if (stringCount == null){
-            return 0;
-        } else {
-            return Integer.parseInt(stringCount);
-        }
-    }
-
-    private int getCountValidPredictionsInMonthExclCurrent(String predictionId, int month) {
-        String monContestId, userId, sql, stringCount;
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        Contest cont = new Contest(conn, contestId);
-        PredictionOperations predOp = new PredictionOperations(conn);
-
-        monContestId = cont.getMonContestId(month);
-        userId = predOp.getDbUserId(predictionId);
-
-        sql = "select count(id) as count\n" +
-                "from prediction\n" +
-                "where monthly_contest_id = '" + monContestId + "'\n" +
-                "and user_id = '" + userId + "'\n" +
-                "and id != '" + predictionId + "'\n" +
-                "and (validity_status is null or validity_status not in (10));";
-
-        stringCount = dbOp.getSingleValue(conn, "count", sql);
-
-        if (stringCount == null) {
-            return 0;
-        } else {
-            return Integer.parseInt(stringCount);
-        }
-    }
+        // Season
 
     private void validateSeasDateScheduled(String predictionId) {
         Log.debug("Validating date_scheduled for " + predictionId + "...");
@@ -394,6 +428,34 @@ public class PredictionValidation {
             validateKnownDateScheduled(dateScheduled, predictionId);
         }
     }
+
+    private void validateResultSeas(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String result = predOp.getDbPredictionResult(predictionId);
+
+        if (result.equals("void")) {
+            validateVoidResultSeas(predictionId);
+        } else {
+            Log.debug("result is valid");
+        }
+    }
+
+    private void checkIfMoreThan100SeasBetsByUser(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        int predictionIndex = predOp.getPredictionIndexInSeasContest(predictionId, contestId);
+
+        if (predictionIndex > 100) {
+            updateValidityStatus(predictionId, 17);
+            Log.debug("Prediction " + predictionId + " does not count with status 17:\n" +
+                    "- user already placed 100 predictions in contest\n" +
+                    "- current prediction is #" + predictionIndex + " in contest");
+        } else {
+            Log.debug("The prediction is within <= 100 allowed predictions per contest\n" +
+                    "- current prediction is #" + predictionIndex);
+        }
+    }
+
+        // Month
 
     private void validateMonDateScheduled(String predictionId, int month) {
         /*
@@ -409,79 +471,96 @@ public class PredictionValidation {
         monContestId = cont.getMonContestId(month);
 
 
-       if (dateScheduledWithinMonLimit(dateScheduled, month)) {
+        if (dateScheduledWithinMonLimit(dateScheduled, month)) {
             predOp.updateMonthlyContestId(predictionId, monContestId);
             Log.debug("Prediction belong to month " + month + " contest");
-       } else {
-           if (predOp.eventPostponed(predictionId)) {
-               String origDateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
-               if (dateScheduledOnLastMonDate(origDateScheduled, month)) {
-                   if (dateScheduledWithinMonEndDate24(dateScheduled,month)) {
-                       predOp.updateMonthlyContestId(predictionId, monContestId);
-                       Log.debug("Prediction belong to month " + month + " contest:\n" +
-                               "- date_scheduled NOT in month range\n" +
-                               "- event was postponed\n" +
-                               "- new date_scheduled is within 24 hours of month contest end date");
-                   } else {
-                       int validityStatus = predOp.getDbValidityStatus(predictionId);
-                       if (validityStatus == 1) { // the only expected here  "valid" status
-                           predOp.updateMonthlyContestId(predictionId, monContestId);
-                           updateValidityStatus(predictionId, 50);
-                           Log.debug("Prediction status 50:\n" +
-                                   "- date_scheduled NOT in month range\n" +
-                                   "- event was postponed\n" +
-                                   "- original_date_scheduled is on the last day of monthly contest\n" +
-                                   "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
-                                   "- prediction should count in seasonal contest\n" +
-                                   "- !!! prediction should count for seasonal contest and" +
-                                   " count-VOID for month contest no matter the result");
-                       } else if(validityStatus == 12) { // need special handling for only status 12 here
-                           predOp.updateMonthlyContestId(predictionId, monContestId);
-                           updateValidityStatus(predictionId, 51);
-                           Log.debug("Prediction status 51:\n" +
-                                   "- date_scheduled NOT in month range\n" +
-                                   "- event was postponed\n" +
-                                   "- original_date_scheduled is on the last day of monthly contest\n" +
-                                   "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
-                                   "- prediction should NOT count in seasonal contest\n" +
-                                   "- !!! prediction should NOT count for seasonal contest and" +
-                                   " count-VOID for month contest no matter the result");
-                       } else if(validityStatus == 14 || validityStatus == 17 || validityStatus == 18) {
-                           predOp.updateMonthlyContestId(predictionId, monContestId);
-                           Log.debug("No status update needed yet:\n" +
-                                   "- date_scheduled NOT in month range\n" +
-                                   "- event was postponed\n" +
-                                   "- original_date_scheduled is on the last day of monthly contest\n" +
-                                   "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
-                                   "- prediction should NOT count in seasonal contest\n" +
-                                   "- statuses 14, 17 and 18 will be handled separately");
-                       } else if (validityStatus >=20 && validityStatus < 30) {
-                           predOp.updateMonthlyContestId(predictionId, monContestId);
-                           Log.debug("No status update needed:\n" +
-                                   "- date_scheduled NOT in month range\n" +
-                                   "- event was postponed\n" +
-                                   "- original_date_scheduled is on the last day of monthly contest\n" +
-                                   "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
-                                   "- prediction should count in month contest" +
-                                   "- statuses >=20 and <30 will be handled separately");
-                       } else {
-                           predOp.updateMonthlyContestId(predictionId, monContestId);
-                           Log.warn("Validity status " + validityStatus + " not expected here!");
-                       }
-                   }
-               }  else {
-                   Log.debug("Prediction does not belong to month " + month + ":\n" +
-                           "- date_scheduled NOT in month range\n" +
-                           "- event was postponed\n" +
-                           "- original_date_scheduled is NOT on the last day of monthly contest");
-               }
-           } else {
-               Log.debug("Prediction does not belong to month " + month + ":\n" +
-                       "- date_scheduled NOT in month range\n" +
-                       "- event was NOT postponed");
-           }
-       }
+        } else {
+            if (predOp.eventPostponed(predictionId)) {
+                String origDateScheduled = predOp.getDbOriginalDateScheduled(predictionId);
+                if (dateScheduledOnLastMonDate(origDateScheduled, month)) {
+                    if (dateScheduledWithinMonEndDate24(dateScheduled,month)) {
+                        predOp.updateMonthlyContestId(predictionId, monContestId);
+                        Log.debug("Prediction belong to month " + month + " contest:\n" +
+                                "- date_scheduled NOT in month range\n" +
+                                "- event was postponed\n" +
+                                "- new date_scheduled is within 24 hours of month contest end date");
+                    } else {
+                        int validityStatus = predOp.getDbValidityStatus(predictionId);
+                        if (validityStatus == 1) { // the only expected here  "valid" status
+                            predOp.updateMonthlyContestId(predictionId, monContestId);
+                            updateValidityStatus(predictionId, 50);
+                            Log.debug("Prediction status 50:\n" +
+                                    "- date_scheduled NOT in month range\n" +
+                                    "- event was postponed\n" +
+                                    "- original_date_scheduled is on the last day of monthly contest\n" +
+                                    "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
+                                    "- prediction should count in seasonal contest\n" +
+                                    "- !!! prediction should count for seasonal contest and" +
+                                    " count-VOID for month contest no matter the result");
+                        } else if(validityStatus == 12) { // need special handling for only status 12 here
+                            predOp.updateMonthlyContestId(predictionId, monContestId);
+                            updateValidityStatus(predictionId, 51);
+                            Log.debug("Prediction status 51:\n" +
+                                    "- date_scheduled NOT in month range\n" +
+                                    "- event was postponed\n" +
+                                    "- original_date_scheduled is on the last day of monthly contest\n" +
+                                    "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
+                                    "- prediction should NOT count in seasonal contest\n" +
+                                    "- !!! prediction should NOT count for seasonal contest and" +
+                                    " count-VOID for month contest no matter the result");
+                        } else if(validityStatus == 14 || validityStatus == 17 || validityStatus == 18) {
+                            predOp.updateMonthlyContestId(predictionId, monContestId);
+                            Log.debug("No status update needed yet:\n" +
+                                    "- date_scheduled NOT in month range\n" +
+                                    "- event was postponed\n" +
+                                    "- original_date_scheduled is on the last day of monthly contest\n" +
+                                    "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
+                                    "- prediction should NOT count in seasonal contest\n" +
+                                    "- statuses 14, 17 and 18 will be handled separately");
+                        } else if (validityStatus >=20 && validityStatus < 30) {
+                            predOp.updateMonthlyContestId(predictionId, monContestId);
+                            Log.debug("No status update needed:\n" +
+                                    "- date_scheduled NOT in month range\n" +
+                                    "- event was postponed\n" +
+                                    "- original_date_scheduled is on the last day of monthly contest\n" +
+                                    "- new date_scheduled is NOT within 24 hours of month contest end date\n" +
+                                    "- prediction should count in month contest" +
+                                    "- statuses >=20 and <30 will be handled separately");
+                        } else {
+                            predOp.updateMonthlyContestId(predictionId, monContestId);
+                            Log.warn("Validity status " + validityStatus + " not expected here!");
+                        }
+                    }
+                }  else {
+                    Log.debug("Prediction does not belong to month " + month + ":\n" +
+                            "- date_scheduled NOT in month range\n" +
+                            "- event was postponed\n" +
+                            "- original_date_scheduled is NOT on the last day of monthly contest");
+                }
+            } else {
+                Log.debug("Prediction does not belong to month " + month + ":\n" +
+                        "- date_scheduled NOT in month range\n" +
+                        "- event was NOT postponed");
+            }
+        }
     }
+
+    private void validateResultMon(String predictionId, int month) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String result = predOp.getDbPredictionResult(predictionId);
+
+        if (result.equals("void")) {
+            validateVoidResultMon(predictionId, month);
+        } else {
+            Log.debug("result is valid");
+        }
+    }
+
+    private void checkIfMoreThan100MonBetsByUser(String predictionId, int month) {
+        // implement method
+    }
+
+        // Common
 
     private void validateUserPickValue(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
@@ -513,28 +592,6 @@ public class PredictionValidation {
             Log.debug("Prediction " + predictionId + " count-lost with status 23: \n- user_pick_value > 15");
         } else {
             Log.error("Unknown user_pick_value!");
-        }
-    }
-
-    private void validateResultSeas(String predictionId) {
-        PredictionOperations predOp = new PredictionOperations(conn);
-        String result = predOp.getDbPredictionResult(predictionId);
-
-        if (result.equals("void")) {
-            validateVoidResultSeas(predictionId);
-        } else {
-            Log.debug("result is valid");
-        }
-    }
-
-    private void validateResultMon(String predictionId, int month) {
-        PredictionOperations predOp = new PredictionOperations(conn);
-        String result = predOp.getDbPredictionResult(predictionId);
-
-        if (result.equals("void")) {
-            validateVoidResultMon(predictionId, month);
-        } else {
-            Log.debug("result is valid");
         }
     }
 
@@ -607,20 +664,9 @@ public class PredictionValidation {
         }
     }
 
-    private void checkIfMoreThan100BetsByUser(String predictionId) {
-        PredictionOperations predOp = new PredictionOperations(conn);
-        int predictionIndex = predOp.getPredictionIndexInSeasContest(predictionId, contestId);
-
-        if (predictionIndex > 100) {
-            updateValidityStatus(predictionId, 17);
-            Log.debug("Prediction " + predictionId + " does not count with status 17:\n" +
-                    "- user already placed 100 predictions in contest\n" +
-                    "- current prediction is #" + predictionIndex + " in contest");
-        } else {
-            Log.debug("The prediction is within <= 100 allowed predictions per contest\n" +
-                    "- current prediction is #" + predictionIndex);
-        }
-    }
+    /******************************************
+        MAIN method
+     ******************************************/
 
     public boolean validatePredictions() {
         boolean newInvalidPredictionsFound = false;
