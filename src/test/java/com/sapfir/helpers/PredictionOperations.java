@@ -358,7 +358,7 @@ public class PredictionOperations {
                                 "date_predicted, competitors, market, option1_name, option1_value, \n" +
                                 "option2_name, option2_value, option3_name, option3_value, user_pick_name, \n" +
                                 "user_pick_value, unit_outcome, date_created) \n" +
-                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
                 );
                 sql.setString(1, predictionID);
                 sql.setString(2, cop.getActiveSeasonalContestID());
