@@ -52,7 +52,8 @@ public class PredictionValidation {
         return mainScore.contains("abn.") ||
                 mainScore.contains(" w.o.") ||
                 mainScore.contains(" ret.") ||
-                mainScore.contains("canc.");
+                mainScore.contains("canc.") ||
+                mainScore.contains("award.");
     }
 
     private int getCountValidPredictionsOver10ExclCurrent(String predictionId) {
