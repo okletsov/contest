@@ -19,7 +19,7 @@ public class CommonElements {
     }
 
     @FindBy(css = "#user-header-r2 li:nth-child(5) a")
-    private WebElement username;
+    public WebElement username;
 
     public void openProfilePage(){
         Log.debug("Clicking Username...");

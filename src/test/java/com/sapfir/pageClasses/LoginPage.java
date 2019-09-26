@@ -1,6 +1,7 @@
 package com.sapfir.pageClasses;
 
 import com.sapfir.helpers.Properties;
+import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -30,6 +31,8 @@ public class LoginPage {
 
     public void signIn(){
         Properties prop = new Properties();
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        CommonElements ce = new CommonElements(driver);
 
         String siteUsername = prop.getSiteUsername();
         String sitePassword = prop.getSitePassword();
@@ -46,6 +49,7 @@ public class LoginPage {
         loginButton.click();
         Log.debug("Clicked Login button");
 
+        sm.waitForElement(ce.username, 10);
         Log.info("Successfully logged in");
     }
 }

@@ -56,8 +56,8 @@
           <configuration>
             <systemPropertyVariables>
              <log4j.configurationFile>resources/log4j2.xml</log4j.configurationFile>
-             <year>2018</year>
-             <season>Winter</season>
+             <year>2019</year>
+             <season>Autumn</season>
             </systemPropertyVariables>
           </configuration>
         </plugin>
