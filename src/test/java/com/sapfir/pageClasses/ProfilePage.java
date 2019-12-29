@@ -25,7 +25,7 @@ public class ProfilePage {
     }
 
     @FindBy(id = "feed_menu_following")
-    private WebElement followingTab;
+    public WebElement followingTab;
 
     @FindBy(css = "#profile-following [type=submit]")
     private WebElement saveChangesButton;
