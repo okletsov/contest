@@ -61,7 +61,7 @@ public class Test_Predictions {
 
         pp.viewParticipants();
         pp.clickParticipantUsername(username);
-        pp.viewPredictions();
+        pp.viewPredictions(username);
 
         List<String> predictions = pi.getPredictions();
 //        List<String> predictions = new ArrayList<>();
@@ -77,7 +77,7 @@ public class Test_Predictions {
                Log.warn("Prediction " + predictionID + " was removed by " + username +
                        ". Exist in db? - " + predictionExist);
             } else{
-                boolean predictionFinalized = predOp.predictionFinalized(predictionID);
+                boolean predictionFinalized = predOp.predictionFinalized(predictionID, username);
                 if (!predictionFinalized) {
                     predOp.updatePrediction(predictionID);
                 }

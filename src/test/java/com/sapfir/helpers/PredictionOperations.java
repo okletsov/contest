@@ -419,7 +419,7 @@ public class PredictionOperations {
         return predictionExist;
     }
 
-    public boolean predictionFinalized(String predictionID) {
+    public boolean predictionFinalized(String predictionID, String username) {
         /*
             Prediction is finalized when the event was completed and prediction was written to database after that.
             It means there are no other changes to prediction can happen on website
@@ -430,7 +430,7 @@ public class PredictionOperations {
         boolean predictionFinalized;
         String dbPredictionResult = getDbPredictionResult(predictionID);
         predictionFinalized = !dbPredictionResult.equals("not-played");
-        Log.info("Prediction " + predictionID + " finalized? - " + predictionFinalized);
+        Log.info(username + ": prediction " + predictionID + " finalized? - " + predictionFinalized);
         return predictionFinalized;
     }
 

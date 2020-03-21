@@ -79,7 +79,7 @@ public class ProfilePage {
         sm.waitForElement(feedTab, 10);
     }
 
-    public void viewPredictions() {
+    public void viewPredictions(String username) {
         /*
             This method will click on the Feed tab and wait for one of the following conditions to be true:
                 - at least one prediction appears on page
@@ -87,7 +87,7 @@ public class ProfilePage {
 
             If there are predictions the method will use clickViewMoreButton method to load all predictions
          */
-        Log.debug("Viewing predictions...");
+        Log.debug(username + ": starting to load predictions");
         feedTab.click();
 
         SeleniumMethods sm = new SeleniumMethods(driver);
@@ -102,7 +102,7 @@ public class ProfilePage {
         if (predictionsPresent) {
             Log.debug("Feed loaded");
             clickViewMoreButton();
-            Log.info("All predictions loaded");
+            Log.info(username + ": all predictions loaded");
         }
         if (noPredictionsTextPresent) {Log.info("User does not have any predictions");}
     }
