@@ -54,10 +54,13 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.0</version>
           <configuration>
+            <suiteXmlFiles>
+              <suiteXmlFile>testng.xml</suiteXmlFile>
+            </suiteXmlFiles>
             <systemPropertyVariables>
              <log4j.configurationFile>resources/log4j2.xml</log4j.configurationFile>
-             <year>2018</year>
-             <season>Autumn</season>
+             <year>2020</year>
+             <season>Spring</season>
             </systemPropertyVariables>
           </configuration>
         </plugin>

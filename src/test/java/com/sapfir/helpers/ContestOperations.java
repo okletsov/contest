@@ -211,7 +211,7 @@ public class ContestOperations {
     public String getActiveSeasonalContestID() {
 
         Log.trace("Getting active seasonal contest ID...");
-        String sql = "select * from contest where is_active = 1 and type = 'seasonal';";
+        String sql = "select id from contest where is_active = 1 and type = 'seasonal';";
         DatabaseOperations dbOp = new DatabaseOperations();
         String contestID = dbOp.getSingleValue(conn,"id", sql);
 
@@ -220,4 +220,5 @@ public class ContestOperations {
 
         return contestID;
     }
+
 }

@@ -17,12 +17,12 @@ public class DatabaseOperations {
         Connection conn = null;
 
         try {
-            Log.debug("Connecting to database...");
+            Log.trace("Connecting to database...");
             conn = DriverManager.getConnection(
                     prop.getDatabaseURL(),
                     prop.getDatabaseUsername(),
                     prop.getDatabasePassword());
-            Log.info("Successfully connected to database...");
+            Log.trace("Successfully connected to database...");
 
         } catch (SQLException ex) {
 
@@ -37,10 +37,10 @@ public class DatabaseOperations {
 
     public void closeConnection(Connection conn){
         try {
-            Log.debug("Closing connection...");
+            Log.trace("Closing connection...");
             if (conn != null){
                 conn.close();
-                Log.info("Connection closed successfully");
+                Log.trace("Connection closed successfully");
             } else {
                 Log.error("Unable to close connection because connection is null");
             }
