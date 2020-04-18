@@ -11,7 +11,7 @@ For /F "tokens=1* delims==" %%A IN (config.properties) DO (IF "%%A"=="backupDb_p
 
 :: cding to prod db and generating db dump file
 cd /d "%prodDb_path%"
-mysqldump --port 3306 -u root -p%prodDb_password% --databases main > dump.sql
+mysqldump --port 3306 -u root -p%prodDb_password% --databases main --add-drop-database > dump.sql
 
 :: cding to backup db and applying db dump file
 cd /d "%backupDb_path%"
