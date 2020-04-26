@@ -19,7 +19,8 @@ public class ValidityStatuses {
 
         Log.debug("Getting validity statuses from db...");
         DatabaseOperations dbOp = new DatabaseOperations();
-        String sql = "select status, description from validity;";
+
+        String sql = "select status, description from validity_statuses;";
         List<HashMap<String, Object>> list = dbOp.getListOfHashMaps(conn, sql);
 
         int key;

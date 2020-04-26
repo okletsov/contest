@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class PredictionOperations {
@@ -23,7 +22,7 @@ public class PredictionOperations {
         this.conn = conn;
     }
 
-    private Connection conn;
+    private final Connection conn;
     private WebDriver driver;
 
     public String getDbPredictionResult(String predictionID) {
@@ -353,37 +352,40 @@ public class PredictionOperations {
             try {
                 sql = conn.prepareStatement(
                         "insert into prediction \n" +
-                                "(id, seasonal_contest_id, user_id, event_identifier, sport, region, \n" +
+                                "(id, seasonal_contest_id, seasonal_validity_status_overruled, " +
+                                "monthly_validity_status_overruled, user_id, event_identifier, sport, region, \n" +
                                 "tournament_name, main_score, detailed_score, result, date_scheduled, \n" +
                                 "date_predicted, competitors, market, option1_name, option1_value, \n" +
                                 "option2_name, option2_value, option3_name, option3_value, user_pick_name, \n" +
                                 "user_pick_value, unit_outcome, date_created) \n" +
-                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
                 );
                 sql.setString(1, predictionID);
                 sql.setString(2, cop.getActiveSeasonalContestID());
-                sql.setString(3, uo.getUserID(username));
-                sql.setString(4, pred.getEventIdentifier(predictionID));
-                sql.setString(5, pred.getSport(predictionID));
-                sql.setString(6, pred.getRegion(predictionID));
-                sql.setString(7, pred.getTournament(predictionID));
-                sql.setString(8, pred.getMainScore(predictionID));
-                sql.setString(9, pred.getDetailedScore(predictionID));
-                sql.setString(10, pred.getResult(predictionID));
-                sql.setString(11, pred.getDateScheduled(predictionID));
-                sql.setString(12, pred.getDatePredicted(predictionID));
-                sql.setString(13, pred.getCompetitorsText(predictionID));
-                sql.setString(14, pred.getMarket(predictionID));
-                sql.setString(15, pred.getOptionName(predictionID, 1));
-                sql.setBigDecimal(16, pred.getOptionValue(predictionID, 1));
-                sql.setString(17, pred.getOptionName(predictionID, 2));
-                sql.setBigDecimal(18, pred.getOptionValue(predictionID, 2));
-                sql.setString(19, pred.getOptionName(predictionID, 3));
-                sql.setBigDecimal(20, pred.getOptionValue(predictionID, 3));
-                sql.setString(21, pred.getOptionName(predictionID, userPick));
-                sql.setBigDecimal(22, pred.getOptionValue(predictionID, userPick));
-                sql.setBigDecimal(23, pred.getUnitOutcome(predictionID));
-                sql.setString(24, dateOp.getTimestamp());
+                sql.setInt(3, 0);
+                sql.setInt(4, 0);
+                sql.setString(5, uo.getUserID(username));
+                sql.setString(6, pred.getEventIdentifier(predictionID));
+                sql.setString(7, pred.getSport(predictionID));
+                sql.setString(8, pred.getRegion(predictionID));
+                sql.setString(9, pred.getTournament(predictionID));
+                sql.setString(10, pred.getMainScore(predictionID));
+                sql.setString(11, pred.getDetailedScore(predictionID));
+                sql.setString(12, pred.getResult(predictionID));
+                sql.setString(13, pred.getDateScheduled(predictionID));
+                sql.setString(14, pred.getDatePredicted(predictionID));
+                sql.setString(15, pred.getCompetitorsText(predictionID));
+                sql.setString(16, pred.getMarket(predictionID));
+                sql.setString(17, pred.getOptionName(predictionID, 1));
+                sql.setBigDecimal(18, pred.getOptionValue(predictionID, 1));
+                sql.setString(19, pred.getOptionName(predictionID, 2));
+                sql.setBigDecimal(20, pred.getOptionValue(predictionID, 2));
+                sql.setString(21, pred.getOptionName(predictionID, 3));
+                sql.setBigDecimal(22, pred.getOptionValue(predictionID, 3));
+                sql.setString(23, pred.getOptionName(predictionID, userPick));
+                sql.setBigDecimal(24, pred.getOptionValue(predictionID, userPick));
+                sql.setBigDecimal(25, pred.getUnitOutcome(predictionID));
+                sql.setString(26, dateOp.getTimestamp());
 
                 sql.executeUpdate();
                 sql.close();
