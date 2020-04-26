@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DatabaseOperations {
@@ -88,6 +89,35 @@ public class DatabaseOperations {
         eq.cleanUp();
         Log.trace("Successfully retrieved array for column " + columnLabel);
         return result;
+    }
+
+    public List<HashMap<String,Object>> getListOfHashMaps (Connection conn, String sql) {
+
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        ResultSet rs = eq.getSelectResult();
+        List<HashMap<String,Object>> list = new ArrayList<>();
+
+        try {
+            ResultSetMetaData md = rs.getMetaData();
+            int columns = md.getColumnCount();
+
+            while (rs.next()) {
+                HashMap<String,Object> row = new HashMap<String, Object>(columns);
+                for(int i=1; i<=columns; ++i) {
+                    row.put(md.getColumnName(i),rs.getObject(i));
+                }
+                list.add(row);
+            }
+        } catch (SQLException ex) {
+            Log.fatal("SQLException: " + ex.getMessage());
+            Log.fatal("SQLState: " + ex.getSQLState());
+            Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            System.exit(0);
+        }
+        eq.cleanUp();
+        Log.trace("Successfully retrieved sql result as a list");
+        return list;
     }
 
 }
