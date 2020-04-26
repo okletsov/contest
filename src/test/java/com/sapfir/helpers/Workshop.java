@@ -5,23 +5,53 @@ import org.openqa.selenium.WebDriver;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Workshop {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         DateTimeOperations dtOp = new DateTimeOperations();
         DatabaseOperations dbOp = new DatabaseOperations();
         Connection conn = dbOp.connectToDatabase();
-        Contest cont = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
-        PredictionValidation predVal = new PredictionValidation(conn);
 
-        PredictionOperations predOp = new PredictionOperations(conn);
+        ValidityStatuses vs = new ValidityStatuses(conn);
+        System.out.println(vs.getDescription(12));
+
+
+/*
+        Map<Integer, String> validityStatuses = new HashMap<Integer, String>();
+
+        String sql = "select * from validity;";
+        List<HashMap<String, Object>> list = dbOp.getListOfHashMaps(conn, sql);
+
+
+        Integer key = null;
+        String value = null;
+
+
+        for (int i = 0; i < list.size(); i++) {
+            key = (int) (list.get(i)).get("status");
+            value = (String) (list.get(i)).get("description");
+
+            validityStatuses.put(key, value);
+        }
+
+        System.out.println("stop here");
+
+ */
+
+
+//        Contest cont = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
+//        PredictionValidation predVal = new PredictionValidation(conn);
+
+//        PredictionOperations predOp = new PredictionOperations(conn);
 //        String dbDateTime = predOp.getDbDateScheduled("feed_item_3191037203");
 //        String timeStamp = dtOp.getTimestamp();
 
