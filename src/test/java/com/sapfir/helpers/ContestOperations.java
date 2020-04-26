@@ -9,13 +9,12 @@ import java.sql.SQLException;
 
 public class ContestOperations {
 
-    private Connection conn;
+    private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
+    private final Connection conn;
 
     public ContestOperations(Connection conn) {
         this.conn = conn;
     }
-
-    private static final Logger Log = LogManager.getLogger(ContestOperations.class.getName());
 
     public void addContest(String year, String season) {
         /*

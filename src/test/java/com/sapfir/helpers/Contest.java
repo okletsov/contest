@@ -1,19 +1,15 @@
 package com.sapfir.helpers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.sql.Connection;
 import java.time.LocalDateTime;
 
 public class Contest {
 
-	private DatabaseOperations dbOp = new DatabaseOperations();
-	private DateTimeOperations dtOp = new DateTimeOperations();
+	private final DatabaseOperations dbOp = new DatabaseOperations();
+	private final DateTimeOperations dtOp = new DateTimeOperations();
 
-	private static final Logger Log = LogManager.getLogger(Contest.class.getName());
-	private Connection conn;
-	private String contestId;
+	private final Connection conn;
+	private final String contestId;
 
 	public Contest(Connection conn, String contestId) {
 		this.conn = conn;
