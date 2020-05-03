@@ -16,6 +16,7 @@ public class PredictionValidationTier1 {
     int seasValidityStatus;
     LocalDateTime dateScheduled;
     LocalDateTime originalDateScheduled;
+    LocalDateTime todayDateTime;
 
     // Contest metadata:
 
@@ -36,6 +37,7 @@ public class PredictionValidationTier1 {
         this.dateScheduledKnown = predOp.isDbDateScheduledKnown(predictionId);
         this.wasPostponed = predOp.eventPostponed(predictionId);
         if (dateScheduledKnown) { this.dateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbDateScheduled(predictionId)); }
+        if (!dateScheduledKnown) { this.todayDateTime = dtOp.convertToDateTimeFromString(dtOp.getTimestamp()); }
         if (wasPostponed) { this.originalDateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbOriginalDateScheduled(predictionId)); }
 
         // Getting contest metadata:
@@ -71,7 +73,7 @@ public class PredictionValidationTier1 {
         // If date_scheduled is unknown check if contest should already be over
         // (in other words check if a bet for a tournament winner should belong to contest)
 
-        // Improve getDbSeasValidityStatus method to work for both seasonal and monthly contests
+        if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; }
 
         return 1;
     }
