@@ -486,7 +486,7 @@ public class PredictionValidation {
                                 "- event was postponed\n" +
                                 "- new date_scheduled is within 24 hours of month contest end date");
                     } else {
-                        int validityStatus = predOp.getDbSeasValidityStatus(predictionId);
+                        int validityStatus = predOp.getDbValidityStatus(predictionId, contestId);
                         if (validityStatus == 1) { // the only expected here  "valid" status
                             predOp.updateMonthlyContestId(predictionId, monContestId);
                             updateValidityStatus(predictionId, 50);

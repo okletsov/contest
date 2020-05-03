@@ -168,8 +168,11 @@ public class PredictionOperations {
         return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
     }
 
-    public int getDbSeasValidityStatus(String predictionID) {
-        String sql = "select seasonal_validity_status from prediction where id = '" + predictionID + "';";
+    public int getDbValidityStatus(String predictionID, String contestId) {
+        Contest contest = new Contest(conn,contestId);
+        String contestType = contest.getContestType();
+
+        String sql = "select " + contestType + "_validity_status from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
         return Integer.parseInt(dbOp.getSingleValue(conn, "seasonal_validity_status", sql));
     }
