@@ -21,9 +21,14 @@ public class Workshop {
         DatabaseOperations dbOp = new DatabaseOperations();
         Connection conn = dbOp.connectToDatabase();
 
-        ValidityStatuses vs = new ValidityStatuses(conn);
-        System.out.println(vs.getDescription(12));
+        System.out.println(ValidityStatuses.validStatuses);
 
+        PredictionOperations predOp = new PredictionOperations(conn);
+//        String dateScheduled = predOp.getDbDateScheduled("feed_item_3191037203");
+        boolean isDateScheduledKnown = predOp.isDbDateScheduledKnown("feed_item_3191037203");
+
+
+        System.out.println("stop here");
 
 /*
         Map<Integer, String> validityStatuses = new HashMap<Integer, String>();

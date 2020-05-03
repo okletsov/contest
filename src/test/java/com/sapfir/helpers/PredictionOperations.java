@@ -132,37 +132,49 @@ public class PredictionOperations {
         return predictionIndex;
     }
 
-    public int getPredictionIndexInSeasContest(String predictionId, String contestId) {
-        // update sql to include validity statuses !!!
-        // make sure to include status for void due to canc etc.
+    public int getPredictionIndexInContest(String predictionId, String contestId) {
 
-        int predictionIndex = -1;
-        String userId = getDbUserId(predictionId);
+        Contest contest = new Contest(conn, contestId);
+        String contestType = contest.getContestType();
 
-        String sql = "select id\n" +
-                "from prediction\n" +
-                "where user_id = '" + userId + "'\n" +
-                "and seasonal_contest_id = '" + contestId + "'\n" +
-                "and (validity_status is null or validity_status not in (10))\n" +
-                "order by date_scheduled, date_predicted;";
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String userId = predOp.getDbUserId(predictionId);
+
+        String validStatuses = ValidityStatuses.validStatuses;
+
+        String sql = "select \n" +
+                "\trow_num\n" +
+                "from\n" +
+                "\t(select \n" +
+                "\t\t\trow_number() over (\n" +
+                "\t\t\t\torder by \n" +
+                "\t\t\t\t\tcase when date_scheduled is null then 1 else 0 end\n" +
+                "\t\t\t\t\t, date_scheduled asc\n" +
+                "                    , date_predicted asc\n" +
+                "\t\t\t\t) row_num\n" +
+                "\t\t\t, id\n" +
+                "\t\tfrom prediction\n" +
+                "        where 1=1\n" +
+                "\t\t\tand " + contestType + "_contest_id = '" + contestId + "'\n" +
+                "            and user_id = '" + userId + "'\n" +
+                "            and " + contestType + "_validity_status in " + validStatuses + "\n" +
+                "            or id = '" + predictionId + "'\n" +
+                "\t\torder by row_num asc\n" +
+                "\t) ordered_table \n" +
+                "where 1=1 \n" +
+                "\tand ordered_table.id = '" + predictionId + "';";
 
         DatabaseOperations dbOp = new DatabaseOperations();
-        ArrayList<String> predictionsInContestByUser = dbOp.getArray(conn, "id", sql);
-
-        for (int i = 0; i < predictionsInContestByUser.size(); i++) {
-            String prediction = predictionsInContestByUser.get(i);
-            if (prediction.equals(predictionId)) {
-                predictionIndex = i + 1;
-            }
-        }
-        return predictionIndex;
+        return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
     }
 
-    public int getDbValidityStatus(String predictionID) {
-        String sql = "select validity_status from prediction where id = '" + predictionID + "';";
-        DatabaseOperations dbOp = new DatabaseOperations();
+    public int getDbValidityStatus(String predictionID, String contestId) {
+        Contest contest = new Contest(conn,contestId);
+        String contestType = contest.getContestType();
 
-        return Integer.parseInt(dbOp.getSingleValue(conn, "validity_status", sql));
+        String sql = "select " + contestType + "_validity_status from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return Integer.parseInt(dbOp.getSingleValue(conn, "seasonal_validity_status", sql));
     }
 
     public float getDbUserPickValue(String predictionId) {
@@ -251,6 +263,23 @@ public class PredictionOperations {
 
         wasPostponed = count != null;
         return wasPostponed;
+    }
+
+    public boolean isDbValidityStatusOverruled(String predictionId, String contestId) {
+
+        Contest contest = new Contest(conn, contestId);
+        String contestType = contest.getContestType();
+
+        String sql = "select " + contestType + "_validity_status_overruled from prediction where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        String stringValue = dbOp.getSingleValue(conn, contestType + "_validity_status_overruled", sql);
+        return stringValue.equals("1");
+    }
+
+    public boolean isDbDateScheduledKnown(String predictionId) {
+        String dateScheduled = getDbDateScheduled(predictionId);
+        return dateScheduled != null;
     }
 
     private void updateMainScore(String predictionID) {
@@ -468,15 +497,4 @@ public class PredictionOperations {
         eq.cleanUp();
     }
 
-    public ArrayList<String> getPredictionsToValidate(String contestId) {
-        String sqlToGetPredictionsToInspect =
-                "select p.id\n" +
-                "from prediction p\n" +
-                "join contest c on c.id = p.seasonal_contest_id\n" +
-                "where c.id = '" + contestId + "'\n" +
-                "order by user_id, date_scheduled, date_predicted;";
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        return dbOp.getArray(conn, "id", sqlToGetPredictionsToInspect);
-    }
 }

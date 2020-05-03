@@ -34,6 +34,8 @@ public class ValidityStatuses {
         Log.debug("Successfully got validity statuses from db");
     }
 
+    public static String validStatuses = "(1, 2)";
+
     public String getDescription(int validityStatus) {
         return validityStatuses.get(validityStatus);
     }

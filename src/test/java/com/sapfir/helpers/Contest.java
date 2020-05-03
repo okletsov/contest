@@ -2,6 +2,7 @@ package com.sapfir.helpers;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Contest {
 
@@ -30,6 +31,11 @@ public class Contest {
 				"	and c1.month = " + month + ";";
 
 		return dbOp.getSingleValue(conn, "id", sql);
+	}
+
+	public String getContestType () {
+		String sql = "select type from contest where id = '" + contestId + "';";
+		return dbOp.getSingleValue(conn, "type", sql);
 	}
 
 	public LocalDateTime getSeasStartDate() {
@@ -88,5 +94,17 @@ public class Contest {
 		//This method subtracts 23hr 59m 59s from month end date
 		LocalDateTime monEndDate = getMonEndDate(monthIndex);
 		return monEndDate.minusSeconds(86399);
+	}
+
+	public ArrayList<String> getPredictionsToValidate() {
+		String sql = "select \n" +
+				"\tid\n" +
+				"from prediction\n" +
+				"where id = 1=1\n" +
+				"\tand seasonal_contest_id = '" + contestId + "'\n" +
+				"order by case when date_scheduled is null then 1 else 0 end\n" +
+				"\t, date_scheduled asc\n" +
+				"    , date_predicted asc;";
+		return dbOp.getArray(conn, "id", sql);
 	}
 }
