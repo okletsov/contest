@@ -8,15 +8,17 @@ import java.time.LocalDateTime;
 
 public class PredictionValidationTier1 {
 
+    LocalDateTime todayDateTime;
+
     // Prediction metadata:
 
     boolean seasValidityStatusOverruled;
     boolean wasPostponed;
     boolean dateScheduledKnown;
     int seasValidityStatus;
+    int indexInSeasContest;
     LocalDateTime dateScheduled;
     LocalDateTime originalDateScheduled;
-    LocalDateTime todayDateTime;
 
     // Contest metadata:
 
@@ -39,6 +41,7 @@ public class PredictionValidationTier1 {
         if (dateScheduledKnown) { this.dateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbDateScheduled(predictionId)); }
         if (!dateScheduledKnown) { this.todayDateTime = dtOp.convertToDateTimeFromString(dtOp.getTimestamp()); }
         if (wasPostponed) { this.originalDateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbOriginalDateScheduled(predictionId)); }
+        this.indexInSeasContest = predOp.getPredictionIndexInContest(predictionId, contestId);
 
         // Getting contest metadata:
 
@@ -70,10 +73,13 @@ public class PredictionValidationTier1 {
             return 11;
         }
 
-        // If date_scheduled is unknown check if contest should already be over
+        // 1.2 If date_scheduled is unknown check if contest should already be over
         // (in other words check if a bet for a tournament winner should belong to contest)
 
         if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; }
+
+        // 1.3 Check if user already has 100 valid predictions
+        if (indexInSeasContest > 100) { return 13; }
 
         return 1;
     }
