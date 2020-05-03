@@ -1,7 +1,9 @@
 package com.sapfir.tests;
 
+import com.sapfir.helpers.Contest;
+import com.sapfir.helpers.ContestOperations;
 import com.sapfir.helpers.DatabaseOperations;
-import com.sapfir.helpers.PredictionValidation;
+import com.sapfir.helpers.PredictionValidationTier1;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
@@ -15,7 +17,7 @@ public class Test_ValidatePredictions {
 
     private static final Logger Log = LogManager.getLogger(Test_ValidatePredictions.class.getName());
 
-    private DatabaseOperations dbOp = new DatabaseOperations();
+    private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
 
     @BeforeClass
@@ -30,13 +32,28 @@ public class Test_ValidatePredictions {
     
     @Test
     public void testPredictions() {
+        // Get active seasonal contest id
+//        ContestOperations contOp = new ContestOperations(conn);
+//        String contestId = contOp.getActiveSeasonalContestID();
+        String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
 
-        PredictionValidation predVal = new PredictionValidation(conn);
-        boolean newInvalidPredictionsFound = predVal.validatePredictions();
+        // Get the list of predictions to validate
+//        Contest contest = new Contest(conn, contestId);
+//        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
 
-        while (newInvalidPredictionsFound) {
-            newInvalidPredictionsFound = predVal.validatePredictions();
+        ArrayList<String> predictionsToValidate = new ArrayList<>();
+        predictionsToValidate.add("feed_item_3120084303");
+
+        // Individually validate each prediction
+        for (String predictionId : predictionsToValidate) {
+
+            // Have individual prediction inspected for season
+            PredictionValidationTier1 t1 = new PredictionValidationTier1(conn, contestId, predictionId);
+            int result = t1.getSeasStatus();
+            System.out.println("Validity status for prediction " + predictionId + ": " + result);
+
+            // Have individual prediction inspected for month 1
+            // Have individual prediction inspected for month 2
         }
     }
-
 }

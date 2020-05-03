@@ -443,7 +443,7 @@ public class PredictionValidation {
 
     private void checkIfMoreThan100SeasBetsByUser(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
-        int predictionIndex = predOp.getPredictionIndexInSeasContest(predictionId, contestId);
+        int predictionIndex = predOp.getPredictionIndexInContest(predictionId, contestId);
 
         if (predictionIndex > 100) {
             updateValidityStatus(predictionId, 17);
@@ -486,7 +486,7 @@ public class PredictionValidation {
                                 "- event was postponed\n" +
                                 "- new date_scheduled is within 24 hours of month contest end date");
                     } else {
-                        int validityStatus = predOp.getDbValidityStatus(predictionId);
+                        int validityStatus = predOp.getDbSeasValidityStatus(predictionId);
                         if (validityStatus == 1) { // the only expected here  "valid" status
                             predOp.updateMonthlyContestId(predictionId, monContestId);
                             updateValidityStatus(predictionId, 50);
@@ -669,17 +669,4 @@ public class PredictionValidation {
         MAIN method
      ******************************************/
 
-    public boolean validatePredictions() {
-        boolean newInvalidPredictionsFound = false;
-
-        PredictionOperations predOp = new PredictionOperations(conn);
-        ArrayList<String> predictionsToValidate = predOp.getPredictionsToValidate(contestId);
-
-        for (String predictionId: predictionsToValidate ) {
-            // add individual validation methods here
-            // check if prediction validity status differs from db. This is needed to determine if it's a new invalid prediction or not
-        }
-
-        return newInvalidPredictionsFound;
-    }
 }
