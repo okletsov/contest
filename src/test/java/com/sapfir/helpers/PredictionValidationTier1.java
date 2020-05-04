@@ -50,36 +50,38 @@ public class PredictionValidationTier1 {
         this.seasEndDate24 = contest.getSeasEndDate24();
     }
 
-    // Get seasonal validity status
-    public int getSeasStatus() {
-
-        // Step 0: check if overruled flag is = 1
-        if (seasValidityStatusOverruled) { return seasValidityStatus; }
-
-        // Step 1: check if prediction should at all belong to current contest
-
-         // 1.1 Check if date_scheduled or original date_scheduled is within contest time frame
-         // (in other words checking if event was originally scheduled within contest time frame)
-
+    public boolean eventDateBelongsToSeasContest() {
         if (wasPostponed &&
                 (originalDateScheduled.isBefore(seasStartDate) ||
-                originalDateScheduled.isAfter(seasEndDate))) {
-            return 11;
+                 originalDateScheduled.isAfter(seasEndDate))) {
+            return false;
         }
 
         if (!wasPostponed && dateScheduledKnown &&
                 (dateScheduled.isBefore(seasStartDate) ||
-                dateScheduled.isAfter(seasEndDate))) {
-            return 11;
+                 dateScheduled.isAfter(seasEndDate))) {
+            return false;
         }
 
-        // 1.2 If date_scheduled is unknown check if contest should already be over
-        // (in other words check if a bet for a tournament winner should belong to contest)
+        return true;
+    }
 
-        if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; }
+    // Get seasonal validity status
+    public int getSeasStatus() {
 
-        // 1.3 Check if user already has 100 valid predictions
-        if (indexInSeasContest > 100) { return 13; }
+        /*
+            Step 0: check is seasonal_validity_status was overruled
+            Step 1: check if prediction should at all belong to current contest
+                    1.1 Checking if event was originally scheduled within contest time frame
+                    1.2 If date_scheduled is unknown check if contest is already over
+                    1.3 Check if user already has 100 valid predictions
+         */
+
+
+        if (seasValidityStatusOverruled) { return seasValidityStatus; } // Step 0
+        if (!eventDateBelongsToSeasContest()) { return 11; } // Step 1.1
+        if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; } // Step 1.2
+        if (indexInSeasContest > 100) { return 13; } // Step 1.3
 
         return 1;
     }
