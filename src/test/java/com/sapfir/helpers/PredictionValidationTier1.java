@@ -50,7 +50,7 @@ public class PredictionValidationTier1 {
         this.seasEndDate24 = contest.getSeasEndDate24();
     }
 
-    public boolean eventDateBelongsToSeasContest() {
+    private boolean eventDateBelongsToSeasContest() {
         if (wasPostponed &&
                 (originalDateScheduled.isBefore(seasStartDate) ||
                  originalDateScheduled.isAfter(seasEndDate))) {
@@ -77,8 +77,8 @@ public class PredictionValidationTier1 {
                     1.3 Check if user already has 100 valid predictions
          */
 
-
         if (seasValidityStatusOverruled) { return seasValidityStatus; } // Step 0
+
         if (!eventDateBelongsToSeasContest()) { return 11; } // Step 1.1
         if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; } // Step 1.2
         if (indexInSeasContest > 100) { return 13; } // Step 1.3
