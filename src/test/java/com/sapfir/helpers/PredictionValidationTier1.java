@@ -15,10 +15,12 @@ public class PredictionValidationTier1 {
     boolean seasValidityStatusOverruled;
     boolean wasPostponed;
     boolean dateScheduledKnown;
+    boolean predictionQuarterGoal;
     int seasValidityStatus;
     int indexInSeasContest;
     LocalDateTime dateScheduled;
     LocalDateTime originalDateScheduled;
+    float userPickValue;
 
     // Contest metadata:
 
@@ -42,6 +44,8 @@ public class PredictionValidationTier1 {
         if (!dateScheduledKnown) { this.todayDateTime = dtOp.convertToDateTimeFromString(dtOp.getTimestamp()); }
         if (wasPostponed) { this.originalDateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbOriginalDateScheduled(predictionId)); }
         this.indexInSeasContest = predOp.getPredictionIndexInContest(predictionId, contestId);
+        this.userPickValue = predOp.getDbUserPickValue(predictionId);
+        this.predictionQuarterGoal = predOp.isQuarterGoal(predictionId);
 
         // Getting contest metadata:
 
@@ -75,6 +79,9 @@ public class PredictionValidationTier1 {
                     1.1 Checking if event was originally scheduled within contest time frame
                     1.2 If date_scheduled is unknown check if contest is already over
                     1.3 Check if user already has 100 valid predictions
+            Step 2: if step 1 is ok check if user violated any rules for which prediction should be count lost:
+                    2.1 Check if user_pick_value is less than 1.5 or more than 15
+                    2.2 Check if prediction is quarter goal and user_pick_value is less than 2
          */
 
         if (seasValidityStatusOverruled) { return seasValidityStatus; } // Step 0
@@ -82,6 +89,9 @@ public class PredictionValidationTier1 {
         if (!eventDateBelongsToSeasContest()) { return 11; } // Step 1.1
         if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; } // Step 1.2
         if (indexInSeasContest > 100) { return 13; } // Step 1.3
+
+        if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
+        if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2
 
         return 1;
     }

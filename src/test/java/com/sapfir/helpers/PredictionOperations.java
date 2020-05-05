@@ -282,6 +282,17 @@ public class PredictionOperations {
         return dateScheduled != null;
     }
 
+    public boolean isQuarterGoal(String predictionId) {
+        PredictionOperations predOp = new PredictionOperations(conn);
+        String market = predOp.getDbMarket(predictionId);
+
+        if (market.startsWith("AH ") || market.startsWith("O/U " )) {
+            return  market.contains(".25") || market.contains(".75");
+        } else {
+            return false;
+        }
+    }
+
     private void updateMainScore(String predictionID) {
         Log.debug("Updating main score for prediction " + predictionID + "...");
         PredictionsInspection pi = new PredictionsInspection(driver);
