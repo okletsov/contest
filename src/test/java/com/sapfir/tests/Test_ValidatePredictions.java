@@ -38,11 +38,11 @@ public class Test_ValidatePredictions {
         String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
 
         // Get the list of predictions to validate
-//        Contest contest = new Contest(conn, contestId);
-//        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
+        Contest contest = new Contest(conn, contestId);
+        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
 
-        ArrayList<String> predictionsToValidate = new ArrayList<>();
-        predictionsToValidate.add("feed_item_3263442303");
+//        ArrayList<String> predictionsToValidate = new ArrayList<>();
+//        predictionsToValidate.add("feed_item_3195228603");
 
         // Individually validate each prediction
         for (String predictionId : predictionsToValidate) {

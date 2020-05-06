@@ -18,6 +18,7 @@ public class PredictionValidationTier1 {
     boolean predictionQuarterGoal;
     int seasValidityStatus;
     int indexInSeasContest;
+    int indexWithOddsBetween10And15InMonth;
     LocalDateTime dateScheduled;
     LocalDateTime originalDateScheduled;
     float userPickValue;
@@ -46,6 +47,7 @@ public class PredictionValidationTier1 {
         this.indexInSeasContest = predOp.getPredictionIndexInContest(predictionId, contestId);
         this.userPickValue = predOp.getDbUserPickValue(predictionId);
         this.predictionQuarterGoal = predOp.isQuarterGoal(predictionId);
+        this.indexWithOddsBetween10And15InMonth = predOp.getIndexWithOddsBetween10And15InMonth(predictionId);
 
         // Getting contest metadata:
 
@@ -82,6 +84,7 @@ public class PredictionValidationTier1 {
             Step 2: if step 1 is ok check if user violated any rules for which prediction should be count lost:
                     2.1 Check if user_pick_value is less than 1.5 or more than 15
                     2.2 Check if prediction is quarter goal and user_pick_value is less than 2
+                    2.3 Check if user made more than 1 prediction with user_pick_value between 10.01 and 15 in a given month
          */
 
         if (seasValidityStatusOverruled) { return seasValidityStatus; } // Step 0
@@ -92,6 +95,7 @@ public class PredictionValidationTier1 {
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
         if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2
+        if (indexWithOddsBetween10And15InMonth > 1) { return 23; } // Step 2.3
 
         return 1;
     }

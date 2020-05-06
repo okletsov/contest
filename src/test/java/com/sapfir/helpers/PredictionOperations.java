@@ -137,8 +137,7 @@ public class PredictionOperations {
         Contest contest = new Contest(conn, contestId);
         String contestType = contest.getContestType();
 
-        PredictionOperations predOp = new PredictionOperations(conn);
-        String userId = predOp.getDbUserId(predictionId);
+        String userId = getDbUserId(predictionId);
 
         String validStatuses = ValidityStatuses.validStatuses;
 
@@ -163,6 +162,36 @@ public class PredictionOperations {
                 "\t) ordered_table \n" +
                 "where 1=1 \n" +
                 "\tand ordered_table.id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
+    }
+
+    public int getIndexWithOddsBetween10And15InMonth(String predictionId) {
+
+        String contestId = getDbSeasContestId(predictionId);
+        String userId = getDbUserId(predictionId);
+        String validStatuses = ValidityStatuses.validStatuses;
+        String datePredicted = getDbDatePredicted(predictionId);
+
+        String sql = "select \n" +
+                "\tt1.row_num\n" +
+                "from\n" +
+                "\t(select \n" +
+                "\t\trow_number() over (order by date_predicted asc) row_num\n" +
+                "\t\t, id\n" +
+                "\tfrom prediction p \n" +
+                "\twhere 1=1\n" +
+                "\t\tand seasonal_contest_id = '" + contestId + "'\n" +
+                "\t\tand user_id = '" + userId + "'\n" +
+                "\t\tand user_pick_value > 10\n" +
+                "\t\tand user_pick_value <= 15\n" +
+                "\t \tand seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\tand month(date(convert_tz(date_predicted, 'UTC', 'Europe/Kiev'))) = month(date(convert_tz('" + datePredicted + "', 'UTC', 'Europe/Kiev')))\n" +
+                "\t \tor id = '" + predictionId + "'\n" +
+                "\torder by row_num asc) t1\n" +
+                "where 1=1\n" +
+                "\tand t1.id = '" + predictionId + "';";
 
         DatabaseOperations dbOp = new DatabaseOperations();
         return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));

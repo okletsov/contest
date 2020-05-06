@@ -100,7 +100,7 @@ public class Contest {
 		String sql = "select \n" +
 				"\tid\n" +
 				"from prediction\n" +
-				"where id = 1=1\n" +
+				"where 1=1\n" +
 				"\tand seasonal_contest_id = '" + contestId + "'\n" +
 				"order by case when date_scheduled is null then 1 else 0 end\n" +
 				"\t, date_scheduled asc\n" +
