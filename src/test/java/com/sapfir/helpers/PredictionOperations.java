@@ -55,6 +55,36 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "original_date_scheduled", sql);
     }
 
+    public String getDbInitialDateScheduled(String predictionId) {
+        String sql = "select \n" +
+                "\tmin(t1.date_scheduled) as initial_date_scheduled\n" +
+                "from (\n" +
+                "\tselect \n" +
+                "\t\tp.id \n" +
+                "\t\t, p.date_scheduled\n" +
+                "\t\t, p.date_predicted \n" +
+                "\tfrom prediction p\n" +
+                "\twhere 1=1\n" +
+                "\t\tand p.id = '" + predictionId + "'\n" +
+                "\t\n" +
+                "\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
+                "\t\n" +
+                "\tselect \n" +
+                "\t\tpsc.prediction_id\n" +
+                "\t\t, psc.previous_date_scheduled\n" +
+                "\t\t, p2.date_predicted \n" +
+                "\tfrom prediction_schedule_changes psc\n" +
+                "\t\tjoin prediction p2 on psc.prediction_id = p2.id \n" +
+                "\twhere 1=1 \n" +
+                "\t\tand psc.prediction_id = '" + predictionId + "'\n" +
+                "\t) t1\n" +
+                "where 1=1\n" +
+                "group by t1.id;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "initial_date_scheduled", sql);
+    }
+
     public String getDbUserId(String predictionId) {
         String sql = "select user_id from prediction where id = '" + predictionId + "';";
 

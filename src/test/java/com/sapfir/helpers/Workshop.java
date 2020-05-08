@@ -25,7 +25,7 @@ public class Workshop {
 
         PredictionOperations predOp = new PredictionOperations(conn);
 //        String dateScheduled = predOp.getDbDateScheduled("feed_item_3191037203");
-        boolean isDateScheduledKnown = predOp.isDbDateScheduledKnown("feed_item_3191037203");
+        String initialDateScheduled = predOp.getDbInitialDateScheduled("feed_item_3438974703");
 
 
         System.out.println("stop here");
