@@ -98,13 +98,42 @@ public class Contest {
 
 	public ArrayList<String> getPredictionsToValidate() {
 		String sql = "select \n" +
-				"\tid\n" +
-				"from prediction\n" +
+				"\tt2.id\n" +
+				"from (\n" +
+				"\tselect \n" +
+				"\t\tt1.id\n" +
+				"\t\t, min(t1.date_scheduled) as initial_date_scheduled\n" +
+				"\t\t, t1.date_predicted\n" +
+				"\tfrom (\n" +
+				"\t\tselect \n" +
+				"\t\t\tp.id \n" +
+				"\t\t\t, p.date_scheduled\n" +
+				"\t\t\t, p.date_predicted \n" +
+				"\t\tfrom prediction p\n" +
+				"\t\twhere 1=1\n" +
+				"\t\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
+				"\t\t\n" +
+				"\t\tunion all\n" +
+				"\t\t\n" +
+				"\t\tselect \n" +
+				"\t\t\tpsc.prediction_id\n" +
+				"\t\t\t, psc.previous_date_scheduled\n" +
+				"\t\t\t, p2.date_predicted \n" +
+				"\t\tfrom prediction_schedule_changes psc\n" +
+				"\t\t\tjoin prediction p2 on psc.prediction_id = p2.id \n" +
+				"\t\twhere 1=1 \n" +
+				"\t\t\tand p2.seasonal_contest_id = '" + contestId + "'\n" +
+				"\t\t) t1\n" +
+				"\twhere 1=1\n" +
+				"\tgroup by \n" +
+				"\t\tt1.id\n" +
+				"\t\t, t1.date_predicted\n" +
+				"\t) t2\n" +
 				"where 1=1\n" +
-				"\tand seasonal_contest_id = '" + contestId + "'\n" +
-				"order by case when date_scheduled is null then 1 else 0 end\n" +
-				"\t, date_scheduled asc\n" +
-				"    , date_predicted asc;";
+				"order by \n" +
+				"\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+				"\t, t2.initial_date_scheduled asc\n" +
+				"\t, t2.date_predicted asc;";
 		return dbOp.getArray(conn, "id", sql);
 	}
 }
