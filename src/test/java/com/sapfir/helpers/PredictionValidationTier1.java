@@ -20,7 +20,7 @@ public class PredictionValidationTier1 {
     int indexInSeasContest;
     int indexWithOddsBetween10And15InMonth;
     LocalDateTime dateScheduled;
-    LocalDateTime originalDateScheduled;
+    LocalDateTime initialDateScheduled;
     float userPickValue;
 
     // Contest metadata:
@@ -42,8 +42,8 @@ public class PredictionValidationTier1 {
         this.dateScheduledKnown = predOp.isDbDateScheduledKnown(predictionId);
         this.wasPostponed = predOp.eventPostponed(predictionId);
         if (dateScheduledKnown) { this.dateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbDateScheduled(predictionId)); }
+        if (dateScheduledKnown) { this.initialDateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbInitialDateScheduled(predictionId)); }
         if (!dateScheduledKnown) { this.todayDateTime = dtOp.convertToDateTimeFromString(dtOp.getTimestamp()); }
-        if (wasPostponed) { this.originalDateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbOriginalDateScheduled(predictionId)); }
         this.indexInSeasContest = predOp.getPredictionIndexInContest(predictionId, contestId);
         this.userPickValue = predOp.getDbUserPickValue(predictionId);
         this.predictionQuarterGoal = predOp.isQuarterGoal(predictionId);
@@ -57,19 +57,15 @@ public class PredictionValidationTier1 {
     }
 
     private boolean eventDateBelongsToSeasContest() {
-        if (wasPostponed &&
-                (originalDateScheduled.isBefore(seasStartDate) ||
-                 originalDateScheduled.isAfter(seasEndDate))) {
+
+        if (dateScheduledKnown &&
+                (initialDateScheduled.isBefore(seasStartDate) ||
+                initialDateScheduled.isAfter(seasEndDate))) {
             return false;
+        } else {
+            return true;
         }
 
-        if (!wasPostponed && dateScheduledKnown &&
-                (dateScheduled.isBefore(seasStartDate) ||
-                 dateScheduled.isAfter(seasEndDate))) {
-            return false;
-        }
-
-        return true;
     }
 
     // Get seasonal validity status
