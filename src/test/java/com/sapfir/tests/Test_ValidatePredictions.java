@@ -35,14 +35,14 @@ public class Test_ValidatePredictions {
         // Get active seasonal contest id
 //        ContestOperations contOp = new ContestOperations(conn);
 //        String contestId = contOp.getActiveSeasonalContestID();
-        String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
+        String contestId = "5b6dd5a7-29ea-11ea-9120-74852a015562";
 
         // Get the list of predictions to validate
 //        Contest contest = new Contest(conn, contestId);
 //        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
 
         ArrayList<String> predictionsToValidate = new ArrayList<>();
-        predictionsToValidate.add("feed_item_3200503203");
+        predictionsToValidate.add("feed_item_4022981003");
 
         // Individually validate each prediction
         for (String predictionId : predictionsToValidate) {

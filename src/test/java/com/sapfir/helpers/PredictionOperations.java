@@ -292,6 +292,33 @@ public class PredictionOperations {
         return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
     }
 
+    public int getPredictionIndexPerEventPerUser(String predictionId) {
+        String contestId = getDbSeasContestId(predictionId);
+        String userId = getDbUserId(predictionId);
+        String eventIdentifier = getDbEventIdentifier(predictionId);
+        String validStatuses = ValidityStatuses.validStatuses;
+
+        String sql = "select \n" +
+                "\tt1.row_num\n" +
+                "from (\n" +
+                "\tselect\n" +
+                "\t\trow_number() over(order by p.date_predicted asc) row_num\n" +
+                "\t\t, p.id\n" +
+                "\tfrom prediction p \n" +
+                "\twhere 1=1\n" +
+                "\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
+                "\t\tand p.user_id = '" + userId + "'\n" +
+                "\t\tand event_identifier = '" + eventIdentifier + "'\n" +
+                "\t\tand seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\tor p.id = '" + predictionId + "'\n" +
+                "\t) t1\n" +
+                "where 1=1\n" +
+                "\tand t1.id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
+    }
+
     public int getDbValidityStatus(String predictionID, String contestId) {
         Contest contest = new Contest(conn,contestId);
         String contestType = contest.getContestType();
