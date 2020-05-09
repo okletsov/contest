@@ -47,7 +47,7 @@ public class PredictionValidationTier1 {
         this.indexInSeasContest = predOp.getPredictionIndexInContest(predictionId, contestId);
         this.userPickValue = predOp.getDbUserPickValue(predictionId);
         this.predictionQuarterGoal = predOp.isQuarterGoal(predictionId);
-        this.indexWithOddsBetween10And15InMonth = predOp.getIndexWithOddsBetween10And15InMonth(predictionId);
+        this.indexWithOddsBetween10And15InMonth = predOp.getPredictionIndexWithOddsBetween10And15InMonth(predictionId);
 
         // Getting contest metadata:
 
@@ -91,7 +91,7 @@ public class PredictionValidationTier1 {
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
         if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2
-        if (indexWithOddsBetween10And15InMonth > 1) { return 23; } // Step 2.3
+        if (dateScheduledKnown && indexWithOddsBetween10And15InMonth > 1) { return 23; } // Step 2.3
 
         return 1;
     }

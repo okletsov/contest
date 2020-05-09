@@ -25,7 +25,7 @@ public class Workshop {
 
         PredictionOperations predOp = new PredictionOperations(conn);
 //        String dateScheduled = predOp.getDbDateScheduled("feed_item_3191037203");
-        int row_num = predOp.getPredictionIndexInContest("feed_item_4155472603", "bd2ac2ef-68b6-11ea-a24f-74852a015562");
+        int row_num = predOp.getPredictionIndexInContest("feed_item_3191037203", "2deb734e-ce85-11e8-8022-74852a015562");
 
 
         System.out.println("stop here");
