@@ -172,26 +172,54 @@ public class PredictionOperations {
         String validStatuses = ValidityStatuses.validStatuses;
 
         String sql = "select \n" +
-                "\trow_num\n" +
-                "from\n" +
-                "\t(select \n" +
-                "\t\t\trow_number() over (\n" +
-                "\t\t\t\torder by \n" +
-                "\t\t\t\t\tcase when date_scheduled is null then 1 else 0 end\n" +
-                "\t\t\t\t\t, date_scheduled asc\n" +
-                "                    , date_predicted asc\n" +
-                "\t\t\t\t) row_num\n" +
-                "\t\t\t, id\n" +
-                "\t\tfrom prediction\n" +
-                "        where 1=1\n" +
-                "\t\t\tand " + contestType + "_contest_id = '" + contestId + "'\n" +
-                "            and user_id = '" + userId + "'\n" +
-                "            and " + contestType + "_validity_status in " + validStatuses + "\n" +
-                "            or id = '" + predictionId + "'\n" +
-                "\t\torder by row_num asc\n" +
-                "\t) ordered_table \n" +
-                "where 1=1 \n" +
-                "\tand ordered_table.id = '" + predictionId + "';";
+                "\tt3.row_num\n" +
+                "from (\t\n" +
+                "\tselect \n" +
+                "\t\trow_number() over (\n" +
+                "\t\t\t\t\torder by \n" +
+                "\t\t\t\t\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+                "\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
+                "\t                    , date_predicted asc\n" +
+                "\t\t\t\t\t) row_num\n" +
+                "\t\t, t2.id\n" +
+                "\tfrom (\n" +
+                "\t\tselect \n" +
+                "\t\t\tt1.id\n" +
+                "\t\t\t, min(t1.date_scheduled) as initial_date_scheduled\n" +
+                "\t\t\t, t1.date_predicted\n" +
+                "\t\tfrom (\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\tp.id \n" +
+                "\t\t\t\t, p.date_scheduled\n" +
+                "\t\t\t\t, p.date_predicted \n" +
+                "\t\t\tfrom prediction p\n" +
+                "\t\t\twhere 1=1\n" +
+                "\t\t\t\tand p." + contestType + "_contest_id = '" + contestId + "'\n" +
+                "\t\t\t\tand p.user_id = '" + userId + "'\n" +
+                "\t\t\t\tand p." + contestType + "_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tor p.id = '" + predictionId + "'\n" +
+                "\t\t\t\n" +
+                "\t\t\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
+                "\t\t\t\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\tpsc.prediction_id\n" +
+                "\t\t\t\t, psc.previous_date_scheduled\n" +
+                "\t\t\t\t, p2.date_predicted \n" +
+                "\t\t\tfrom prediction_schedule_changes psc\n" +
+                "\t\t\t\tjoin prediction p2 on psc.prediction_id = p2.id \n" +
+                "\t\t\twhere 1=1 \n" +
+                "\t\t\t\tand p2." + contestType + "_contest_id = '" + contestId + "'\n" +
+                "\t\t\t\tand p2.user_id = '" + userId + "'\n" +
+                "\t\t\t\tand p2." + contestType + "_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tor p2.id = '" + predictionId + "'\n" +
+                "\t\t\t) t1\n" +
+                "\t\twhere 1=1\n" +
+                "\t\tgroup by \n" +
+                "\t\t\tt1.id\n" +
+                "\t\t\t, t1.date_predicted\n" +
+                "\t\t) t2\n" +
+                "\t) t3\n" +
+                "where t3.id = '" + predictionId + "';";
 
         DatabaseOperations dbOp = new DatabaseOperations();
         return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
