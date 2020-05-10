@@ -136,6 +136,13 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "id", sql);
     }
 
+    public String getDbUserPickName(String predictionId) {
+        String sql = "select user_pick_name from prediction p where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "user_pick_name", sql);
+    }
+
     public int getPredictionIndexOnGivenDayByUser(String predictionId) {
         String contestId = getDbSeasContestId(predictionId);
         String userId = getDbUserId(predictionId);

@@ -24,6 +24,7 @@ public class PredictionValidationTier1 {
     LocalDateTime dateScheduled;
     LocalDateTime initialDateScheduled;
     float userPickValue;
+    String userPickName;
 
     // Contest metadata:
 
@@ -52,6 +53,7 @@ public class PredictionValidationTier1 {
         if (dateScheduledKnown) {this.indexWithOddsBetween10And15InMonth = predOp.getPredictionIndexWithOddsBetween10And15InMonth(predictionId); }
         this.indexPerEventPerUser = predOp.getPredictionIndexPerEventPerUser(predictionId);
         if (dateScheduledKnown) { this.indexOnGivenDayByUser = predOp.getPredictionIndexOnGivenDayByUser(predictionId); }
+        this.userPickName = predOp.getDbUserPickName(predictionId);
 
         // Getting contest metadata:
 
@@ -87,6 +89,7 @@ public class PredictionValidationTier1 {
                     2.3 Check if user made more than 1 prediction with user_pick_value between 10.01 and 15 in a given month
                     2.4 Check if user made more than 1 prediction for the same event
                     2.5 Check if user made predictions on more than 10 events per day
+                    2.6 Check if market is Odd/Even (implemented via inspection of user_pick_name)
          */
 
         if (seasValidityStatusOverruled) { return seasValidityStatus; } // Step 0
@@ -100,6 +103,7 @@ public class PredictionValidationTier1 {
         if (dateScheduledKnown && indexWithOddsBetween10And15InMonth > 1) { return 23; } // Step 2.3
         if (indexPerEventPerUser > 1) { return 24; } // Step 2.4
         if (dateScheduledKnown && indexOnGivenDayByUser > 10) { return 25; } // Step 2.5
+        if (userPickName.contains("Odd") || userPickName.contains("Even")) { return 26; } // Step 2.6
 
         return 1;
     }

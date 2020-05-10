@@ -42,7 +42,7 @@ public class Test_ValidatePredictions {
 //        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
 
         ArrayList<String> predictionsToValidate = new ArrayList<>();
-        predictionsToValidate.add("feed_item_3423009803");
+        predictionsToValidate.add("feed_item_3421194503");
 
         // Individually validate each prediction
         for (String predictionId : predictionsToValidate) {
