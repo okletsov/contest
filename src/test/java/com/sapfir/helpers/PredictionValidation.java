@@ -650,7 +650,7 @@ public class PredictionValidation {
         }
 
         if (dateScheduled != null) {
-            int predictionIndexOnDayByUser = predOp.getPredictionIndexOnGivenDayByUser(predictionId, dateScheduled);
+            int predictionIndexOnDayByUser = predOp.getPredictionIndexOnGivenDayByUser(predictionId);
             if (predictionIndexOnDayByUser > 10) {
                 updateValidityStatus(predictionId, 25);
                 Log.debug("Prediction " + predictionId + " count-lost with status 25:\n" +

@@ -136,30 +136,66 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "id", sql);
     }
 
-    public int getPredictionIndexOnGivenDayByUser(String predictionId, String dateScheduled) {
-        // update sql to include validity statuses !!!
-
-        int predictionIndex = -1;
+    public int getPredictionIndexOnGivenDayByUser(String predictionId) {
+        String contestId = getDbSeasContestId(predictionId);
         String userId = getDbUserId(predictionId);
+        String validStatuses = ValidityStatuses.validStatuses;
+        String initialDateScheduled = getDbInitialDateScheduled(predictionId);
 
-        String sql = "select id\n" +
-                "from prediction\n" +
-                "where user_id = '" + userId + "'\n" +
-                "and (validity_status is null or validity_status not in (10))\n" +
-                "and date(convert_tz(date_scheduled, 'UTC', 'Europe/Kiev')) = " +
-                "date(convert_tz('" + dateScheduled + "', 'UTC', 'Europe/Kiev'))\n" +
-                "order by date_scheduled, date_predicted;";
+        String sql = "select \n" +
+                "\tt3.row_num\n" +
+                "from (\n" +
+                "\tselect\n" +
+                "\t\trow_number() over (\n" +
+                "\t\t\torder by \n" +
+                "\t\t\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+                "\t\t\t\t, t2.initial_date_scheduled asc\n" +
+                "\t\t\t\t, date_predicted asc\n" +
+                "\t\t) row_num\n" +
+                "\t\t, t2.id\n" +
+                "\tfrom (\n" +
+                "\t\tselect \n" +
+                "\t\t\tt1.id\n" +
+                "\t\t\t, min(t1.date_scheduled) as initial_date_scheduled\n" +
+                "\t\t\t, t1.date_predicted\n" +
+                "\t\tfrom (\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\tp.id \n" +
+                "\t\t\t\t, p.date_scheduled\n" +
+                "\t\t\t\t, p.date_predicted \n" +
+                "\t\t\tfrom prediction p\n" +
+                "\t\t\twhere 1=1\n" +
+                "\t\t\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
+                "\t\t\t\tand p.user_id = '" + userId + "'\n" +
+                "\t\t\t\tand p.seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tor p.id = '" + predictionId + "'\n" +
+                "\t\t\t\n" +
+                "\t\t\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
+                "\t\t\t\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\tpsc.prediction_id\n" +
+                "\t\t\t\t, psc.previous_date_scheduled\n" +
+                "\t\t\t\t, p2.date_predicted \n" +
+                "\t\t\tfrom prediction_schedule_changes psc\n" +
+                "\t\t\t\tjoin prediction p2 on psc.prediction_id = p2.id \n" +
+                "\t\t\twhere 1=1 \n" +
+                "\t\t\t\tand p2.seasonal_contest_id = '" + contestId + "'\n" +
+                "\t\t\t\tand p2.user_id = '" + userId + "'\n" +
+                "\t\t\t\tand p2.seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tor p2.id = '" + predictionId + "'\n" +
+                "\t\t\t) t1\n" +
+                "\t\twhere 1=1\n" +
+                "\t\tgroup by \n" +
+                "\t\t\tt1.id\n" +
+                "\t\t\t, t1.date_predicted\n" +
+                "\t\t) t2\n" +
+                "\twhere 1=1\n" +
+                "\t\tand date(date(convert_tz(t2.initial_date_scheduled, 'UTC', 'Europe/Kiev'))) = date(date(convert_tz('" + initialDateScheduled + "', 'UTC', 'Europe/Kiev')))\n" +
+                "\t) t3\n" +
+                "where t3.id = '" + predictionId + "';";
 
         DatabaseOperations dbOp = new DatabaseOperations();
-        ArrayList<String> predictionOnDayByUser = dbOp.getArray(conn, "id", sql);
-
-        for (int i = 0; i < predictionOnDayByUser.size(); i++) {
-            String prediction = predictionOnDayByUser.get(i);
-            if (prediction.equals(predictionId)) {
-                predictionIndex = i + 1;
-            }
-        }
-        return predictionIndex;
+        return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
     }
 
     public int getPredictionIndexInContest(String predictionId, String contestId) {
