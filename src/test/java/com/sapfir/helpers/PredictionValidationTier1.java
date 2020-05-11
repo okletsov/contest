@@ -5,9 +5,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public class PredictionValidationTier1 {
 
+    public static HashMap<String, Integer> warnings = new HashMap<>();
+    Connection conn;
     LocalDateTime todayDateTime;
 
     // Prediction metadata:
@@ -21,10 +24,13 @@ public class PredictionValidationTier1 {
     int indexWithOddsBetween10And15InMonth;
     int indexPerEventPerUser;
     int indexOnGivenDayByUser;
+    int indexPerEventMarketUserPickNameCompetitors;
     LocalDateTime dateScheduled;
     LocalDateTime initialDateScheduled;
     float userPickValue;
     String userPickName;
+    String userId;
+    String predictionId;
 
     // Contest metadata:
 
@@ -37,6 +43,7 @@ public class PredictionValidationTier1 {
         PredictionOperations predOp = new PredictionOperations(conn);
         Contest contest = new Contest(conn, contestId);
         DateTimeOperations dtOp = new DateTimeOperations();
+        this.conn = conn;
 
         // Getting prediction metadata:
 
@@ -54,6 +61,9 @@ public class PredictionValidationTier1 {
         this.indexPerEventPerUser = predOp.getPredictionIndexPerEventPerUser(predictionId);
         if (dateScheduledKnown) { this.indexOnGivenDayByUser = predOp.getPredictionIndexOnGivenDayByUser(predictionId); }
         this.userPickName = predOp.getDbUserPickName(predictionId);
+        this.indexPerEventMarketUserPickNameCompetitors = predOp.getPredictionIndexPerEventMarketUserPickNameCompetitors(predictionId);
+        this.userId = predOp.getDbUserId(predictionId);
+        this.predictionId = predictionId;
 
         // Getting contest metadata:
 
@@ -74,8 +84,27 @@ public class PredictionValidationTier1 {
 
     }
 
+    private int countDuplicatedPredictions() {
+        int count = 0;
+
+        for (String id: warnings.keySet()) {
+            PredictionOperations predOpDupl = new PredictionOperations(conn);
+
+            String userIdDupl = predOpDupl.getDbUserId(id);
+            int warningId = warnings.get(id);
+
+            if (userIdDupl.equals(userId) && (warningId == 1 || warningId == 2)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     // Get seasonal validity status
     public int getSeasStatus() {
+
+        int countDuplPredictions = countDuplicatedPredictions();
 
         /*
             Step 0: check is seasonal_validity_status was overruled
@@ -90,6 +119,10 @@ public class PredictionValidationTier1 {
                     2.4 Check if user made more than 1 prediction for the same event
                     2.5 Check if user made predictions on more than 10 events per day
                     2.6 Check if market is Odd/Even (implemented via inspection of user_pick_name)
+                    2.7 Check if user made a duplicated prediction
+                        2.7.1 Warning for the first occurrence
+                        2.7.2 Warning for the second occurrence
+                        2.7.3 Count-lost starting from the third occurrence
          */
 
         if (seasValidityStatusOverruled) { return seasValidityStatus; } // Step 0
@@ -104,6 +137,10 @@ public class PredictionValidationTier1 {
         if (indexPerEventPerUser > 1) { return 24; } // Step 2.4
         if (dateScheduledKnown && indexOnGivenDayByUser > 10) { return 25; } // Step 2.5
         if (userPickName.contains("Odd") || userPickName.contains("Even")) { return 26; } // Step 2.6
+
+        if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 0) { warnings.put(predictionId, 1); } // Step 2.7.1
+        if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 1) { warnings.put(predictionId, 2); } // Step 2.7.2
+        if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions > 1) { return 27; } // Step 2.7.3
 
         return 1;
     }

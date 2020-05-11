@@ -143,6 +143,13 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "user_pick_name", sql);
     }
 
+    public String getDbCompetitors(String predictionId) {
+        String sql = "select competitors from prediction p where id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "competitors", sql);
+    }
+
     public int getPredictionIndexOnGivenDayByUser(String predictionId) {
         String contestId = getDbSeasContestId(predictionId);
         String userId = getDbUserId(predictionId);
@@ -357,6 +364,31 @@ public class PredictionOperations {
                 "\t) t1\n" +
                 "where 1=1\n" +
                 "\tand t1.id = '" + predictionId + "';";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
+    }
+
+    public int getPredictionIndexPerEventMarketUserPickNameCompetitors (String predictionId) {
+        String eventIdentifier = getDbEventIdentifier(predictionId);
+        String market = getDbMarket(predictionId);
+        String userPickName = getDbUserPickName(predictionId);
+        String competitors = getDbCompetitors(predictionId);
+
+        String sql = "select \n" +
+                "\tt1.row_num \n" +
+                "from (\n" +
+                "\tselect \n" +
+                "\t\trow_number() over(order by date_predicted asc) row_num\n" +
+                "\t\t, id\n" +
+                "\tfrom prediction p \n" +
+                "\twhere 1=1\n" +
+                "\t\tand p.event_identifier = '" + eventIdentifier + "'\n" +
+                "\t\tand p.market = '" + market + "'\n" +
+                "\t\tand p.user_pick_name = '" + userPickName + "'\n" +
+                "\t\tand p.competitors = '" + competitors + "'\n" +
+                "\t) t1\n" +
+                "where t1.id = '" + predictionId + "';";
 
         DatabaseOperations dbOp = new DatabaseOperations();
         return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
