@@ -35,14 +35,16 @@ public class Test_ValidatePredictions {
         // Get active seasonal contest id
 //        ContestOperations contOp = new ContestOperations(conn);
 //        String contestId = contOp.getActiveSeasonalContestID();
-        String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
+        String contestId = "8d570ed0-de73-11e9-92ec-74852a015562";
 
         // Get the list of predictions to validate
-//        Contest contest = new Contest(conn, contestId);
-//        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
+        Contest contest = new Contest(conn, contestId);
+        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
 
-        ArrayList<String> predictionsToValidate = new ArrayList<>();
-        predictionsToValidate.add("feed_item_3191037203");
+//        ArrayList<String> predictionsToValidate = new ArrayList<>();
+//        predictionsToValidate.add("feed_item_3805148303");
+//        predictionsToValidate.add("feed_item_3804796803");
+//        predictionsToValidate.add("feed_item_3804797703");
 
         // Individually validate each prediction
         for (String predictionId : predictionsToValidate) {
@@ -51,6 +53,7 @@ public class Test_ValidatePredictions {
             PredictionValidationTier1 t1 = new PredictionValidationTier1(conn, contestId, predictionId);
             int result = t1.getSeasStatus();
             System.out.println("Validity status for prediction " + predictionId + ": " + result);
+            System.out.println("Warning status: " + PredictionValidationTier1.warnings.get(predictionId));
 
             // Have individual prediction inspected for month 1
             // Have individual prediction inspected for month 2
