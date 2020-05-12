@@ -38,6 +38,18 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "type", sql);
 	}
 
+	public LocalDateTime getStartDate() {
+		String sql = "select start_date from contest where id = '" + contestId + "';";
+		String stringStartDate = dbOp.getSingleValue(conn, "start_date", sql);
+		return dtOp.convertToDateTimeFromString(stringStartDate);
+	}
+
+	public LocalDateTime getEndDate() {
+		String sql = "select end_date from contest where id = '" + contestId + "';";
+		String stringEndDate = dbOp.getSingleValue(conn, "end_date", sql);
+		return dtOp.convertToDateTimeFromString(stringEndDate);
+	}
+
 	public LocalDateTime getSeasStartDate() {
 		String sql = "select start_date from contest where id = '" + contestId + "';";
 		String stringStartDate = dbOp.getSingleValue(conn, "start_date", sql);

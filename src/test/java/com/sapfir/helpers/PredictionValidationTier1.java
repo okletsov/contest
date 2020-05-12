@@ -69,15 +69,15 @@ public class PredictionValidationTier1 {
 
     private boolean contestIsOverForUnknownDateScheduled(String contestId) {
         Contest contest = new Contest(conn, contestId);
-        LocalDateTime endDate = contest.getSeasEndDate();
+        LocalDateTime endDate = contest.getEndDate();
         return todayDateTime.isAfter(endDate);
     }
 
     private boolean eventDateBelongsToContest(String contestId) {
 
         Contest contest = new Contest(conn, contestId);
-        LocalDateTime startDate = contest.getSeasStartDate();
-        LocalDateTime endDate = contest.getSeasEndDate();
+        LocalDateTime startDate = contest.getStartDate();
+        LocalDateTime endDate = contest.getEndDate();
 
         if (dateScheduledKnown &&
                 (initialDateScheduled.isBefore(startDate) ||
