@@ -15,12 +15,12 @@ public class PredictionValidationTier1 {
 
     // Prediction metadata:
 
-    boolean seasValidityStatusOverruled;
+    boolean validityStatusOverruled;
     boolean wasPostponed;
     boolean dateScheduledKnown;
     boolean predictionQuarterGoal;
-    int seasValidityStatus;
-    int indexInSeasContest;
+    int validityStatus;
+    int indexInContest;
     int indexWithOddsBetween10And15InMonth;
     int indexPerEventPerUser;
     int indexOnGivenDayByUser;
@@ -47,14 +47,14 @@ public class PredictionValidationTier1 {
 
         // Getting prediction metadata:
 
-        this.seasValidityStatusOverruled = predOp.isDbValidityStatusOverruled(predictionId, contestId);
-        if (seasValidityStatusOverruled) { this.seasValidityStatus = predOp.getDbValidityStatus(predictionId, contestId); }
+        this.validityStatusOverruled = predOp.isDbValidityStatusOverruled(predictionId, contestId);
+        if (validityStatusOverruled) { this.validityStatus = predOp.getDbValidityStatus(predictionId, contestId); }
         this.dateScheduledKnown = predOp.isDbDateScheduledKnown(predictionId);
         this.wasPostponed = predOp.eventPostponed(predictionId);
         if (dateScheduledKnown) { this.dateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbDateScheduled(predictionId)); }
         if (dateScheduledKnown) { this.initialDateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbInitialDateScheduled(predictionId)); }
         if (!dateScheduledKnown) { this.todayDateTime = dtOp.convertToDateTimeFromString(dtOp.getTimestamp()); }
-        this.indexInSeasContest = predOp.getPredictionIndexInContest(predictionId, contestId);
+        this.indexInContest = predOp.getPredictionIndexInContest(predictionId, contestId);
         this.userPickValue = predOp.getDbUserPickValue(predictionId);
         this.predictionQuarterGoal = predOp.isQuarterGoal(predictionId);
         if (dateScheduledKnown) {this.indexWithOddsBetween10And15InMonth = predOp.getPredictionIndexWithOddsBetween10And15InMonth(predictionId); }
@@ -107,7 +107,7 @@ public class PredictionValidationTier1 {
         int countDuplPredictions = countDuplicatedPredictions();
 
         /*
-            Step 0: check is seasonal_validity_status was overruled
+            Step 0: check is validity_status was overruled
             Step 1: check if prediction should at all belong to current contest
                     1.1 Checking if event was originally scheduled within contest time frame
                     1.2 If date_scheduled is unknown check if contest is already over
@@ -125,11 +125,11 @@ public class PredictionValidationTier1 {
                         2.7.3 Count-lost starting from the third occurrence
          */
 
-        if (seasValidityStatusOverruled) { return seasValidityStatus; } // Step 0
+        if (validityStatusOverruled) { return validityStatus; } // Step 0
 
         if (!eventDateBelongsToSeasContest()) { return 11; } // Step 1.1
         if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; } // Step 1.2
-        if (indexInSeasContest > 100) { return 13; } // Step 1.3
+        if (indexInContest > 100) { return 13; } // Step 1.3
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
         if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2
