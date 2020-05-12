@@ -34,6 +34,7 @@ public class PredictionValidationTier1 {
 
     // Contest metadata:
 
+    String contestId;
     LocalDateTime seasStartDate;
     LocalDateTime seasEndDate;
     LocalDateTime seasEndDate24;
@@ -67,12 +68,19 @@ public class PredictionValidationTier1 {
 
         // Getting contest metadata:
 
+        this.contestId = contestId;
         this.seasStartDate = contest.getSeasStartDate();
         this.seasEndDate = contest.getSeasEndDate();
         this.seasEndDate24 = contest.getSeasEndDate24();
     }
 
-    private boolean eventDateBelongsToSeasContest() {
+    private boolean contestIsOverForUnknownDateScheduled(String contestId) {
+        Contest contest = new Contest(conn, contestId);
+        LocalDateTime endDate = contest.getSeasEndDate();
+        return todayDateTime.isAfter(endDate);
+    }
+
+    private boolean eventDateBelongsToContest() {
 
         if (dateScheduledKnown &&
                 (initialDateScheduled.isBefore(seasStartDate) ||
@@ -101,8 +109,8 @@ public class PredictionValidationTier1 {
         return count;
     }
 
-    // Get seasonal validity status
-    public int getSeasStatus() {
+    // Get validity status
+    public int getStatus() {
 
         int countDuplPredictions = countDuplicatedPredictions();
 
@@ -127,8 +135,8 @@ public class PredictionValidationTier1 {
 
         if (validityStatusOverruled) { return validityStatus; } // Step 0
 
-        if (!eventDateBelongsToSeasContest()) { return 11; } // Step 1.1
-        if (!dateScheduledKnown && todayDateTime.isAfter(seasEndDate)) { return 12; } // Step 1.2
+        if (!eventDateBelongsToContest()) { return 11; } // Step 1.1
+        if (!dateScheduledKnown && contestIsOverForUnknownDateScheduled(contestId)) { return 12; } // Step 1.2
         if (indexInContest > 100) { return 13; } // Step 1.3
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1

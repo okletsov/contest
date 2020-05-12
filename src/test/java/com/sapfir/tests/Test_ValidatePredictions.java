@@ -51,7 +51,7 @@ public class Test_ValidatePredictions {
 
             // Have individual prediction inspected for season
             PredictionValidationTier1 t1 = new PredictionValidationTier1(conn, contestId, predictionId);
-            int result = t1.getSeasStatus();
+            int result = t1.getStatus();
             System.out.println("Validity status for prediction " + predictionId + ": " + result);
             System.out.println("Warning status: " + PredictionValidationTier1.warnings.get(predictionId));
 
