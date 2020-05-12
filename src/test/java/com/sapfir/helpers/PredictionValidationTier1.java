@@ -35,12 +35,17 @@ public class PredictionValidationTier1 {
     // Contest metadata:
 
     String contestId;
+    LocalDateTime startDate;
+    LocalDateTime endDate;
+    LocalDateTime startOfLastDate;
+    LocalDateTime endDatePlus24hrs;
 
     public PredictionValidationTier1(Connection conn, String contestId, String predictionId) {
 
         PredictionOperations predOp = new PredictionOperations(conn);
         DateTimeOperations dtOp = new DateTimeOperations();
         this.conn = conn;
+        Contest contest = new Contest(conn, contestId);
 
         // Getting prediction metadata:
 
@@ -65,19 +70,13 @@ public class PredictionValidationTier1 {
         // Getting contest metadata:
 
         this.contestId = contestId;
+        this.startDate = contest.getStartDate();
+        this.endDate = contest.getEndDate();
+        this.startOfLastDate = contest.getStartOfLastDay();
+        this.endDatePlus24hrs = contest.getEndDatePlus24hrs();
     }
 
-    private boolean contestIsOverForUnknownDateScheduled(String contestId) {
-        Contest contest = new Contest(conn, contestId);
-        LocalDateTime endDate = contest.getEndDate();
-        return todayDateTime.isAfter(endDate);
-    }
-
-    private boolean eventDateBelongsToContest(String contestId) {
-
-        Contest contest = new Contest(conn, contestId);
-        LocalDateTime startDate = contest.getStartDate();
-        LocalDateTime endDate = contest.getEndDate();
+    private boolean eventDateBelongsToContest() {
 
         if (dateScheduledKnown &&
                 (initialDateScheduled.isBefore(startDate) ||
@@ -132,8 +131,8 @@ public class PredictionValidationTier1 {
 
         if (validityStatusOverruled) { return validityStatus; } // Step 0
 
-        if (!eventDateBelongsToContest(contestId)) { return 11; } // Step 1.1
-        if (!dateScheduledKnown && contestIsOverForUnknownDateScheduled(contestId)) { return 12; } // Step 1.2
+        if (!eventDateBelongsToContest()) { return 11; } // Step 1.1
+        if (!dateScheduledKnown && todayDateTime.isAfter(endDate)) { return 12; } // Step 1.2
         if (indexInContest > 100) { return 13; } // Step 1.3
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
