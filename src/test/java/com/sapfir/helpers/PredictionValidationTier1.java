@@ -35,14 +35,10 @@ public class PredictionValidationTier1 {
     // Contest metadata:
 
     String contestId;
-    LocalDateTime seasStartDate;
-    LocalDateTime seasEndDate;
-    LocalDateTime seasEndDate24;
 
     public PredictionValidationTier1(Connection conn, String contestId, String predictionId) {
 
         PredictionOperations predOp = new PredictionOperations(conn);
-        Contest contest = new Contest(conn, contestId);
         DateTimeOperations dtOp = new DateTimeOperations();
         this.conn = conn;
 
@@ -69,9 +65,6 @@ public class PredictionValidationTier1 {
         // Getting contest metadata:
 
         this.contestId = contestId;
-        this.seasStartDate = contest.getSeasStartDate();
-        this.seasEndDate = contest.getSeasEndDate();
-        this.seasEndDate24 = contest.getSeasEndDate24();
     }
 
     private boolean contestIsOverForUnknownDateScheduled(String contestId) {
@@ -80,11 +73,15 @@ public class PredictionValidationTier1 {
         return todayDateTime.isAfter(endDate);
     }
 
-    private boolean eventDateBelongsToContest() {
+    private boolean eventDateBelongsToContest(String contestId) {
+
+        Contest contest = new Contest(conn, contestId);
+        LocalDateTime startDate = contest.getSeasStartDate();
+        LocalDateTime endDate = contest.getSeasEndDate();
 
         if (dateScheduledKnown &&
-                (initialDateScheduled.isBefore(seasStartDate) ||
-                initialDateScheduled.isAfter(seasEndDate))) {
+                (initialDateScheduled.isBefore(startDate) ||
+                initialDateScheduled.isAfter(endDate))) {
             return false;
         } else {
             return true;
@@ -135,7 +132,7 @@ public class PredictionValidationTier1 {
 
         if (validityStatusOverruled) { return validityStatus; } // Step 0
 
-        if (!eventDateBelongsToContest()) { return 11; } // Step 1.1
+        if (!eventDateBelongsToContest(contestId)) { return 11; } // Step 1.1
         if (!dateScheduledKnown && contestIsOverForUnknownDateScheduled(contestId)) { return 12; } // Step 1.2
         if (indexInContest > 100) { return 13; } // Step 1.3
 
