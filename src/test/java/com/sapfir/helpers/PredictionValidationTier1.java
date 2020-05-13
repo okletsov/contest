@@ -91,7 +91,8 @@ public class PredictionValidationTier1 {
     }
 
     private boolean isBeforeLastDay(LocalDateTime date) {
-        return date.isBefore(startOfLastDay);
+        return date.isBefore(startOfLastDay) &&
+               date.isAfter(startDate.plusSeconds(-1)) ;
     }
 
     private boolean isOnLastDay(LocalDateTime date) {
