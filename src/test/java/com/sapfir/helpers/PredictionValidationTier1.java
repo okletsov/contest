@@ -31,13 +31,14 @@ public class PredictionValidationTier1 {
     String userPickName;
     String userId;
     String predictionId;
+    String mainScore;
 
     // Contest metadata:
 
     String contestId;
     LocalDateTime startDate;
     LocalDateTime endDate;
-    LocalDateTime startOfLastDate;
+    LocalDateTime startOfLastDay;
     LocalDateTime endDatePlus24hrs;
 
     public PredictionValidationTier1(Connection conn, String contestId, String predictionId) {
@@ -66,13 +67,14 @@ public class PredictionValidationTier1 {
         this.indexPerEventMarketUserPickNameCompetitors = predOp.getPredictionIndexPerEventMarketUserPickNameCompetitors(predictionId);
         this.userId = predOp.getDbUserId(predictionId);
         this.predictionId = predictionId;
+        this.mainScore = predOp.getDbMainScore(predictionId);
 
         // Getting contest metadata:
 
         this.contestId = contestId;
         this.startDate = contest.getStartDate();
         this.endDate = contest.getEndDate();
-        this.startOfLastDate = contest.getStartOfLastDay();
+        this.startOfLastDay = contest.getStartOfLastDay();
         this.endDatePlus24hrs = contest.getEndDatePlus24hrs();
     }
 
@@ -86,6 +88,32 @@ public class PredictionValidationTier1 {
             return true;
         }
 
+    }
+
+    private boolean isBeforeLastDay(LocalDateTime date) {
+        return date.isBefore(startOfLastDay);
+    }
+
+    private boolean isOnLastDay(LocalDateTime date) {
+        return date.isAfter(startOfLastDay.plusSeconds(-1)) &&
+               date.isBefore(endDate.plusSeconds(1));
+    }
+
+    private boolean isOnLastDayPlus24hrs(LocalDateTime date) {
+        return date.isAfter(endDate) &&
+               date.isBefore(endDatePlus24hrs);
+    }
+
+    private boolean isAfterLastDayPlus24hrs(LocalDateTime date) {
+        return date.isAfter(endDatePlus24hrs.plusSeconds(-1));
+    }
+
+    private boolean eventCancelled() {
+        return mainScore.contains("abn.") ||
+               mainScore.contains(" w.o.") ||
+               mainScore.contains(" ret.") ||
+               mainScore.contains("canc.") ||
+               mainScore.contains("award.");
     }
 
     private int countDuplicatedPredictions() {

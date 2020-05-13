@@ -24,7 +24,11 @@ public class Workshop {
         PredictionOperations predOp = new PredictionOperations(conn);
         Contest contest = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
 
-        LocalDateTime predictionTime = dtOp.convertToDateTimeFromString("2018-12-01 21:59:59");
+        LocalDateTime startDate = contest.getStartDate();
+        LocalDateTime endDate = contest.getEndDate();
+        LocalDateTime startOfLastDay = contest.getStartOfLastDay();
+        LocalDateTime endDatePlus24hrs = contest.getEndDatePlus24hrs();
+
 
         System.out.println("stop here");
 
