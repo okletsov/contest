@@ -36,6 +36,7 @@ public class PredictionValidationTier1 {
     // Contest metadata:
 
     String contestId;
+    String contestType;
     LocalDateTime startDate;
     LocalDateTime endDate;
     LocalDateTime startOfLastDay;
@@ -68,6 +69,7 @@ public class PredictionValidationTier1 {
         this.userId = predOp.getDbUserId(predictionId);
         this.predictionId = predictionId;
         this.mainScore = predOp.getDbMainScore(predictionId);
+        this.contestType = contest.getContestType();
 
         // Getting contest metadata:
 
@@ -115,6 +117,22 @@ public class PredictionValidationTier1 {
                mainScore.contains(" ret.") ||
                mainScore.contains("canc.") ||
                mainScore.contains("award.");
+    }
+
+    private boolean extraPredictionMade() {
+        // Method named and invented by Inga :)
+
+        PredictionOperations predOp = new PredictionOperations(conn);
+        int countRemainingPredictions = predOp.getRemainingPredictionsCount(predictionId, contestId);
+        int predictionsAmountRequired;
+
+        if (contestType.equals("seasonal")) {
+            predictionsAmountRequired = 100;
+        } else { // "monthly" is the only other option
+            predictionsAmountRequired = 30;
+        }
+
+        return (indexInContest + countRemainingPredictions) > predictionsAmountRequired;
     }
 
     private int countDuplicatedPredictions() {

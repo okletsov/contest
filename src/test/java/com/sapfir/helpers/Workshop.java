@@ -29,6 +29,8 @@ public class Workshop {
         LocalDateTime startOfLastDay = contest.getStartOfLastDay();
         LocalDateTime endDatePlus24hrs = contest.getEndDatePlus24hrs();
 
+        PredictionValidationTier1 t1 = new PredictionValidationTier1(conn, "2deb734e-ce85-11e8-8022-74852a015562", "feed_item_3248089703");
+//        boolean extraPredMade = t1.extraPredictionMade();
 
         System.out.println("stop here");
 

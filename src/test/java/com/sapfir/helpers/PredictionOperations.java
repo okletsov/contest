@@ -394,6 +394,82 @@ public class PredictionOperations {
         return Integer.parseInt(dbOp.getSingleValue(conn, "row_num", sql));
     }
 
+    public int getRemainingPredictionsCount(String predictionId, String contestId) {
+        /*
+            Getting the count of remaining predictions in contest that:
+                - scheduled after currently being inspected prediction AND
+                - whose initial_date_scheduled belong to current contest AND
+                - include predictions with unknown initial_date_scheduled only if contest is not over
+                - regardless of future predictions' validity status
+         */
+
+        Contest contest = new Contest(conn, contestId);
+        DateTimeOperations dtOp = new DateTimeOperations();
+
+        String contestType = contest.getContestType();
+        String endDate = dtOp.convertToStringFromDateTime(contest.getEndDate());
+        String userId = getDbUserId(predictionId);
+        String initialDateScheduled = getDbInitialDateScheduled(predictionId);
+
+        String sql = "select \n" +
+                "\tcount(t3.id) as count\n" +
+                "from (\n" +
+                "\tselect \n" +
+                "\t\tt2.id\n" +
+                "\t\t, t2.initial_date_scheduled\n" +
+                "\t\t, t2.date_predicted\n" +
+                "\tfrom (\n" +
+                "\t\tselect \n" +
+                "\t\t\tt1.id\n" +
+                "\t\t\t, min(t1.date_scheduled) as initial_date_scheduled\n" +
+                "\t\t\t, t1.date_predicted\n" +
+                "\t\tfrom (\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\tp.id \n" +
+                "\t\t\t\t, p.date_scheduled\n" +
+                "\t\t\t\t, p.date_predicted \n" +
+                "\t\t\tfrom prediction p\n" +
+                "\t\t\twhere 1=1\n" +
+                "\t\t\t\tand p." + contestType + "_contest_id = '" + contestId + "'\n" +
+                "\t\t\t\tand p.user_id = '" + userId + "'\n" +
+                "\t\t\t\n" +
+                "\t\t\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
+                "\t\t\t\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\tpsc.prediction_id\n" +
+                "\t\t\t\t, psc.previous_date_scheduled\n" +
+                "\t\t\t\t, p2.date_predicted \n" +
+                "\t\t\tfrom prediction_schedule_changes psc\n" +
+                "\t\t\t\tjoin prediction p2 on psc.prediction_id = p2.id \n" +
+                "\t\t\twhere 1=1 \n" +
+                "\t\t\t\tand p2." + contestType + "_contest_id = '" + contestId + "'\n" +
+                "\t\t\t\tand p2.user_id = '" + userId + "'\n" +
+                "\t\t\t) t1\n" +
+                "\t\twhere 1=1\n" +
+                "\t\tgroup by \n" +
+                "\t\t\tt1.id\n" +
+                "\t\t\t, t1.date_predicted\n" +
+                "\t\t) t2\n" +
+                "\twhere 1=1 \n" +
+                "\t-- only including predictions scheduled after currently being inspected prediction\n" +
+                "\t\tand t2.initial_date_scheduled >= '" + initialDateScheduled + "' -- current prediction's initial_date_scheduled\n" +
+                "\t\tand t2.initial_date_scheduled <= '" + endDate + "' -- contest end date\n" +
+                "\t\tand t2.id != '" + predictionId + "' -- exclude current prediction from result set\n" +
+                "\t\t-- including predictions with unknown initial_date_scheduled only if contest is not over yet\n" +
+                "\t\tor (\n" +
+                "\t\t\tt2.initial_date_scheduled is null\n" +
+                "\t\t\tand now() <= '" + endDate + "' -- contest end date\n" +
+                "\t\t\t)\n" +
+                "\torder by\n" +
+                "\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+                "\t\t, t2.initial_date_scheduled asc\n" +
+                "\t\t, t2.date_predicted asc\n" +
+                "\t) t3;";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return Integer.parseInt(dbOp.getSingleValue(conn, "count", sql));
+    }
+
     public int getDbValidityStatus(String predictionID, String contestId) {
         Contest contest = new Contest(conn,contestId);
         String contestType = contest.getContestType();
