@@ -174,6 +174,18 @@ public class PredictionValidationTier1 {
                         2.7.1 Warning for the first occurrence
                         2.7.2 Warning for the second occurrence
                         2.7.3 Count-lost starting from the third occurrence
+             Step 3: if steps 1 and 2 are ok check other special conditions that may apply
+                    3.1 Initial_date_scheduled before last day, date_scheduled before last day and event cancelled - doesn't count
+                    3.2 Initial_date_scheduled before last day, date_scheduled on the last day and event cancelled - doesn't count
+                    3.3 Initial_date_scheduled before last day, date_scheduled on the last + 24hrs - doesn't count
+                    3.4 Initial_date_scheduled before last day, date_scheduled after the last day + 24hrs - doesn't count
+                    3.5 Initial_date_scheduled on the last day, date_scheduled on the last day and extra prediction made instead - doesn't count
+                    3.6 Initial_date_scheduled on the last day, date_scheduled on the last day and no extra prediction made instead - count void
+                    3.7 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs and extra prediction made instead - doesn't count
+                    3.8 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs, event cancelled and no extra prediction made instead - count void
+                    3.9 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs, event not cancelled and no extra prediction made instead - valid prediction
+                    3.10 Initial_date_scheduled on the last day, date_scheduled after the last day + 24hrs and extra prediction made instead - doesn't count
+                    3.11 Initial_date_scheduled on the last day, date_scheduled after the last day + 24hrs and no extra prediction made instead - count void
          */
 
         if (validityStatusOverruled) { return validityStatus; } // Step 0
@@ -192,6 +204,25 @@ public class PredictionValidationTier1 {
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 0) { warnings.put(predictionId, 1); } // Step 2.7.1
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 1) { warnings.put(predictionId, 2); } // Step 2.7.2
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions > 1) { return 27; } // Step 2.7.3
+
+        if (dateScheduledKnown && isBeforeLastDay(initialDateScheduled)) {
+
+            if (isBeforeLastDay(dateScheduled) && eventCancelled()) { return 41; } // Step 3.1
+            if (isOnLastDay(dateScheduled) && eventCancelled()) { return 42; } // Step 3.2
+            if (isOnLastDayPlus24hrs(dateScheduled)) { return 43; } // Step 3.3
+            if (isAfterLastDayPlus24hrs(dateScheduled)) { return 44; } // Step 3.4
+        }
+
+        if (dateScheduledKnown && isOnLastDay(initialDateScheduled)) {
+
+            if (isOnLastDay(dateScheduled) && eventCancelled() && extraPredictionMade()) { return 45; } // Step 3.5
+            if (isOnLastDay(dateScheduled) && eventCancelled() && !extraPredictionMade()) { return 46; } // Step 3.6
+            if (isOnLastDayPlus24hrs(dateScheduled) && extraPredictionMade()) { return 47; } // Step 3.7
+            if (isOnLastDayPlus24hrs(dateScheduled) && !extraPredictionMade() && eventCancelled()) { return 48; } // Step 3.8
+            if (isOnLastDayPlus24hrs(dateScheduled) && !extraPredictionMade() && !eventCancelled()) { return 2; } // Step 3.9
+            if (isAfterLastDayPlus24hrs(dateScheduled) && extraPredictionMade()) { return 49; } // Step 3.10
+            if (isAfterLastDayPlus24hrs(dateScheduled) && !extraPredictionMade()) { return 50; } // Step 3.11
+        }
 
         return 1;
     }
