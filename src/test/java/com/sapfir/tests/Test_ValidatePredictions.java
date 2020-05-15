@@ -35,7 +35,7 @@ public class Test_ValidatePredictions {
         // Get active seasonal contest id
 //        ContestOperations contOp = new ContestOperations(conn);
 //        String contestId = contOp.getActiveSeasonalContestID();
-        String contestId = "cbbb5466-357e-11e9-b75d-74852a015562";
+        String contestId = "5b6dd5a7-29ea-11ea-9120-74852a015562";
 
         // Get the list of predictions to validate
         Contest contest = new Contest(conn, contestId);

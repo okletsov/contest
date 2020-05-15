@@ -386,7 +386,7 @@ public class PredictionOperations {
                 "\t\tand p.event_identifier = '" + eventIdentifier + "'\n" +
                 "\t\tand p.market = '" + market + "'\n" +
                 "\t\tand p.user_pick_name = '" + userPickName + "'\n" +
-                "\t\tand p.competitors = '" + competitors + "'\n" +
+                "\t\tand p.competitors = \"" + competitors + "\"\n" +
                 "\t) t1\n" +
                 "where t1.id = '" + predictionId + "';";
 
