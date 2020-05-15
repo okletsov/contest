@@ -112,11 +112,13 @@ public class PredictionValidationTier1 {
     }
 
     private boolean eventCancelled() {
-        return mainScore.contains("abn.") ||
-               mainScore.contains(" w.o.") ||
-               mainScore.contains(" ret.") ||
-               mainScore.contains("canc.") ||
-               mainScore.contains("award.");
+        if (mainScore != null) {
+            return mainScore.contains("abn.") ||
+                    mainScore.contains(" w.o.") ||
+                    mainScore.contains(" ret.") ||
+                    mainScore.contains("canc.") ||
+                    mainScore.contains("award.");
+        } else return false;
     }
 
     private boolean extraPredictionMade() {
