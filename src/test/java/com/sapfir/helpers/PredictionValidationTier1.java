@@ -9,6 +9,8 @@ import java.util.HashMap;
 
 public class PredictionValidationTier1 {
 
+    private static final Logger Log = LogManager.getLogger(PredictionValidationTier1.class.getName());
+
     public static HashMap<String, Integer> warnings = new HashMap<>();
     Connection conn;
     LocalDateTime todayDateTime;
@@ -28,6 +30,8 @@ public class PredictionValidationTier1 {
     LocalDateTime dateScheduled;
     LocalDateTime initialDateScheduled;
     float userPickValue;
+    float payout;
+    float option2Value;
     String userPickName;
     String userId;
     String predictionId;
@@ -69,11 +73,13 @@ public class PredictionValidationTier1 {
         this.userId = predOp.getDbUserId(predictionId);
         this.predictionId = predictionId;
         this.mainScore = predOp.getDbMainScore(predictionId);
-        this.contestType = contest.getContestType();
+        this.option2Value = predOp.getDbOption2Value(predictionId);
+        if (option2Value > 0) { this.payout = predOp.getPayout(predictionId); }
 
         // Getting contest metadata:
 
         this.contestId = contestId;
+        this.contestType = contest.getContestType();
         this.startDate = contest.getStartDate();
         this.endDate = contest.getEndDate();
         this.startOfLastDay = contest.getStartOfLastDay();
@@ -137,6 +143,21 @@ public class PredictionValidationTier1 {
         return (indexInContest + countRemainingPredictions) > predictionsAmountRequired;
     }
 
+    private void checkForAnomalyOdd() {
+        /*
+            Anomaly odd = bagovaya stavka
+            Until a better solution is implemented we will manually inspect odds with payout > 105%
+
+            To know what bets have a payout value we will need to see the db value for option2_value
+            if it exists (> 0) the payout value can be calculated
+         */
+
+        if (payout > 1.05) {
+            Log.warn("Prediction with ID: " + predictionId + " potentially does not count. Payout = " + payout + ". Check for anomaly odd");
+        }
+
+    }
+
     private int countDuplicatedPredictions() {
         int count = 0;
 
@@ -176,6 +197,8 @@ public class PredictionValidationTier1 {
                         2.7.1 Warning for the first occurrence
                         2.7.2 Warning for the second occurrence
                         2.7.3 Count-lost starting from the third occurrence
+                    2.8 Check for anomaly odds
+
              Step 3: if steps 1 and 2 are ok check other special conditions that may apply
                     3.1 Initial_date_scheduled before last day, date_scheduled before last day and event cancelled - doesn't count
                     3.2 Initial_date_scheduled before last day, date_scheduled on the last day and event cancelled - doesn't count
@@ -206,6 +229,8 @@ public class PredictionValidationTier1 {
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 0) { warnings.put(predictionId, 1); } // Step 2.7.1
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 1) { warnings.put(predictionId, 2); } // Step 2.7.2
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions > 1) { return 27; } // Step 2.7.3
+
+        if (option2Value > 0) { checkForAnomalyOdd(); } // Step 2.8 (warning only in logs)
 
         if (dateScheduledKnown && isBeforeLastDay(initialDateScheduled)) {
 
