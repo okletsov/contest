@@ -140,11 +140,11 @@ public class PredictionValidationTier1 {
     private int countDuplicatedPredictions() {
         int count = 0;
 
-        for (String id: warnings.keySet()) {
+        for (String predictionId: warnings.keySet()) {
             PredictionOperations predOpDupl = new PredictionOperations(conn);
 
-            String userIdDupl = predOpDupl.getDbUserId(id);
-            int warningId = warnings.get(id);
+            String userIdDupl = predOpDupl.getDbUserId(predictionId);
+            int warningId = warnings.get(predictionId);
 
             if (userIdDupl.equals(userId) && (warningId == 1 || warningId == 2)) {
                 count++;
