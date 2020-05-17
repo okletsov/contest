@@ -153,7 +153,6 @@ public class PredictionOperations {
     public int getPredictionIndexOnGivenDayByUser(String predictionId) {
         String contestId = getDbSeasContestId(predictionId);
         String userId = getDbUserId(predictionId);
-        String validStatuses = ValidityStatuses.validStatuses;
         String initialDateScheduled = getDbInitialDateScheduled(predictionId);
 
         String sql = "select \n" +
@@ -181,7 +180,13 @@ public class PredictionOperations {
                 "\t\t\twhere 1=1\n" +
                 "\t\t\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
                 "\t\t\t\tand p.user_id = '" + userId + "'\n" +
-                "\t\t\t\tand p.seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tand p.seasonal_validity_status in (\n" +
+                "\t\t\t\t\tselect\n" +
+                "\t\t\t\t\t\tvs.status\n" +
+                "\t\t\t\t\tfrom validity_statuses vs \n" +
+                "\t\t\t\t\twhere 1=1\n" +
+                "\t\t\t\t\t\tand vs.count_in_contest = 1\n" +
+                "\t\t\t\t\t)\n" +
                 "\t\t\t\tor p.id = '" + predictionId + "'\n" +
                 "\t\t\t\n" +
                 "\t\t\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
@@ -195,7 +200,13 @@ public class PredictionOperations {
                 "\t\t\twhere 1=1 \n" +
                 "\t\t\t\tand p2.seasonal_contest_id = '" + contestId + "'\n" +
                 "\t\t\t\tand p2.user_id = '" + userId + "'\n" +
-                "\t\t\t\tand p2.seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tand p2.seasonal_validity_status in (\n" +
+                "\t\t\t\t\tselect\n" +
+                "\t\t\t\t\t\tvs2.status\n" +
+                "\t\t\t\t\tfrom validity_statuses vs2\n" +
+                "\t\t\t\t\twhere 1=1\n" +
+                "\t\t\t\t\t\tand vs2.count_in_contest = 1\n" +
+                "\t\t\t\t\t)\n" +
                 "\t\t\t\tor p2.id = '" + predictionId + "'\n" +
                 "\t\t\t) t1\n" +
                 "\t\twhere 1=1\n" +
@@ -218,8 +229,6 @@ public class PredictionOperations {
         String contestType = contest.getContestType();
 
         String userId = getDbUserId(predictionId);
-
-        String validStatuses = ValidityStatuses.validStatuses;
 
         String sql = "select \n" +
                 "\tt3.row_num\n" +
@@ -246,7 +255,13 @@ public class PredictionOperations {
                 "\t\t\twhere 1=1\n" +
                 "\t\t\t\tand p." + contestType + "_contest_id = '" + contestId + "'\n" +
                 "\t\t\t\tand p.user_id = '" + userId + "'\n" +
-                "\t\t\t\tand p." + contestType + "_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tand p." + contestType + "_validity_status in (\n" +
+                "\t\t\t\t\tselect\n" +
+                "\t\t\t\t\t\tvs.status\n" +
+                "\t\t\t\t\tfrom validity_statuses vs \n" +
+                "\t\t\t\t\twhere 1=1\n" +
+                "\t\t\t\t\t\tand vs.count_in_contest = 1\n" +
+                "\t\t\t\t\t)\n" +
                 "\t\t\t\tor p.id = '" + predictionId + "'\n" +
                 "\t\t\t\n" +
                 "\t\t\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
@@ -260,7 +275,13 @@ public class PredictionOperations {
                 "\t\t\twhere 1=1 \n" +
                 "\t\t\t\tand p2." + contestType + "_contest_id = '" + contestId + "'\n" +
                 "\t\t\t\tand p2.user_id = '" + userId + "'\n" +
-                "\t\t\t\tand p2." + contestType + "_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tand p2." + contestType + "_validity_status in (\n" +
+                "\t\t\t\t\tselect\n" +
+                "\t\t\t\t\t\tvs2.status\n" +
+                "\t\t\t\t\tfrom validity_statuses vs2 \n" +
+                "\t\t\t\t\twhere 1=1\n" +
+                "\t\t\t\t\t\tand vs2.count_in_contest = 1\n" +
+                "\t\t\t\t\t)\n" +
                 "\t\t\t\tor p2.id = '" + predictionId + "'\n" +
                 "\t\t\t) t1\n" +
                 "\t\twhere 1=1\n" +
@@ -279,7 +300,6 @@ public class PredictionOperations {
 
         String contestId = getDbSeasContestId(predictionId);
         String userId = getDbUserId(predictionId);
-        String validStatuses = ValidityStatuses.validStatuses;
         String initialDateScheduled = getDbInitialDateScheduled(predictionId);
 
         String sql = "select \n" +
@@ -307,7 +327,13 @@ public class PredictionOperations {
                 "\t\t\twhere 1=1\n" +
                 "\t\t\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
                 "\t\t\t\tand p.user_id = '" + userId + "'\n" +
-                "\t\t\t\tand p.seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tand p.seasonal_validity_status in (\n" +
+                "\t\t\t\t\tselect\n" +
+                "\t\t\t\t\t\tvs.status\n" +
+                "\t\t\t\t\tfrom validity_statuses vs \n" +
+                "\t\t\t\t\twhere 1=1\n" +
+                "\t\t\t\t\t\tand vs.count_in_contest = 1\n" +
+                "\t\t\t\t\t)\n" +
                 "\t\t\t\tand p.user_pick_value > 10\n" +
                 "\t\t\t\tand p.user_pick_value <= 15\n" +
                 "\t\t\t\tor p.id = '" + predictionId + "'\n" +
@@ -323,7 +349,13 @@ public class PredictionOperations {
                 "\t\t\twhere 1=1 \n" +
                 "\t\t\t\tand p2.seasonal_contest_id = '" + contestId + "'\n" +
                 "\t\t\t\tand p2.user_id = '" + userId + "'\n" +
-                "\t\t\t\tand p2.seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\t\t\tand p2.seasonal_validity_status in (\n" +
+                "\t\t\t\t\tselect\n" +
+                "\t\t\t\t\t\tvs2.status\n" +
+                "\t\t\t\t\tfrom validity_statuses vs2 \n" +
+                "\t\t\t\t\twhere 1=1\n" +
+                "\t\t\t\t\t\tand vs2.count_in_contest = 1\n" +
+                "\t\t\t\t\t)\n" +
                 "\t\t\t\tand p2.user_pick_value > 10\n" +
                 "\t\t\t\tand p2.user_pick_value <= 15\n" +
                 "\t\t\t\tor p2.id = '" + predictionId + "'\n" +
@@ -346,7 +378,6 @@ public class PredictionOperations {
         String contestId = getDbSeasContestId(predictionId);
         String userId = getDbUserId(predictionId);
         String eventIdentifier = getDbEventIdentifier(predictionId);
-        String validStatuses = ValidityStatuses.validStatuses;
 
         String sql = "select \n" +
                 "\tt1.row_num\n" +
@@ -359,7 +390,13 @@ public class PredictionOperations {
                 "\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
                 "\t\tand p.user_id = '" + userId + "'\n" +
                 "\t\tand event_identifier = '" + eventIdentifier + "'\n" +
-                "\t\tand seasonal_validity_status in " + validStatuses + "\n" +
+                "\t\tand p.seasonal_validity_status in (\n" +
+                "\t\t\tselect\n" +
+                "\t\t\t\tvs.status\n" +
+                "\t\t\tfrom validity_statuses vs \n" +
+                "\t\t\twhere 1=1\n" +
+                "\t\t\t\tand vs.count_in_contest = 1\n" +
+                "\t\t\t)\n" +
                 "\t\tor p.id = '" + predictionId + "'\n" +
                 "\t) t1\n" +
                 "where 1=1\n" +
