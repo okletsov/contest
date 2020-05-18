@@ -1,9 +1,6 @@
 package com.sapfir.tests;
 
-import com.sapfir.helpers.Contest;
-import com.sapfir.helpers.ContestOperations;
-import com.sapfir.helpers.DatabaseOperations;
-import com.sapfir.helpers.PredictionValidationTier1;
+import com.sapfir.helpers.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
@@ -32,35 +29,36 @@ public class Test_ValidatePredictions {
     
     @Test
     public void testPredictions() {
-        // Get active seasonal contest id
-//        ContestOperations contOp = new ContestOperations(conn);
-//        String contestId = contOp.getActiveSeasonalContestID();
-        String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
+        // Step 1: Get active seasonal contest id
+        ContestOperations contOp = new ContestOperations(conn);
+//        String seasContestId = contOp.getActiveSeasonalContestID();
+        String seasContestId = "3fd1fd5d-7913-11e9-a98a-74852a015562";
 
-        // Get the list of predictions to validate
-        Contest contest = new Contest(conn, contestId);
+        Contest contest = new Contest(conn, seasContestId);
+        String mon1ContestId = contest.getMonContestId(1);
+        String mon2ContestId = contest.getMonContestId(2);
+
+        // Step 2: Get the list of predictions to validate
         ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
-
 //        ArrayList<String> predictionsToValidate = new ArrayList<>();
 //        predictionsToValidate.add("feed_item_3805148303");
 //        predictionsToValidate.add("feed_item_3804796803");
 //        predictionsToValidate.add("feed_item_3804797703");
 
-        // Individually validate each prediction
+        // Step 3: Individually validate each prediction
         for (String predictionId : predictionsToValidate) {
 
-            // Have individual prediction inspected for season
-            PredictionValidationTier1 t1 = new PredictionValidationTier1(conn, contestId, predictionId);
-            int status = t1.getStatus();
+            // Step 3.1: Have individual prediction inspected for season
+            PredictionValidationTier1 predValSeas = new PredictionValidationTier1(conn, seasContestId, predictionId);
+            PredictionOperations predOp = new PredictionOperations(conn);
+            ValidityStatuses vs = new ValidityStatuses(conn);
 
-            if (status > 27) {
-                System.out.println("Validity status for prediction " + predictionId + ": " + status);
-            }
+            int seasStatus = predValSeas.getStatus();
+            if (seasStatus > 1) { Log.warn("Status for prediction " + predictionId + ": " + seasStatus); }
+            predOp.updateValidityStatus(predictionId, seasStatus, "seasonal");
 
-//            System.out.println("Warning status: " + PredictionValidationTier1.warnings.get(predictionId));
-
-            // Have individual prediction inspected for month 1
-            // Have individual prediction inspected for month 2
+            // Step 3.2: Have individual prediction inspected for month 1
+            // Step 3.3: Have individual prediction inspected for month 2
         }
     }
 }

@@ -847,4 +847,13 @@ public class PredictionOperations {
         eq.cleanUp();
     }
 
+    public void updateValidityStatus(String predictionId, int status, String contestType) {
+        String sql = "update prediction p\n" +
+                "set " + contestType + "_validity_status = " + status + "\n" +
+                "where id = '" + predictionId + "';";
+
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
+    }
+
 }

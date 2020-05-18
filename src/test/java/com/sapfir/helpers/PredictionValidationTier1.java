@@ -204,8 +204,8 @@ public class PredictionValidationTier1 {
                     3.2 Initial_date_scheduled before last day, date_scheduled on the last day and event cancelled - doesn't count
                     3.3 Initial_date_scheduled before last day, date_scheduled on the last + 24hrs - doesn't count
                     3.4 Initial_date_scheduled before last day, date_scheduled after the last day + 24hrs - doesn't count
-                    3.5 Initial_date_scheduled on the last day, date_scheduled on the last day and extra prediction made instead - doesn't count
-                    3.6 Initial_date_scheduled on the last day, date_scheduled on the last day and no extra prediction made instead - count void
+                    3.5 Initial_date_scheduled on the last day, date_scheduled on the last day, event cancelled and extra prediction made instead - doesn't count
+                    3.6 Initial_date_scheduled on the last day, date_scheduled on the last day, event cancelled and no extra prediction made instead - count void
                     3.7 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs and extra prediction made instead - doesn't count
                     3.8 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs, event cancelled and no extra prediction made instead - count void
                     3.9 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs, event not cancelled and no extra prediction made instead - valid prediction
@@ -221,7 +221,7 @@ public class PredictionValidationTier1 {
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
         if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2
-        if (dateScheduledKnown && indexWithOddsBetween10And15InMonth > 1) { return 23; } // Step 2.3
+        if (dateScheduledKnown && userPickValue > 10 && userPickValue <= 15 && indexWithOddsBetween10And15InMonth > 1) { return 23; } // Step 2.3
         if (indexPerEventPerUser > 1) { return 24; } // Step 2.4
         if (dateScheduledKnown && indexOnGivenDayByUser > 10) { return 25; } // Step 2.5
         if (userPickName.contains("Odd") || userPickName.contains("Even")) { return 26; } // Step 2.6
