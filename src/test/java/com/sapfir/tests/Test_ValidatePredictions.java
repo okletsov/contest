@@ -54,7 +54,7 @@ public class Test_ValidatePredictions {
             ValidityStatuses vs = new ValidityStatuses(conn);
 
             int seasStatus = predValSeas.getStatus();
-            if (seasStatus > 1) { Log.warn("Status for prediction " + predictionId + ": " + seasStatus); }
+            if (seasStatus > 1) { Log.warn("Status for prediction " + predictionId + ": " + seasStatus + " - " + vs.getDescription(seasStatus)); }
             predOp.updateValidityStatus(predictionId, seasStatus, "seasonal");
 
             // Step 3.2: Have individual prediction inspected for month 1
