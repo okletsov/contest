@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 public class DateTimeOperations {
 
-	private String datePattern = "yyyy-MM-dd HH:mm:ss";
+	private final String datePattern = "yyyy-MM-dd HH:mm:ss";
 
 	private String convertFromUnix(String unixTimeStamp){
 		return Instant.ofEpochSecond(Long.parseLong(unixTimeStamp)).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(datePattern));
@@ -31,5 +31,10 @@ public class DateTimeOperations {
 	public LocalDateTime convertToDateTimeFromString (String stringDateTime) {
 		String convertableString = stringDateTime.replace(" ", "T");
 		return LocalDateTime.parse(convertableString);
+	}
+
+	public String convertToStringFromDateTime (LocalDateTime dateTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		return dateTime.format(formatter);
 	}
 }
