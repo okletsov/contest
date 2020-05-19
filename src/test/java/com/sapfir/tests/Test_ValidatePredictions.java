@@ -61,7 +61,8 @@ public class Test_ValidatePredictions {
             // Step 3.2: Have individual prediction inspected for month 1
             // Step 3.3: Have individual prediction inspected for month 2
 
-            Log.info("Predictions validation finished");
         }
+
+        Log.info("Predictions validation finished");
     }
 }
