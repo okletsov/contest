@@ -30,6 +30,7 @@ public class Test_ValidatePredictions {
     @Test
     public void testPredictions() {
         // Step 1: Get active seasonal contest id
+        Log.info("Starting to validate predictions...");
         ContestOperations contOp = new ContestOperations(conn);
 //        String seasContestId = contOp.getActiveSeasonalContestID();
         String seasContestId = "3fd1fd5d-7913-11e9-a98a-74852a015562";
@@ -59,6 +60,8 @@ public class Test_ValidatePredictions {
 
             // Step 3.2: Have individual prediction inspected for month 1
             // Step 3.3: Have individual prediction inspected for month 2
+
+            Log.info("Predictions validation finished");
         }
     }
 }

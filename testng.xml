@@ -4,6 +4,7 @@
     <test name="Test_Predictions" >
         <classes>
             <class name="com.sapfir.tests.Test_Predictions" />
+            <class name="com.sapfir.tests.Test_ValidatePredictions" />
         </classes>
     </test>
 </suite>
