@@ -23,6 +23,7 @@ public class PredictionValidationTier1 {
     boolean predictionQuarterGoal;
     int validityStatus;
     int indexInContest;
+    int indexInSeasContest;
     int indexWithOddsBetween10And15InMonth;
     int indexPerEventPerUser;
     int indexOnGivenDayByUser;
@@ -63,6 +64,7 @@ public class PredictionValidationTier1 {
         if (dateScheduledKnown) { this.initialDateScheduled = dtOp.convertToDateTimeFromString(predOp.getDbInitialDateScheduled(predictionId)); }
         if (!dateScheduledKnown) { this.todayDateTime = dtOp.convertToDateTimeFromString(dtOp.getTimestamp()); }
         this.indexInContest = predOp.getPredictionIndexInContest(predictionId, contestId);
+        this.indexInSeasContest = predOp.getPredictionIndexInSeasContest(predictionId);
         this.userPickValue = predOp.getDbUserPickValue(predictionId);
         this.predictionQuarterGoal = predOp.isQuarterGoal(predictionId);
         if (dateScheduledKnown) {this.indexWithOddsBetween10And15InMonth = predOp.getPredictionIndexWithOddsBetween10And15InMonth(predictionId); }
@@ -186,6 +188,7 @@ public class PredictionValidationTier1 {
                     1.1 Checking if event was originally scheduled within contest time frame
                     1.2 If date_scheduled is unknown check if contest is already over
                     1.3 Check if user already has 100 valid predictions
+                    1.4 If inspecting for monthly contest - it is a point to assign monthly_contest_id to prediction
             Step 2: if step 1 is ok check if user violated any rules for which prediction should be count lost:
                     2.1 Check if user_pick_value is less than 1.5 or more than 15
                     2.2 Check if prediction is quarter goal and user_pick_value is less than 2
@@ -204,6 +207,8 @@ public class PredictionValidationTier1 {
                     3.2 Initial_date_scheduled before last day, date_scheduled on the last day and event cancelled - doesn't count
                     3.3 Initial_date_scheduled before last day, date_scheduled on the last + 24hrs - doesn't count
                     3.4 Initial_date_scheduled before last day, date_scheduled after the last day + 24hrs - doesn't count
+
+                 If inspecting for seasonal contest:
                     3.5 Initial_date_scheduled on the last day, date_scheduled on the last day, event cancelled and extra prediction made instead - doesn't count
                     3.6 Initial_date_scheduled on the last day, date_scheduled on the last day, event cancelled and no extra prediction made instead - count void
                     3.7 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs and extra prediction made instead - doesn't count
@@ -211,13 +216,26 @@ public class PredictionValidationTier1 {
                     3.9 Initial_date_scheduled on the last day, date_scheduled on the last day + 24hrs, event not cancelled and no extra prediction made instead - valid prediction
                     3.10 Initial_date_scheduled on the last day, date_scheduled after the last day + 24hrs and extra prediction made instead - doesn't count
                     3.11 Initial_date_scheduled on the last day, date_scheduled after the last day + 24hrs and no extra prediction made instead - count void
+
+                 If inspecting for monthly contest:
+                    3.12 Initial_date_scheduled on the last day, date_scheduled on the last day and event cancelled - doesn't count
+                    3.13 Initial_date_scheduled on the last day, date_scheduled on the last + 24hrs day and event cancelled - count void
+                    3.14 Initial_date_scheduled on the last day, date_scheduled on the last + 24hrs day and event not cancelled - valid prediction
+                    3.15 Initial_date_scheduled on the last day, date_scheduled after last dat + 24hrs
+
          */
 
         if (validityStatusOverruled) { return validityStatus; } // Step 0
 
         if (!eventDateBelongsToContest()) { return 11; } // Step 1.1
         if (!dateScheduledKnown && todayDateTime.isAfter(endDate)) { return 12; } // Step 1.2
-        if (indexInContest > 100) { return 13; } // Step 1.3
+        if (indexInSeasContest > 100) { return 13; } // Step 1.3
+
+        if (contestType.equals("monthly")) { // Step 1.4
+
+            PredictionOperations predOp = new PredictionOperations(conn);
+            predOp.updateMonthlyContestId(predictionId, contestId);
+        }
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
         if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2
@@ -230,7 +248,7 @@ public class PredictionValidationTier1 {
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 1) { warnings.put(predictionId, 2); } // Step 2.7.2
         if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions > 1) { return 27; } // Step 2.7.3
 
-        if (option2Value > 0) { checkForAnomalyOdd(); } // Step 2.8 (warning only in logs)
+//        if (option2Value > 0) { checkForAnomalyOdd(); } // Step 2.8 (warning only in logs)
 
         if (dateScheduledKnown && isBeforeLastDay(initialDateScheduled)) {
 
@@ -240,7 +258,7 @@ public class PredictionValidationTier1 {
             if (isAfterLastDayPlus24hrs(dateScheduled)) { return 44; } // Step 3.4
         }
 
-        if (dateScheduledKnown && isOnLastDay(initialDateScheduled)) {
+        if (contestType.equals("seasonal") && dateScheduledKnown && isOnLastDay(initialDateScheduled)) {
 
             if (isOnLastDay(dateScheduled) && eventCancelled() && extraPredictionMade()) { return 45; } // Step 3.5
             if (isOnLastDay(dateScheduled) && eventCancelled() && !extraPredictionMade()) { return 46; } // Step 3.6
@@ -249,6 +267,15 @@ public class PredictionValidationTier1 {
             if (isOnLastDayPlus24hrs(dateScheduled) && !extraPredictionMade() && !eventCancelled()) { return 2; } // Step 3.9
             if (isAfterLastDayPlus24hrs(dateScheduled) && extraPredictionMade()) { return 49; } // Step 3.10
             if (isAfterLastDayPlus24hrs(dateScheduled) && !extraPredictionMade()) { return 50; } // Step 3.11
+        }
+
+        if (contestType.equals("monthly") && dateScheduledKnown && isOnLastDay(initialDateScheduled)) {
+
+            if (isOnLastDay(dateScheduled) && eventCancelled()) { return 51; } // Step 3.12
+            if (isOnLastDayPlus24hrs(dateScheduled) && eventCancelled()) { return 52; } // Step 3.13
+            if (isOnLastDayPlus24hrs(dateScheduled) && !eventCancelled()) { return 3; } // Step 3.14
+            if (isAfterLastDayPlus24hrs(dateScheduled)) { return 53; } // Step 3.15
+
         }
 
         return 1;

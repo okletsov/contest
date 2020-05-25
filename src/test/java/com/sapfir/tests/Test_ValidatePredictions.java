@@ -29,6 +29,10 @@ public class Test_ValidatePredictions {
     
     @Test
     public void testPredictions() {
+
+        ValidityStatuses vs = new ValidityStatuses(conn);
+        PredictionOperations predOp = new PredictionOperations(conn);
+
         // Step 1: Get active seasonal contest id
         Log.info("Starting to validate predictions...");
         ContestOperations contOp = new ContestOperations(conn);
@@ -41,25 +45,55 @@ public class Test_ValidatePredictions {
 
         // Step 2: Get the list of predictions to validate
         ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
-//        ArrayList<String> predictionsToValidate = new ArrayList<>();
-//        predictionsToValidate.add("feed_item_3805148303");
-//        predictionsToValidate.add("feed_item_3804796803");
-//        predictionsToValidate.add("feed_item_3804797703");
 
         // Step 3: Individually validate each prediction
         for (String predictionId : predictionsToValidate) {
 
             // Step 3.1: Have individual prediction inspected for season
             PredictionValidationTier1 predValSeas = new PredictionValidationTier1(conn, seasContestId, predictionId);
-            PredictionOperations predOp = new PredictionOperations(conn);
-            ValidityStatuses vs = new ValidityStatuses(conn);
-
             int seasStatus = predValSeas.getStatus();
-            if (seasStatus > 1) { Log.warn("Status for prediction " + predictionId + ": " + seasStatus + " - " + vs.getDescription(seasStatus)); }
+            if (seasStatus > 1 && seasStatus != 41) { Log.warn("Status for prediction " + predictionId + ": " + seasStatus + " - " + vs.getDescription(seasStatus)); }
             predOp.updateValidityStatus(predictionId, seasStatus, "seasonal");
 
             // Step 3.2: Have individual prediction inspected for month 1
+            PredictionValidationTier1 predValMon1 = new PredictionValidationTier1(conn, mon1ContestId, predictionId);
+            int mon1Status = predValMon1.getStatus();
+
+            if ( // update monthly status only if prediction belongs to monthly contest
+                    mon1Status != 11 &&
+                    mon1Status != 12 &&
+                    mon1Status != 13
+            ) {
+                if ( // log a warning only if prediction status is specific to monthly contest
+                        mon1Status == 3 ||
+                        mon1Status == 51 ||
+                        mon1Status == 52 ||
+                        mon1Status == 53
+                ) {
+                    Log.warn("Month 1 status for prediction " + predictionId + ": " + mon1Status + " - " + vs.getDescription(mon1Status));
+                }
+                predOp.updateValidityStatus(predictionId, mon1Status, "monthly");
+            }
+
             // Step 3.3: Have individual prediction inspected for month 2
+            PredictionValidationTier1 predValMon2 = new PredictionValidationTier1(conn, mon2ContestId, predictionId);
+            int mon2Status = predValMon2.getStatus();
+
+            if ( // update monthly status only if prediction belongs to monthly contest
+                    mon2Status != 11 &&
+                    mon2Status != 12 &&
+                    mon2Status != 13
+            ) {
+                if ( // log a warning only if prediction status is specific to monthly contest
+                        mon2Status == 3 ||
+                        mon2Status == 51 ||
+                        mon2Status == 52 ||
+                        mon2Status == 53
+                ) {
+                    Log.warn("Month 2 status for prediction " + predictionId + ": " + mon2Status + " - " + vs.getDescription(mon2Status));
+                }
+                predOp.updateValidityStatus(predictionId, mon2Status, "monthly");
+            }
 
         }
 
