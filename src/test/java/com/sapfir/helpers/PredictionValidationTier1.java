@@ -5,13 +5,11 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 
 public class PredictionValidationTier1 {
 
     private static final Logger Log = LogManager.getLogger(PredictionValidationTier1.class.getName());
 
-    public static HashMap<String, Integer> warnings = new HashMap<>();
     Connection conn;
     LocalDateTime todayDateTime;
 
@@ -28,6 +26,7 @@ public class PredictionValidationTier1 {
     int indexPerEventPerUser;
     int indexOnGivenDayByUser;
     int indexPerEventMarketUserPickNameCompetitors;
+    int indexOfDuplPrediction;
     LocalDateTime dateScheduled;
     LocalDateTime initialDateScheduled;
     float userPickValue;
@@ -77,6 +76,7 @@ public class PredictionValidationTier1 {
         this.mainScore = predOp.getDbMainScore(predictionId);
         this.option2Value = predOp.getDbOption2Value(predictionId);
         if (option2Value > 0) { this.payout = predOp.getPayout(predictionId); }
+        this.indexOfDuplPrediction = predOp.getIndexOfDuplPrediction(predictionId);
 
         // Getting contest metadata:
 
@@ -145,6 +145,12 @@ public class PredictionValidationTier1 {
         return (indexInContest + countRemainingPredictions) > predictionsAmountRequired;
     }
 
+    private void updateWarningStatus(int status) {
+        if (contestType.equals("seasonal")) { Log.warn("Warning for prediction " + predictionId + ": " + indexOfDuplPrediction + " occurrence for user"); }
+        PredictionOperations predOp = new PredictionOperations(conn);
+        predOp.updateWarningStatus(predictionId, status, contestType);
+    }
+
     private void checkForAnomalyOdd() {
         /*
             Anomaly odd = bagovaya stavka
@@ -160,27 +166,8 @@ public class PredictionValidationTier1 {
 
     }
 
-    private int countDuplicatedPredictions() {
-        int count = 0;
-
-        for (String predictionId: warnings.keySet()) {
-            PredictionOperations predOpDupl = new PredictionOperations(conn);
-
-            String userIdDupl = predOpDupl.getDbUserId(predictionId);
-            int warningId = warnings.get(predictionId);
-
-            if (userIdDupl.equals(userId) && (warningId == 1 || warningId == 2)) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
     // Get validity status
     public int getStatus() {
-
-        int countDuplPredictions = countDuplicatedPredictions();
 
         /*
             Step 0: check is validity_status was overruled
@@ -244,9 +231,9 @@ public class PredictionValidationTier1 {
         if (dateScheduledKnown && indexOnGivenDayByUser > 10) { return 25; } // Step 2.5
         if (userPickName.contains("Odd") || userPickName.contains("Even")) { return 26; } // Step 2.6
 
-        if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 0) { warnings.put(predictionId, 1); } // Step 2.7.1
-        if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions == 1) { warnings.put(predictionId, 2); } // Step 2.7.2
-        if (indexPerEventMarketUserPickNameCompetitors > 1 && countDuplPredictions > 1) { return 27; } // Step 2.7.3
+        if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction == 1) { updateWarningStatus(1); } // Step 2.7.1
+        if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction == 2) { updateWarningStatus(2); } // Step 2.7.2
+        if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction > 2) { return 27; } // Step 2.7.3
 
 //        if (option2Value > 0) { checkForAnomalyOdd(); } // Step 2.8 (warning only in logs)
 

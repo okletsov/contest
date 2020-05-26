@@ -37,7 +37,7 @@ public class Test_ValidatePredictions {
         Log.info("Starting to validate predictions...");
         ContestOperations contOp = new ContestOperations(conn);
         String seasContestId = contOp.getActiveSeasonalContestID();
-//        String seasContestId = "3fd1fd5d-7913-11e9-a98a-74852a015562";
+//        String seasContestId = "8d570ed0-de73-11e9-92ec-74852a015562";
 
         Contest contest = new Contest(conn, seasContestId);
         String mon1ContestId = contest.getMonContestId(1);
