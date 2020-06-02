@@ -490,7 +490,7 @@ public class PredictionOperations {
                 "\t\trow_number() over(order by date_predicted asc) row_num\n" +
                 "\t\t, id\n" +
                 "\tfrom prediction p \n" +
-                "\t\tjoin validity_statuses vs on vs.status = p.seasonal_validity_status \n" +
+                "\t\tleft join validity_statuses vs on vs.status = p.seasonal_validity_status \n" +
                 "\twhere 1=1\n" +
                 "\t\tand vs.count_in_contest = 1\n" +
                 "\t\tand p.event_identifier = '" + eventIdentifier + "'\n" +
