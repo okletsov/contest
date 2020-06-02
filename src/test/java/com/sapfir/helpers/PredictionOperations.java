@@ -490,11 +490,14 @@ public class PredictionOperations {
                 "\t\trow_number() over(order by date_predicted asc) row_num\n" +
                 "\t\t, id\n" +
                 "\tfrom prediction p \n" +
+                "\t\tjoin validity_statuses vs on vs.status = p.seasonal_validity_status \n" +
                 "\twhere 1=1\n" +
+                "\t\tand vs.count_in_contest = 1\n" +
                 "\t\tand p.event_identifier = '" + eventIdentifier + "'\n" +
                 "\t\tand p.market = '" + market + "'\n" +
                 "\t\tand p.user_pick_name = '" + userPickName + "'\n" +
-                "\t\tand p.competitors = \"" + competitors + "\"\n" +
+                "\t\tand p.competitors = '" + competitors + "'\n" +
+                "\t\tor p.id = '" + predictionId + "'\n" +
                 "\t) t1\n" +
                 "where t1.id = '" + predictionId + "';";
 
