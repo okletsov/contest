@@ -3,9 +3,12 @@ package com.sapfir.helpers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
 
 public class ContestOperations {
 
@@ -207,6 +210,76 @@ public class ContestOperations {
         Log.info("Month 2 contest successfully activated");
     }
 
+    public void writeGeneralContestResults(List<HashMap<String,Object>> results) {
+
+        PreparedStatement sql = null;
+        int lastValidPlace = 0;
+
+        for (int i = 0; i < results.size(); i++) {
+
+            String nickname = results.get(i).get("nickname").toString();
+
+            Log.info("Writing general contest results for " + nickname);
+
+//            Step 1: getting data to insert from the result set
+
+            String userId = results.get(i).get("user_id").toString();
+            String contestId = results.get(i).get("contest_id").toString();
+            int place = Integer.parseInt(results.get(i).get("place").toString());
+            int finalBetsCount = Integer.parseInt(results.get(i).get("final_bets_count").toString());
+            int origBetsCount = Integer.parseInt(results.get(i).get("orig_bets_count").toString());
+            int activeDays = Integer.parseInt(results.get(i).get("active_days").toString());
+            BigDecimal won = new BigDecimal(results.get(i).get("won").toString());
+            BigDecimal lost = new BigDecimal(results.get(i).get("lost").toString());
+            BigDecimal units = new BigDecimal(results.get(i).get("units").toString());
+            BigDecimal roi = new BigDecimal(results.get(i).get("roi").toString());
+
+            if (place == 0) {
+                    place = lastValidPlace + 1;
+            } else {
+                lastValidPlace = place;
+            }
+
+//            Step 2: find annual points corresponding to a place
+            int annualPoints = getAnnualPointsByPlace(place);
+
+//            Step 3: generate and execute update statement
+
+            try {
+                sql = conn.prepareStatement(
+                        "INSERT INTO `main`.`cr_general` (`id`, `user_id`, `contest_id`, `annual_points`, `nickname`, `place`, `final_bets_count`, `orig_bets_count`, `won`, `lost`, `units`, `roi`, `active_days`) \n" +
+                        "VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                );
+
+                sql.setString(1, userId);
+                sql.setString(2, contestId);
+                sql.setInt(3, annualPoints);
+                sql.setString(4, nickname);
+                sql.setInt(5, place);
+                sql.setInt(6, finalBetsCount);
+                sql.setInt(7, origBetsCount);
+                sql.setBigDecimal(8, won);
+                sql.setBigDecimal(9, lost);
+                sql.setBigDecimal(10, units);
+                sql.setBigDecimal(11, roi);
+                sql.setInt(12, activeDays);
+
+                sql.executeUpdate();
+                sql.close();
+
+                Log.info("Done");
+
+            }catch (SQLException ex) {
+                Log.error("SQLException: " + ex.getMessage());
+                Log.error("SQLState: " + ex.getSQLState());
+                Log.error("VendorError: " + ex.getErrorCode());
+                Log.trace("Stack trace: ", ex);
+                Log.error("Failing sql statement: " + sql);
+            }
+        }
+
+    }
+
     public String getActiveSeasonalContestID() {
 
         Log.trace("Getting active seasonal contest ID...");
@@ -218,6 +291,156 @@ public class ContestOperations {
         else { Log.trace("There are no active seasonal contests in database"); }
 
         return contestID;
+    }
+
+    private int getAnnualPointsByPlace(int place) {
+        if (place == 1) {
+            return 10;
+        } else if (place == 2) {
+            return 8;
+        } else if (place == 3) {
+            return 6;
+        } else if (place == 4) {
+            return 5;
+        } else if (place == 5) {
+            return 4;
+        } else if (place == 6) {
+            return 3;
+        } else if (place == 7) {
+            return 2;
+        } else if (place == 8) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public List<HashMap<String,Object>> getGeneralContestResults(String contestId) {
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+
+        String seasResultSql = "select \n" +
+                "\t(\n" +
+                "\t\tcase \n" +
+                "\t\t\twhen t5.active_days >=30 then (row_number() over (order by \n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcase when t5.active_days >= 30 then 0 else 1 end\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t, t5.units desc\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t)\n" +
+                "\t\t\t\t\t\t\t\t\t\t)\n" +
+                "\t\telse 0 end\t\t\n" +
+                "\t) as place\n" +
+                "\t, t5.nickname\n" +
+                "\t, t5.user_id\n" +
+                "\t, t5.seasonal_contest_id as contest_id\n" +
+                "\t, t5.final_bets_count\n" +
+                "\t, t5.orig_bets_count\n" +
+                "\t, t5.active_days\n" +
+                "\t, t5.won\n" +
+                "\t, t5.lost\n" +
+                "\t, t5.units\n" +
+                "\t, t5.roi\n" +
+                "from (\n" +
+                "\tselect \n" +
+                "\t\tt4.nickname\n" +
+                "\t\t, t4.user_id\n" +
+                "\t\t, t4.seasonal_contest_id\n" +
+                "\t\t, (case when t4.bets < 100 then 100 else t4.bets end) as final_bets_count\n" +
+                "\t\t, t4.bets as orig_bets_count\n" +
+                "\t\t, t4.active_days\n" +
+                "\t\t, t4.won\n" +
+                "\t\t, (case when t4.bets < 100 then (t4.lost + (100 - t4.bets)) else t4.lost end) as lost\n" +
+                "\t\t, (case when t4.bets < 100 then (t4.units - (100 - t4.bets)) else t4.units end) as units\n" +
+                "\t\t, cast((case when t4.bets < 100 then (t4.units - (100 - t4.bets)) else t4.units end) as decimal(5,2)) as roi\n" +
+                "\tfrom (\n" +
+                "\t\tselect \n" +
+                "\t\t\tt3.nickname\n" +
+                "\t\t\t, t3.user_id\n" +
+                "\t\t\t, t3.seasonal_contest_id\n" +
+                "\t\t\t, sum(case when t3.result = 'not-played' then 0 else 1 end) as bets\n" +
+                "\t\t\t, count(distinct date(t3.kiev_date_predicted)) as active_days\n" +
+                "\t\t\t, cast(sum(\n" +
+                "\t\t\t\tcase \n" +
+                "\t\t\t\t\twhen t3.count_lost = 1 then '0'\n" +
+                "\t\t\t\t\twhen t3.count_void = 1 then '1'\n" +
+                "\t\t\t\t\twhen t3.result = 'void' then '1'\n" +
+                "\t\t\t\t\twhen t3.result = 'won' then t3.user_pick_value\n" +
+                "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value\t\t\t\n" +
+                "\t\t\t\tend \n" +
+                "\t\t\t) as decimal(5,2)) as won\n" +
+                "\t\t\t, sum(case when t3.unit_outcome < 0 then t3.unit_outcome end) * -1 as lost\n" +
+                "\t\t\t, cast(sum(t3.unit_outcome) as decimal(5,2)) as units\n" +
+                "\t\t\t, cast((sum(t3.unit_outcome) / sum(case when t3.result = 'not-played' then 0 else 1 end)) * 100 as decimal(5,2)) as roi\n" +
+                "\t\tfrom (\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\tun.nickname \n" +
+                "\t\t\t\t, p3.user_id \n" +
+                "\t\t\t\t, p3.seasonal_contest_id \n" +
+                "\t\t\t\t, p3.seasonal_validity_status as seas_st\n" +
+                "\t\t\t\t, p3.seasonal_validity_status_overruled as seas_st_over\n" +
+                "\t\t\t\t, p3.monthly_validity_status as mon_st\n" +
+                "\t\t\t\t, p3.monthly_validity_status_overruled as mon_st_over\n" +
+                "\t\t\t\t, vs.count_lost \n" +
+                "\t\t\t\t, vs.count_void \n" +
+                "\t\t\t\t, convert_tz(t2.date_predicted, 'UTC', 'Europe/Kiev') as kiev_date_predicted\n" +
+                "\t\t\t\t, p3.user_pick_value \n" +
+                "\t\t\t\t, p3.`result`\n" +
+                "\t\t\t\t, (\n" +
+                "\t\t\t\t\tcase \n" +
+                "\t\t\t\t\t\twhen vs.count_lost = 1 then '-1'\n" +
+                "\t\t\t\t\t\twhen vs.count_void = 1 then '0'\n" +
+                "\t\t\t\t\t\telse p3.unit_outcome \n" +
+                "\t\t\t\t\tend\n" +
+                "\t\t\t\t) as unit_outcome\n" +
+                "\t\t\tfrom (\n" +
+                "\t\t\t\tselect \n" +
+                "\t\t\t\t\tt1.id\n" +
+                "\t\t\t\t\t, min(t1.date_scheduled) as initial_date_scheduled\n" +
+                "\t\t\t\t\t, t1.date_predicted\n" +
+                "\t\t\t\tfrom (\n" +
+                "\t\t\t\t\tselect \n" +
+                "\t\t\t\t\t\tp.id \n" +
+                "\t\t\t\t\t\t, p.date_scheduled\n" +
+                "\t\t\t\t\t\t, p.date_predicted \n" +
+                "\t\t\t\t\tfrom prediction p\n" +
+                "\t\t\t\t\t\n" +
+                "\t\t\t\t\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
+                "\t\t\t\t\t\n" +
+                "\t\t\t\t\tselect \n" +
+                "\t\t\t\t\t\tpsc.prediction_id\n" +
+                "\t\t\t\t\t\t, psc.previous_date_scheduled \n" +
+                "\t\t\t\t\t\t, p2.date_predicted \n" +
+                "\t\t\t\t\tfrom prediction_schedule_changes psc\n" +
+                "\t\t\t\t\t\tjoin prediction p2 on p2.id = psc.prediction_id \n" +
+                "\t\t\t\t\t) t1 -- finding all date_scheduled, including postponed\n" +
+                "\t\t\t\twhere 1=1\n" +
+                "\t\t\t\tgroup by \n" +
+                "\t\t\t\t\tt1.id\n" +
+                "\t\t\t\t\t, t1.date_predicted\n" +
+                "\t\t\t\t) t2 -- finding initial date_scheduled per prediction\n" +
+                "\t\t\t\tjoin prediction p3 on p3.id = t2.id\n" +
+                "\t\t\t\tjoin user u on u.id = p3.user_id \n" +
+                "\t\t\t\tjoin user_nickname un on un.user_id = u.id \n" +
+                "\t\t\t\tjoin validity_statuses vs on vs.status = p3.seasonal_validity_status  \n" +
+                "\t\t\twhere 1=1\n" +
+                "\t\t\t\tand un.is_active = 1\n" +
+                "\t\t\t\tand p3.seasonal_contest_id = '" + contestId + "'\n" +
+                "\t\t \t\tand vs.count_in_contest = 1\n" +
+                "\t\t\torder by \n" +
+                "\t\t\t\tun.nickname \n" +
+                "\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+                "\t\t\t\t, t2.initial_date_scheduled asc\n" +
+                "\t\t\t\t, t2.date_predicted asc\n" +
+                "\t\t\t) t3 -- all predictions that count in contest with correct unit_outcome based on status \n" +
+                "\t\tgroup by \n" +
+                "\t\t\tt3.nickname\n" +
+                "\t\t\t, t3.user_id\n" +
+                "\t\t\t, t3.seasonal_contest_id\n" +
+                "\t\t) t4 -- calculating raw contest result measures\n" +
+                "\t) t5 -- applying rules for user who did no make 100 predictions\n" +
+                "; -- applying rules for users with less than 30 active days";
+
+        return dbOp.getListOfHashMaps(conn, seasResultSql);
+
     }
 
 }
