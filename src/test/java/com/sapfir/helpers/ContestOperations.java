@@ -269,7 +269,7 @@ public class ContestOperations {
 
                 Log.info("Done");
 
-            }catch (SQLException ex) {
+            } catch (SQLException ex) {
                 Log.error("SQLException: " + ex.getMessage());
                 Log.error("SQLState: " + ex.getSQLState());
                 Log.error("VendorError: " + ex.getErrorCode());
@@ -278,6 +278,52 @@ public class ContestOperations {
             }
         }
 
+    }
+
+    public void writeContestResultsWinningStrick(List<HashMap<String,Object>> results) {
+
+        PreparedStatement sql = null;
+
+        for (int i = 0; i < results.size(); i++) {
+
+            String nickname = results.get(i).get("nickname").toString();
+
+            Log.info("Writing winning strick results for " + nickname);
+
+//            Step 1: getting data to insert from the result set
+
+            String userId = results.get(i).get("user_id").toString();
+            String contestId = results.get(i).get("contest_id").toString();
+            BigDecimal strickAvgOdds = new BigDecimal(results.get(i).get("strick_avg_odds").toString());
+            int strickLength = Integer.parseInt(results.get(i).get("strick_length").toString());
+
+//            Step 3: generate and execute update statement
+
+            try {
+                sql = conn.prepareStatement(
+                        "INSERT INTO `main`.`cr_winning_strick` (`id`, `user_id`, `contest_id`, `nickname`, `strick_length`, `strick_avg_odds`) \n" +
+                                "VALUES (uuid(), ?, ?, ?, ?, ?);"
+                );
+
+                sql.setString(1, userId);
+                sql.setString(2, contestId);
+                sql.setString(3, nickname);
+                sql.setInt(4, strickLength);
+                sql.setBigDecimal(5, strickAvgOdds);
+
+                sql.executeUpdate();
+                sql.close();
+
+                Log.info("Done");
+
+            } catch (SQLException ex) {
+                Log.error("SQLException: " + ex.getMessage());
+                Log.error("SQLState: " + ex.getSQLState());
+                Log.error("VendorError: " + ex.getErrorCode());
+                Log.trace("Stack trace: ", ex);
+                Log.error("Failing sql statement: " + sql);
+            }
+        }
     }
 
     public String getActiveSeasonalContestID() {
@@ -441,6 +487,126 @@ public class ContestOperations {
 
         return dbOp.getListOfHashMaps(conn, seasResultSql);
 
+    }
+
+    public List<HashMap<String,Object>> getContestResultsWinningStrick(String contestId) {
+        DatabaseOperations dbOp = new DatabaseOperations();
+
+        String seasResultSql = "select \n" +
+                "\tt5.nickname\n" +
+                "\t, t5.user_id\n" +
+                "\t, t5.contest_id\n" +
+                "\t, t5.strick_avg_odds\n" +
+                "\t, t5.strick_length\n" +
+                "from (\n" +
+                "\tselect \n" +
+                "\t\t(\n" +
+                "\t\t\trow_number() over (partition by\n" +
+                "\t\t\t\t\t\t\t\t\tt4.nickname\n" +
+                "\t\t\t\t\t\t\t\torder by \n" +
+                "\t\t\t\t\t\t\t\t\tt4.strick_length desc\n" +
+                "\t\t\t\t\t\t\t\t\t, t4.strick_avg_odds desc\n" +
+                "\t\t\t\t\t\t\t\t)\n" +
+                "\t\t) as strick_rank\n" +
+                "\t\t, t4.nickname\n" +
+                "\t\t, t4.user_id\n" +
+                "\t\t, t4.seasonal_contest_id as contest_id\n" +
+                "\t\t, t4.strick_avg_odds\n" +
+                "\t\t, t4.strick_length\n" +
+                "\tfrom (\n" +
+                "\t\tselect \n" +
+                "\t\t\tt3.nickname\n" +
+                "\t\t\t, t3.user_id \n" +
+                "\t\t\t, t3.seasonal_contest_id \n" +
+                "\t\t\t, round(avg(t3.user_pick_value), 2) as strick_avg_odds\n" +
+                "\t\t\t, count(t3.id) as strick_length\n" +
+                "\t\tfrom (\n" +
+                "\t\t\tselect \n" +
+                "\t\t\t\t(\n" +
+                "\t\t\t\t\trow_number() over (order by \n" +
+                "\t\t\t\t\t\t\t\t\t\t\tp3.user_id\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc) -\n" +
+                "\t\t\t\t\trow_number () over (partition by \n" +
+                "\t\t\t\t\t\t\t\t\t\t\tp3.user_id\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, p3.result \n" +
+                "\t\t\t\t\t\t\t\t\t\torder by \n" +
+                "\t\t\t\t\t\t\t\t\t\t\tp3.user_id \n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc)\n" +
+                "\t\t\t\t) as grp\n" +
+                "\t\t\t\t, p3.id\n" +
+                "\t\t\t\t, p3.user_id \n" +
+                "\t\t\t\t, p3.seasonal_contest_id \n" +
+                "\t\t\t\t, un.nickname \n" +
+                "\t\t\t\t, p3.result\n" +
+                "\t\t\t\t, p3.user_pick_value\n" +
+                "\t\t\t\t, t2.initial_date_scheduled\n" +
+                "\t\t\t\t, t2.date_predicted\n" +
+                "\t\t\tfrom prediction p3\n" +
+                "\t\t\t\tjoin (\n" +
+                "\t\t\t\t\tselect \n" +
+                "\t\t\t\t\t\tt1.id\n" +
+                "\t\t\t\t\t\t, min(t1.date_scheduled) as initial_date_scheduled\n" +
+                "\t\t\t\t\t\t, t1.date_predicted\n" +
+                "\t\t\t\t\tfrom (\n" +
+                "\t\t\t\t\t\tselect \n" +
+                "\t\t\t\t\t\t\tp.id \n" +
+                "\t\t\t\t\t\t\t, p.date_scheduled\n" +
+                "\t\t\t\t\t\t\t, p.date_predicted \n" +
+                "\t\t\t\t\t\tfrom prediction p\n" +
+                "\t\t\t\t\t\t\n" +
+                "\t\t\t\t\t\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
+                "\t\t\t\t\t\t\n" +
+                "\t\t\t\t\t\tselect \n" +
+                "\t\t\t\t\t\t\tpsc.prediction_id\n" +
+                "\t\t\t\t\t\t\t, psc.previous_date_scheduled\n" +
+                "\t\t\t\t\t\t\t, p2.date_predicted \n" +
+                "\t\t\t\t\t\tfrom prediction_schedule_changes psc\n" +
+                "\t\t\t\t\t\t\tjoin prediction p2 on psc.prediction_id = p2.id \n" +
+                "\t\t\t\t\t\t) t1\n" +
+                "\t\t\t\t\tgroup by \n" +
+                "\t\t\t\t\t\tt1.id\n" +
+                "\t\t\t\t\t\t, t1.date_predicted\n" +
+                "\t\t\t\t) t2 on p3.id = t2.id\n" +
+                "\t\t\t\tjoin contest c on c.id = p3.seasonal_contest_id\n" +
+                "\t\t\t\tjoin user_nickname un on un.user_id = p3.user_id\n" +
+                "\t\t\t\tjoin validity_statuses vs on vs.status = p3.seasonal_validity_status\n" +
+                "\t\t\twhere 1=1\n" +
+                "\t\t\t\tand un.is_active = 1\n" +
+                "\t\t\t\tand vs.count_in_contest = 1\n" +
+                "-- \t\t\t\tand c.id = (select c.id from contest c where c.`type` = 'seasonal' and is_active = 1)\n" +
+                "\t\t\t\tand c.id = '" + contestId + "'\n" +
+                "\t\t\torder by \n" +
+                "\t\t\t\tp3.user_id \n" +
+                "\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+                "\t\t\t\t, t2.initial_date_scheduled asc\n" +
+                "\t\t\t\t, t2.date_predicted asc\n" +
+                "\t\t\t) t3\n" +
+                "\t\twhere 1=1\n" +
+                "\t\t\tand t3.result = 'won'\n" +
+                "\t\tgroup by \n" +
+                "\t\t\tt3.grp\n" +
+                "\t\t\t, t3.nickname\n" +
+                "\t\t\t, t3.user_id \n" +
+                "\t\t\t, t3.seasonal_contest_id \n" +
+                "\t\t\t, t3.result\n" +
+                "\t\torder by\n" +
+                "\t\t\tt3.nickname\n" +
+                "\t\t\t, strick_length desc\n" +
+                "\t\t\t, strick_avg_odds desc\n" +
+                "\t\t) t4\n" +
+                "\t) t5\n" +
+                "where 1=1\n" +
+                "\tand t5.strick_rank = 1\n" +
+                "order by \n" +
+                "\tt5.strick_length desc \n" +
+                "\t, t5.strick_avg_odds desc\n" +
+                ";";
+
+        return dbOp.getListOfHashMaps(conn, seasResultSql);
     }
 
 }
