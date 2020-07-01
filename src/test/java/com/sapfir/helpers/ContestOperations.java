@@ -115,7 +115,7 @@ public class ContestOperations {
 
                 sql = conn.prepareStatement("INSERT INTO contest \n" +
                         "(id, type, year, month, season, start_date, end_date, is_active, date_created)\n" +
-                        "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?);");
+                        "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
                 Log.debug("Adding seasonal contest...");
                 sql.setString(1, "seasonal");
@@ -126,6 +126,7 @@ public class ContestOperations {
                 sql.setString(6, seasonal_end_date);
                 sql.setInt(7, 1);
                 sql.setString(8, dtOp.getTimestamp());
+                sql.setInt(9, 250);
                 sql.executeUpdate();
                 Log.info("Successfully added " + season + " " + year + " contest");
 
@@ -138,6 +139,7 @@ public class ContestOperations {
                 sql.setString(6, month_1_end_date);
                 sql.setInt(7, 1);
                 sql.setString(8, dtOp.getTimestamp());
+                sql.setInt(9, 0);
                 sql.executeUpdate();
                 Log.info("Successfully added month 1 contest");
 
@@ -150,6 +152,7 @@ public class ContestOperations {
                 sql.setString(6, month_2_end_date);
                 sql.setInt(7, 0);
                 sql.setString(8, dtOp.getTimestamp());
+                sql.setInt(9, 0);
                 sql.executeUpdate();
                 Log.info("Successfully added month 2 contest");
 
