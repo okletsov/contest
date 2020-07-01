@@ -297,7 +297,7 @@ public class ContestOperations {
             BigDecimal strickAvgOdds = new BigDecimal(results.get(i).get("strick_avg_odds").toString());
             int strickLength = Integer.parseInt(results.get(i).get("strick_length").toString());
 
-//            Step 3: generate and execute update statement
+//            Step 2: generate and execute update statement
 
             try {
                 sql = conn.prepareStatement(
@@ -310,6 +310,50 @@ public class ContestOperations {
                 sql.setString(3, nickname);
                 sql.setInt(4, strickLength);
                 sql.setBigDecimal(5, strickAvgOdds);
+
+                sql.executeUpdate();
+                sql.close();
+
+                Log.info("Done");
+
+            } catch (SQLException ex) {
+                Log.error("SQLException: " + ex.getMessage());
+                Log.error("SQLState: " + ex.getSQLState());
+                Log.error("VendorError: " + ex.getErrorCode());
+                Log.trace("Stack trace: ", ex);
+                Log.error("Failing sql statement: " + sql);
+            }
+        }
+    }
+
+    public void writeContestResultsBiggestOdds(List<HashMap<String,Object>> results) {
+
+        PreparedStatement sql = null;
+
+        for (int i = 0; i < results.size(); i++) {
+
+            String nickname = results.get(i).get("nickname").toString();
+
+            Log.info("Writing biggest odds for " + nickname);
+
+//            Step 1: getting data to insert from the result set
+
+            String userId = results.get(i).get("user_id").toString();
+            String contestId = results.get(i).get("contest_id").toString();
+            BigDecimal userPickValue = new BigDecimal(results.get(i).get("user_pick_value").toString());
+
+//            Step 2: generate and execute update statement
+
+            try {
+                sql = conn.prepareStatement(
+                        "INSERT INTO `main`.`cr_biggest_odds` (`id`, `user_id`, `contest_id`, `nickname`, `user_pick_value`) \n" +
+                                "VALUES (uuid(), ?, ?, ?, ?);"
+                );
+
+                sql.setString(1, userId);
+                sql.setString(2, contestId);
+                sql.setString(3, nickname);
+                sql.setBigDecimal(4, userPickValue);
 
                 sql.executeUpdate();
                 sql.close();
@@ -604,6 +648,44 @@ public class ContestOperations {
                 "order by \n" +
                 "\tt5.strick_length desc \n" +
                 "\t, t5.strick_avg_odds desc\n" +
+                ";";
+
+        return dbOp.getListOfHashMaps(conn, seasResultSql);
+    }
+
+    public List<HashMap<String,Object>> getContestResultsBiggestOdds(String contestId) {
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+
+        String seasResultSql = "select \n" +
+                "\tt1.nickname\n" +
+                "\t, t1.user_id\n" +
+                "\t, t1.contest_id\n" +
+                "\t, t1.user_pick_value\n" +
+                "from (\n" +
+                "\tselect \n" +
+                "\t\tun.nickname  \n" +
+                "\t\t, p.user_id \n" +
+                "\t\t, p.seasonal_contest_id as contest_id\n" +
+                "\t\t, max(p.user_pick_value) as user_pick_value \n" +
+                "\tfrom prediction p \n" +
+                "\t\tjoin contest c on c.id = p.seasonal_contest_id \n" +
+                "\t\tjoin user_nickname un on un.user_id = p.user_id \n" +
+                "\t\tjoin validity_statuses vs on vs.status = p.seasonal_validity_status \n" +
+                "\twhere 1=1\n" +
+                "\t-- \tand p.seasonal_contest_id = (select c.id from contest c where c.`type` = 'seasonal' and is_active = 1)\n" +
+                "\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
+                "\t\tand un.is_active = 1\n" +
+                "\t\tand p.unit_outcome > 0\n" +
+                "\t\tand vs.count_in_contest = 1\n" +
+                "\t\tand vs.count_lost != 1\n" +
+                "\t\tand vs.count_void != 1\n" +
+                "\tgroup by \n" +
+                "\t\tun.nickname \n" +
+                "\t\t, p.user_id \n" +
+                "\t\t, p.seasonal_contest_id \n" +
+                "\torder by user_pick_value desc\n" +
+                ") t1 -- t1 is used because java does not recognize aliases\n" +
                 ";";
 
         return dbOp.getListOfHashMaps(conn, seasResultSql);

@@ -50,6 +50,10 @@ public class Test_EndContest {
         contOp.writeContestResultsWinningStrick(strickPerUser);
 
 //        Step 4: Writing biggest odds
+
+        List<HashMap<String,Object>> biggestOddsPerUser = contOp.getContestResultsBiggestOdds(contestId);
+        contOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
+
 //        Step 5: Writing Finance data
 //        Step 6: Deactivate contest if it is active
     }
