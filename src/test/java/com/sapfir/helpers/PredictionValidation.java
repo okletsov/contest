@@ -6,9 +6,9 @@ import org.apache.logging.log4j.Logger;
 import java.sql.Connection;
 import java.time.LocalDateTime;
 
-public class PredictionValidationTier1 {
+public class PredictionValidation {
 
-    private static final Logger Log = LogManager.getLogger(PredictionValidationTier1.class.getName());
+    private static final Logger Log = LogManager.getLogger(PredictionValidation.class.getName());
 
     Connection conn;
     LocalDateTime todayDateTime;
@@ -46,7 +46,7 @@ public class PredictionValidationTier1 {
     LocalDateTime startOfLastDay;
     LocalDateTime endDatePlus24hrs;
 
-    public PredictionValidationTier1(Connection conn, String contestId, String predictionId) {
+    public PredictionValidation(Connection conn, String contestId, String predictionId) {
 
         PredictionOperations predOp = new PredictionOperations(conn);
         DateTimeOperations dtOp = new DateTimeOperations();
