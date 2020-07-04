@@ -13,7 +13,7 @@ public class ContestFinance {
         this.contestId = contestId;
     }
 
-    public BigDecimal sumEntranceFees() {
+    public BigDecimal getSumEntranceFees() {
 
         Contest c = new Contest(conn, contestId);
         BigDecimal participantsCount = BigDecimal.valueOf(c.getParticipantsCount(contestId));
@@ -23,10 +23,10 @@ public class ContestFinance {
     }
 
     public BigDecimal seasPrize() {
-        return sumEntranceFees().multiply(BigDecimal.valueOf(0.8));
+        return getSumEntranceFees().multiply(BigDecimal.valueOf(0.8));
     }
 
-    public BigDecimal seasPlacesPrize() {
+    public BigDecimal getSeasPlacesPrize() {
 
         Contest c = new Contest(conn, contestId);
         String mon1ContestId = c.getMonContestId(1);
@@ -41,45 +41,45 @@ public class ContestFinance {
         return seasPrize().multiply(BigDecimal.valueOf(0.5));
     }
 
-    public BigDecimal seasFirstPlaceAward() {
-        return seasPlacesPrize().multiply(BigDecimal.valueOf(0.5));
+    public BigDecimal getSeasFirstPlaceAward() {
+        return getSeasPlacesPrize().multiply(BigDecimal.valueOf(0.5));
     }
 
-    public BigDecimal seasSecondPlaceAward() {
-        return seasPlacesPrize().multiply(BigDecimal.valueOf(0.3));
+    public BigDecimal getSeasSecondPlaceAward() {
+        return getSeasPlacesPrize().multiply(BigDecimal.valueOf(0.3));
     }
 
-    public BigDecimal seasThirdPlaceAward() {
-        return seasPlacesPrize().multiply(BigDecimal.valueOf(0.2));
+    public BigDecimal getSeasThirdPlaceAward() {
+        return getSeasPlacesPrize().multiply(BigDecimal.valueOf(0.2));
     }
 
-    public BigDecimal winningStrickAward() {
+    public BigDecimal getWinningStrickAward() {
         return  seasPrize().multiply(BigDecimal.valueOf(0.05));
     }
 
-    public BigDecimal biggestOddsAward() {
+    public BigDecimal getBiggestOddsAward() {
         return seasPrize().multiply(BigDecimal.valueOf(0.05));
     }
 
-    public BigDecimal monPlacesPrize() {
+    public BigDecimal getMonPlacesPrize() {
         return seasPrize().multiply(BigDecimal.valueOf(0.2));
     }
 
-    public BigDecimal monFirstPlaceAward(int participants) {
-        if (participants >= 3) { return monPlacesPrize().multiply(BigDecimal.valueOf(0.5)); }
-        if (participants == 2) { return monPlacesPrize().multiply(BigDecimal.valueOf(0.6)); }
-        if (participants == 1) { return monPlacesPrize(); }
+    public BigDecimal getMonFirstPlaceAward(int participants) {
+        if (participants >= 3) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.5)); }
+        if (participants == 2) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.6)); }
+        if (participants == 1) { return getMonPlacesPrize(); }
         return BigDecimal.valueOf(0);
     }
 
-    public BigDecimal monSecondPlaceAward(int participants) {
-        if (participants >= 3) { return monPlacesPrize().multiply(BigDecimal.valueOf(0.3)); }
-        if (participants == 2) { return monPlacesPrize().multiply(BigDecimal.valueOf(0.4)); }
+    public BigDecimal getMonSecondPlaceAward(int participants) {
+        if (participants >= 3) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.3)); }
+        if (participants == 2) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.4)); }
         return BigDecimal.valueOf(0);
     }
 
-    public BigDecimal monThirdPlaceAward(int participants) {
-        if (participants >= 3) { return monPlacesPrize().multiply(BigDecimal.valueOf(0.2)); }
+    public BigDecimal getMonThirdPlaceAward(int participants) {
+        if (participants >= 3) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.2)); }
         return BigDecimal.valueOf(0);
     }
 

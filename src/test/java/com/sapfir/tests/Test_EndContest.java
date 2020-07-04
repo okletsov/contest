@@ -61,21 +61,21 @@ public class Test_EndContest {
         ContestFinance cf = new ContestFinance(conn, contestId);
         Contest c = new Contest(conn, contestId);
 
-        BigDecimal seasEntranceFees = cf.sumEntranceFees();
+        BigDecimal seasEntranceFees = cf.getSumEntranceFees();
         BigDecimal seasPrize = cf.seasPrize();
 
-        BigDecimal seasPlacesPrize = cf.seasPlacesPrize();
+        BigDecimal seasPlacesPrize = cf.getSeasPlacesPrize();
 
-        BigDecimal seasFirstPlace = cf.seasFirstPlaceAward();
-        BigDecimal seasSecondPlace = cf.seasSecondPlaceAward();
-        BigDecimal seasThirdPlace = cf.seasThirdPlaceAward();
+        BigDecimal seasFirstPlace = cf.getSeasFirstPlaceAward();
+        BigDecimal seasSecondPlace = cf.getSeasSecondPlaceAward();
+        BigDecimal seasThirdPlace = cf.getSeasThirdPlaceAward();
 
-        BigDecimal winningStrick = cf.winningStrickAward();
-        BigDecimal biggestOdds = cf.biggestOddsAward();
+        BigDecimal winningStrick = cf.getWinningStrickAward();
+        BigDecimal biggestOdds = cf.getBiggestOddsAward();
 
-        BigDecimal monFirstPlace = cf.monFirstPlaceAward(3);
-        BigDecimal monSecondPlace = cf.monSecondPlaceAward(3);
-        BigDecimal monThirdPlace = cf.monThirdPlaceAward(3);
+        BigDecimal monFirstPlace = cf.getMonFirstPlaceAward(3);
+        BigDecimal monSecondPlace = cf.getMonSecondPlaceAward(3);
+        BigDecimal monThirdPlace = cf.getMonThirdPlaceAward(3);
 
         System.out.println("success");
 //        Step 6: Deactivate contest if it is active
