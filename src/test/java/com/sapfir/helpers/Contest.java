@@ -1,5 +1,6 @@
 package com.sapfir.helpers;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,9 +34,54 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "id", sql);
 	}
 
-	public String getContestType () {
+	public String getContestType() {
 		String sql = "select type from contest where id = '" + contestId + "';";
 		return dbOp.getSingleValue(conn, "type", sql);
+	}
+
+	public BigDecimal getEntranceFee() {
+		String sql = "select entrance_fee from contest where id = '" + contestId + "';";
+		return new BigDecimal(dbOp.getSingleValue(conn, "entrance_fee", sql));
+	}
+
+	public int getParticipantsCount(String contestId) {
+
+		Contest c = new Contest(conn, contestId);
+		String contestType = c.getContestType();
+
+		String sql;
+
+		if(contestType.equals("seasonal")) {
+
+			sql = "select \n" +
+					"\tcount(uscp.id) as participants_count\n" +
+					"from contest c \n" +
+					"\tjoin user_seasonal_contest_participation uscp on uscp.contest_id = c.id \n" +
+					"\tjoin user_nickname un on un.user_id = uscp.user_id \n" +
+					"where 1=1 \n" +
+					"\tand c.id = '" + contestId + "'\n" +
+					"\tand un.is_active = 1;";
+		} else {
+			sql = "select \n" +
+					"\tcount(t1.user_id) as participants_count\n" +
+					"from (\n" +
+					"\tselect \n" +
+					"\t\tcount(p.id) as predictions\n" +
+					"\t\t, p.user_id \n" +
+					"\tfrom prediction p\n" +
+					"\t\tjoin validity_statuses vs on vs.status = p.monthly_validity_status \n" +
+					"\twhere 1=1\n" +
+					"\t\tand monthly_contest_id = '" + contestId + "'\n" +
+					"\t\tand vs.count_in_contest \n" +
+					"\tgroup by \n" +
+					"\t\tp.user_id \n" +
+					"\t) t1\n" +
+					"where 1=1\n" +
+					"\tand predictions >= 30\n" +
+					";";
+		}
+
+		return Integer.parseInt(dbOp.getSingleValue(conn, "participants_count", sql));
 	}
 
 	public LocalDateTime getStartDate() {
