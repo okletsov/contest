@@ -1,9 +1,6 @@
 package com.sapfir.tests;
 
-import com.sapfir.helpers.Contest;
-import com.sapfir.helpers.ContestFinance;
-import com.sapfir.helpers.ContestOperations;
-import com.sapfir.helpers.DatabaseOperations;
+import com.sapfir.helpers.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
@@ -36,7 +33,7 @@ public class Test_EndContest {
     @Test
     public void endContest() {
 
-        ContestOperations contOp = new ContestOperations(conn);
+        ContestResults contOp = new ContestResults(conn);
 
 //        Step 1: Specify contest id to end
 
@@ -44,17 +41,17 @@ public class Test_EndContest {
 
 //        Step 2: Writing general contest results
 
-        List<HashMap<String,Object>> results = contOp.getGeneralContestResults(contestId);
+        List<HashMap<String,Object>> results = contOp.getGeneralContestResultsToWrite(contestId);
 //        contOp.writeGeneralContestResults(results);
 
 //        Step 3: Writing winning strick
 
-        List<HashMap<String,Object>> strickPerUser = contOp.getContestResultsWinningStrick(contestId);
+        List<HashMap<String,Object>> strickPerUser = contOp.getContestResultsWinningStrickToWrite(contestId);
 //        contOp.writeContestResultsWinningStrick(strickPerUser);
 
 //        Step 4: Writing biggest odds
 
-        List<HashMap<String,Object>> biggestOddsPerUser = contOp.getContestResultsBiggestOdds(contestId);
+        List<HashMap<String,Object>> biggestOddsPerUser = contOp.getContestResultsBiggestOddsToWrite(contestId);
 //        contOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
 
 //        Step 5: Writing Finance data
