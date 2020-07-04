@@ -33,7 +33,8 @@ public class Test_EndContest {
     @Test
     public void endContest() {
 
-        ContestResults contOp = new ContestResults(conn);
+        ContestResults contRes = new ContestResults(conn);
+        ContestResultsOperations contResOp = new ContestResultsOperations(conn);
 
 //        Step 1: Specify contest id to end
 
@@ -41,18 +42,18 @@ public class Test_EndContest {
 
 //        Step 2: Writing general contest results
 
-        List<HashMap<String,Object>> results = contOp.getGeneralContestResultsToWrite(contestId);
-//        contOp.writeGeneralContestResults(results);
+        List<HashMap<String,Object>> results = contRes.getGeneralContestResultsToWrite(contestId);
+//        contResOp.writeGeneralContestResults(results);
 
 //        Step 3: Writing winning strick
 
-        List<HashMap<String,Object>> strickPerUser = contOp.getContestResultsWinningStrickToWrite(contestId);
-//        contOp.writeContestResultsWinningStrick(strickPerUser);
+        List<HashMap<String,Object>> strickPerUser = contRes.getContestResultsWinningStrickToWrite(contestId);
+//        contResOp.writeContestResultsWinningStrick(strickPerUser);
 
 //        Step 4: Writing biggest odds
 
-        List<HashMap<String,Object>> biggestOddsPerUser = contOp.getContestResultsBiggestOddsToWrite(contestId);
-//        contOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
+        List<HashMap<String,Object>> biggestOddsPerUser = contRes.getContestResultsBiggestOddsToWrite(contestId);
+//        contResOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
 
 //        Step 5: Writing Finance data
         ContestFinance cf = new ContestFinance(conn, contestId);
