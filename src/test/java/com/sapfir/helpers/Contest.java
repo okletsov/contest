@@ -34,6 +34,22 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "id", sql);
 	}
 
+	public String getSeasContestId() {
+//		Method finds seasonal contest id if monthly contest id was provided
+
+		String sql = "select \n" +
+				"\tc2.id \n" +
+				"from contest c \n" +
+				"\tjoin contest c2 on \n" +
+				"\t\tc.season = c2.season\n" +
+				"\t\tand c.`year` = c2.`year` \n" +
+				"where 1=1\n" +
+				"\tand c.id = '" + contestId + "'\n" +
+				"\tand c2.`type` = 'seasonal';";
+
+		return dbOp.getSingleValue(conn, "id", sql);
+	}
+
 	public String getContestType() {
 		String sql = "select type from contest where id = '" + contestId + "';";
 		return dbOp.getSingleValue(conn, "type", sql);

@@ -283,7 +283,7 @@ public class ContestResults {
     public List<HashMap<String,Object>> getContestResultsWinningStrickToWrite(String contestId) {
         DatabaseOperations dbOp = new DatabaseOperations();
 
-        String seasResultSql = "select \n" +
+        String sql = "select \n" +
                 "\tt5.nickname\n" +
                 "\t, t5.user_id\n" +
                 "\t, t5.contest_id\n" +
@@ -397,14 +397,14 @@ public class ContestResults {
                 "\t, t5.strick_avg_odds desc\n" +
                 ";";
 
-        return dbOp.getListOfHashMaps(conn, seasResultSql);
+        return dbOp.getListOfHashMaps(conn, sql);
     }
 
     public List<HashMap<String,Object>> getContestResultsBiggestOddsToWrite(String contestId) {
 
         DatabaseOperations dbOp = new DatabaseOperations();
 
-        String seasResultSql = "select \n" +
+        String sql = "select \n" +
                 "\tt1.nickname\n" +
                 "\t, t1.user_id\n" +
                 "\t, t1.contest_id\n" +
@@ -435,7 +435,25 @@ public class ContestResults {
                 ") t1 -- t1 is used because java does not recognize aliases\n" +
                 ";";
 
-        return dbOp.getListOfHashMaps(conn, seasResultSql);
+        return dbOp.getListOfHashMaps(conn, sql);
+    }
+
+    public List<HashMap<String,Object>> getFirstThreePlaces(String contestId) {
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+
+        String sql = "select \n" +
+                "\tcg.place\n" +
+                "\t, cg.user_id \n" +
+                "\t, cg.contest_id \n" +
+                "\t, cg.nickname \n" +
+                "from cr_general cg\n" +
+                "where 1=1\n" +
+                "\tand cg.contest_id = '" + contestId + "'\n" +
+                "\tand cg.place in (1, 2, 3);";
+
+        return dbOp.getListOfHashMaps(conn, sql);
+
     }
 
 }

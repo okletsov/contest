@@ -1,10 +1,15 @@
 package com.sapfir.helpers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import sun.rmi.runtime.Log;
+
 import java.math.BigDecimal;
 import java.sql.Connection;
 
 public class ContestFinance {
 
+    private static final Logger Log = LogManager.getLogger(ContestFinance.class.getName());
     private final Connection conn;
     private final String contestId;
 
@@ -13,20 +18,36 @@ public class ContestFinance {
         this.contestId = contestId;
     }
 
-    public BigDecimal getSumEntranceFees() {
+    private BigDecimal getSumEntranceFees() {
 
         Contest c = new Contest(conn, contestId);
-        BigDecimal participantsCount = BigDecimal.valueOf(c.getParticipantsCount(contestId));
 
-        return c.getEntranceFee().multiply(participantsCount);
+        String contestType = c.getContestType();
+        String seasContestId;
+        BigDecimal entranceFee;
 
+        if (contestType.equals("seasonal")) {
+            seasContestId = contestId;
+            entranceFee = c.getEntranceFee();
+        } else {
+//            If the contest passed in during initialization is monthly, we still need to get its parent seasonal
+//            contest id in order to get participants count and calculate sum of entrance fees
+
+            seasContestId = c.getSeasContestId();
+
+            Contest cSeas = new Contest(conn, seasContestId);
+            entranceFee = cSeas.getEntranceFee();
+        }
+
+        BigDecimal participantsCount = BigDecimal.valueOf(c.getParticipantsCount(seasContestId));
+        return  entranceFee.multiply(participantsCount);
     }
 
-    public BigDecimal seasPrize() {
+    private BigDecimal seasPrize() {
         return getSumEntranceFees().multiply(BigDecimal.valueOf(0.8));
     }
 
-    public BigDecimal getSeasPlacesPrize() {
+    private BigDecimal getSeasPlacesPrize() {
 
         Contest c = new Contest(conn, contestId);
         String mon1ContestId = c.getMonContestId(1);
@@ -41,15 +62,15 @@ public class ContestFinance {
         return seasPrize().multiply(BigDecimal.valueOf(0.5));
     }
 
-    public BigDecimal getSeasFirstPlaceAward() {
+    private BigDecimal getSeasFirstPlaceAward() {
         return getSeasPlacesPrize().multiply(BigDecimal.valueOf(0.5));
     }
 
-    public BigDecimal getSeasSecondPlaceAward() {
+    private BigDecimal getSeasSecondPlaceAward() {
         return getSeasPlacesPrize().multiply(BigDecimal.valueOf(0.3));
     }
 
-    public BigDecimal getSeasThirdPlaceAward() {
+    private BigDecimal getSeasThirdPlaceAward() {
         return getSeasPlacesPrize().multiply(BigDecimal.valueOf(0.2));
     }
 
@@ -61,26 +82,56 @@ public class ContestFinance {
         return seasPrize().multiply(BigDecimal.valueOf(0.05));
     }
 
-    public BigDecimal getMonPlacesPrize() {
+    private BigDecimal getMonPlacesPrize() {
         return seasPrize().multiply(BigDecimal.valueOf(0.2));
     }
 
-    public BigDecimal getMonFirstPlaceAward(int participants) {
+    private BigDecimal getMonFirstPlaceAward(int participants) {
         if (participants >= 3) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.5)); }
         if (participants == 2) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.6)); }
         if (participants == 1) { return getMonPlacesPrize(); }
         return BigDecimal.valueOf(0);
     }
 
-    public BigDecimal getMonSecondPlaceAward(int participants) {
+    private BigDecimal getMonSecondPlaceAward(int participants) {
         if (participants >= 3) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.3)); }
         if (participants == 2) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.4)); }
         return BigDecimal.valueOf(0);
     }
 
-    public BigDecimal getMonThirdPlaceAward(int participants) {
+    private BigDecimal getMonThirdPlaceAward(int participants) {
         if (participants >= 3) { return getMonPlacesPrize().multiply(BigDecimal.valueOf(0.2)); }
         return BigDecimal.valueOf(0);
+    }
+
+    public BigDecimal getFinanceActionValue(int place, String contestId) {
+        Contest c = new Contest(conn, contestId);
+
+        String contestType = c.getContestType();
+
+        if (contestType.equals("seasonal") && place == 1) { return getSeasFirstPlaceAward(); }
+        if (contestType.equals("seasonal") && place == 2) { return getSeasSecondPlaceAward(); }
+        if (contestType.equals("seasonal") && place == 3) { return getSeasThirdPlaceAward(); }
+        if (contestType.equals("monthly") && place == 1) { return getMonFirstPlaceAward(c.getParticipantsCount(contestId)); }
+        if (contestType.equals("monthly") && place == 2) { return getMonSecondPlaceAward(c.getParticipantsCount(contestId)); }
+        if (contestType.equals("monthly") && place == 3) { return getMonThirdPlaceAward(c.getParticipantsCount(contestId)); }
+        return BigDecimal.valueOf(0);
+
+    }
+
+    public int getFinanceActionId(int place, String contestId) {
+        Contest c = new Contest(conn, contestId);
+
+        String contestType = c.getContestType();
+
+        if (contestType.equals("seasonal") && place == 1) { return 1; }
+        if (contestType.equals("seasonal") && place == 2) { return 2; }
+        if (contestType.equals("seasonal") && place == 3) { return 3; }
+        if (contestType.equals("monthly") && place == 1) { return 4; }
+        if (contestType.equals("monthly") && place == 2) { return 5; }
+        if (contestType.equals("monthly") && place == 3) { return 6; }
+
+        return 0;
     }
 
 }
