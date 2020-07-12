@@ -7,15 +7,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Test_EndContest {
+public class Test_EndSeasContest {
 
-    private static final Logger Log = LogManager.getLogger(Test_EndContest.class.getName());
+    private static final Logger Log = LogManager.getLogger(Test_EndSeasContest.class.getName());
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -58,7 +56,7 @@ public class Test_EndContest {
 
 //        Step 5: Writing Finance data
 
-//            Step 5.1 Writing contest placement award
+//            Step 5.1 Writing contest placement awards
 //        List<HashMap<String,Object>> writtenContestResults = contRes.getFirstThreePlaces(contestId);
 //        contFinOp.writeContestPlacementAwards(writtenContestResults);
 
