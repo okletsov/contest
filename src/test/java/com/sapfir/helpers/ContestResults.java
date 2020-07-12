@@ -477,4 +477,32 @@ public class ContestResults {
         return dbOp.getListOfHashMaps(conn, sql);
     }
 
+    public List<HashMap<String,Object>> getContestResultsWrittenWinningStrick(String contestId) {
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+
+        String sql = "select \n" +
+                "\tt1.user_id\n" +
+                "\t, t1.contest_id\n" +
+                "\t, t1.nickname\n" +
+                "from (\n" +
+                "\tselect\n" +
+                "\t\t(row_number() over (\n" +
+                "\t\t\t\torder by \n" +
+                "\t\t\t\t\tcws.strick_length desc\n" +
+                "\t\t\t\t\t, cws.strick_avg_odds desc\n" +
+                "\t\t\t\t)\n" +
+                "\t\t) as place\n" +
+                "\t\t,cws.user_id \n" +
+                "\t\t, cws.contest_id \n" +
+                "\t\t, cws.nickname \n" +
+                "\tfrom cr_winning_strick cws \n" +
+                "\twhere 1=1\n" +
+                "\t\tand cws.contest_id = '" + contestId + "'\n" +
+                "\t) t1\n" +
+                "where t1.place = 1;";
+
+        return dbOp.getListOfHashMaps(conn, sql);
+    }
+
 }

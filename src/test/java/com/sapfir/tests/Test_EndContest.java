@@ -48,13 +48,13 @@ public class Test_EndContest {
 
 //        Step 3: Writing winning strick
 
-//        List<HashMap<String,Object>> strickPerUser = contRes.getContestResultsWinningStrickToWrite(contestId);
-//        contResOp.writeContestResultsWinningStrick(strickPerUser);
+        List<HashMap<String,Object>> strickPerUser = contRes.getContestResultsWinningStrickToWrite(contestId);
+        contResOp.writeContestResultsWinningStrick(strickPerUser);
 
 //        Step 4: Writing biggest odds
 
-        List<HashMap<String,Object>> biggestOddsPerUser = contRes.getContestResultsBiggestOddsToWrite(contestId);
-        contResOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
+//        List<HashMap<String,Object>> biggestOddsPerUser = contRes.getContestResultsBiggestOddsToWrite(contestId);
+//        contResOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
 
 //        Step 5: Writing Finance data
 
@@ -63,10 +63,12 @@ public class Test_EndContest {
 //        contFinOp.writeContestPlacementAwards(writtenContestResults);
 
 //            Step 5.2 Writing biggest odds awards
-        List<HashMap<String,Object>> writtenBiggestOdds = contRes.getContestResultsWrittenBiggestOdds(contestId);
-        contFinOp.writeContestBiggestOddsAwards(writtenBiggestOdds);
+//        List<HashMap<String,Object>> writtenBiggestOddsResults = contRes.getContestResultsWrittenBiggestOdds(contestId);
+//        contFinOp.writeContestBiggestOddsAwards(writtenBiggestOddsResults);
 
 //            Step 5.3 Writing winning strick awards
+        List<HashMap<String,Object>> writtenWinningStrickResults = contRes.getContestResultsWrittenWinningStrick(contestId);
+        contFinOp.writeContestWinningStrickAwards(writtenWinningStrickResults);
 
         System.out.println("success");
 //        Step 6: Deactivate contest if it is active
