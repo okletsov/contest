@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -68,8 +69,56 @@ public class ContestFinanceOperations {
             }
         }
 
-        System.out.println("stop");
+    }
 
+    public void writeContestBiggestOddsAwards(List<HashMap<String,Object>> results) {
+
+        PreparedStatement sql = null;
+
+        for (int i = 0; i < results.size(); i++) {
+
+            String nickname = results.get(i).get("nickname").toString();
+
+            Log.info("Writing biggest odds award for " + nickname);
+
+//            Step 1: getting data to insert from the result set
+
+            String userId = results.get(i).get("user_id").toString();
+            String contestId = results.get(i).get("contest_id").toString();
+            int financeActionId = 8;
+
+            ContestFinance cf = new ContestFinance(conn, contestId);
+            BigDecimal winners = BigDecimal.valueOf(results.size());
+            BigDecimal actionValue = cf.getBiggestOddsAward().divide(winners, 2, RoundingMode.CEILING);
+
+//            Step 2: generate and execute update statement
+
+            try {
+                sql = conn.prepareStatement(
+                        "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `nickname`, `action_value`) " +
+                                "VALUES (uuid(), ?, ?, ?, ?, ?);"
+                );
+
+                sql.setString(1, userId);
+                sql.setString(2, contestId);
+                sql.setInt(3, financeActionId);
+                sql.setString(4, nickname);
+                sql.setBigDecimal(5, actionValue);
+
+                sql.executeUpdate();
+                sql.close();
+
+                Log.info("Done");
+
+            } catch (SQLException ex) {
+                Log.error("SQLException: " + ex.getMessage());
+                Log.error("SQLState: " + ex.getSQLState());
+                Log.error("VendorError: " + ex.getErrorCode());
+                Log.trace("Stack trace: ", ex);
+                Log.error("Failing sql statement: " + sql);
+            }
+
+        }
     }
 
 }

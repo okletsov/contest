@@ -456,4 +456,25 @@ public class ContestResults {
 
     }
 
+    public List<HashMap<String,Object>> getContestResultsWrittenBiggestOdds(String contestId) {
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+
+        String sql = "select \n" +
+                "\tcbo.user_id \n" +
+                "\t, cbo.contest_id \n" +
+                "\t, cbo.nickname \n" +
+                "from cr_biggest_odds cbo \n" +
+                "where 1=1\n" +
+                "\tand cbo.contest_id = '" + contestId + "'\n" +
+                "\tand cbo.user_pick_value = (\n" +
+                "\t\t\t\t\t\t\t\tselect \n" +
+                "\t\t\t\t\t\t\t\t\tmax(cbo2.user_pick_value) \n" +
+                "\t\t\t\t\t\t\t\tfrom cr_biggest_odds cbo2\n" +
+                "\t\t\t\t\t\t\t\twhere cbo2.contest_id = '" + contestId + "'\n" +
+                "\t\t\t\t\t\t\t);";
+
+        return dbOp.getListOfHashMaps(conn, sql);
+    }
+
 }
