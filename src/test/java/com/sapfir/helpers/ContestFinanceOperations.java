@@ -89,7 +89,7 @@ public class ContestFinanceOperations {
 
             ContestFinance cf = new ContestFinance(conn, contestId);
             BigDecimal winners = BigDecimal.valueOf(results.size());
-            BigDecimal actionValue = cf.getBiggestOddsAward().divide(winners, 2, RoundingMode.CEILING);
+            BigDecimal actionValue = cf.getBiggestOddsAward().divide(winners, 2, RoundingMode.HALF_UP);
 
 //            Step 2: generate and execute update statement
 
