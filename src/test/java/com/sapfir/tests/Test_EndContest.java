@@ -11,9 +11,9 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 
-public class Test_EndSeasContest {
+public class Test_EndContest {
 
-    private static final Logger Log = LogManager.getLogger(Test_EndSeasContest.class.getName());
+    private static final Logger Log = LogManager.getLogger(Test_EndContest.class.getName());
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -35,24 +35,30 @@ public class Test_EndSeasContest {
         ContestResultsOperations contResOp = new ContestResultsOperations(conn);
         ContestFinanceOperations contFinOp = new ContestFinanceOperations(conn);
 
-//        Step 1: Specify contest id to end
+//        Step 1: Specify contest id to end and find its type (seasonal vs monthly)
 
         String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
+
+        Contest c = new Contest(conn, contestId);
+        String contestType = c.getContestType();
 
 //        Step 2: Writing general contest results
 
         List<HashMap<String,Object>> generalResultsToWrite = contRes.getGeneralContestResultsToWrite(contestId);
         contResOp.writeGeneralContestResults(generalResultsToWrite);
 
-//        Step 3: Writing winning strick
+        if (contestType.equals("seasonal")) {
 
-        List<HashMap<String,Object>> strickPerUser = contRes.getContestResultsWinningStrickToWrite(contestId);
-        contResOp.writeContestResultsWinningStrick(strickPerUser);
+//            Step 3: Writing winning strick
 
-//        Step 4: Writing biggest odds
+            List<HashMap<String,Object>> strickPerUser = contRes.getContestResultsWinningStrickToWrite(contestId);
+            contResOp.writeContestResultsWinningStrick(strickPerUser);
 
-        List<HashMap<String,Object>> biggestOddsPerUser = contRes.getContestResultsBiggestOddsToWrite(contestId);
-        contResOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
+//            Step 4: Writing biggest odds
+
+            List<HashMap<String,Object>> biggestOddsPerUser = contRes.getContestResultsBiggestOddsToWrite(contestId);
+            contResOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
+        }
 
 //        Step 5: Writing Finance data
 
@@ -60,13 +66,16 @@ public class Test_EndSeasContest {
         List<HashMap<String,Object>> writtenContestResults = contRes.getFirstThreePlaces(contestId);
         contFinOp.writeContestPlacementAwards(writtenContestResults);
 
+        if (contestType.equals("seasonal")) {
+
 //            Step 5.2 Writing biggest odds awards
-        List<HashMap<String,Object>> writtenBiggestOddsResults = contRes.getContestResultsWrittenBiggestOdds(contestId);
-        contFinOp.writeContestBiggestOddsAwards(writtenBiggestOddsResults);
+            List<HashMap<String,Object>> writtenBiggestOddsResults = contRes.getContestResultsWrittenBiggestOdds(contestId);
+            contFinOp.writeContestBiggestOddsAwards(writtenBiggestOddsResults);
 
 //            Step 5.3 Writing winning strick awards
-        List<HashMap<String,Object>> writtenWinningStrickResults = contRes.getContestResultsWrittenWinningStrick(contestId);
-        contFinOp.writeContestWinningStrickAwards(writtenWinningStrickResults);
+            List<HashMap<String,Object>> writtenWinningStrickResults = contRes.getContestResultsWrittenWinningStrick(contestId);
+            contFinOp.writeContestWinningStrickAwards(writtenWinningStrickResults);
+        }
 
 //        Step 6: Deactivating contest
         ContestOperations contOp = new ContestOperations(conn);
