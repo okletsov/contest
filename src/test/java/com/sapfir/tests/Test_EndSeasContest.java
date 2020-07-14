@@ -41,8 +41,8 @@ public class Test_EndSeasContest {
 
 //        Step 2: Writing general contest results
 
-//        List<HashMap<String,Object>> generalResultsToWrite = contRes.getGeneralContestResultsToWrite(contestId);
-//        contResOp.writeGeneralContestResults(generalResultsToWrite);
+        List<HashMap<String,Object>> generalResultsToWrite = contRes.getGeneralContestResultsToWrite(contestId);
+        contResOp.writeGeneralContestResults(generalResultsToWrite);
 
 //        Step 3: Writing winning strick
 
@@ -51,24 +51,26 @@ public class Test_EndSeasContest {
 
 //        Step 4: Writing biggest odds
 
-//        List<HashMap<String,Object>> biggestOddsPerUser = contRes.getContestResultsBiggestOddsToWrite(contestId);
-//        contResOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
+        List<HashMap<String,Object>> biggestOddsPerUser = contRes.getContestResultsBiggestOddsToWrite(contestId);
+        contResOp.writeContestResultsBiggestOdds(biggestOddsPerUser);
 
 //        Step 5: Writing Finance data
 
 //            Step 5.1 Writing contest placement awards
-//        List<HashMap<String,Object>> writtenContestResults = contRes.getFirstThreePlaces(contestId);
-//        contFinOp.writeContestPlacementAwards(writtenContestResults);
+        List<HashMap<String,Object>> writtenContestResults = contRes.getFirstThreePlaces(contestId);
+        contFinOp.writeContestPlacementAwards(writtenContestResults);
 
 //            Step 5.2 Writing biggest odds awards
-//        List<HashMap<String,Object>> writtenBiggestOddsResults = contRes.getContestResultsWrittenBiggestOdds(contestId);
-//        contFinOp.writeContestBiggestOddsAwards(writtenBiggestOddsResults);
+        List<HashMap<String,Object>> writtenBiggestOddsResults = contRes.getContestResultsWrittenBiggestOdds(contestId);
+        contFinOp.writeContestBiggestOddsAwards(writtenBiggestOddsResults);
 
 //            Step 5.3 Writing winning strick awards
         List<HashMap<String,Object>> writtenWinningStrickResults = contRes.getContestResultsWrittenWinningStrick(contestId);
         contFinOp.writeContestWinningStrickAwards(writtenWinningStrickResults);
 
-        System.out.println("success");
-//        Step 6: Deactivate contest if it is active
+//        Step 6: Deactivating contest
+        ContestOperations contOp = new ContestOperations(conn);
+        contOp.deactivateContest(contestId);
+
     }
 }

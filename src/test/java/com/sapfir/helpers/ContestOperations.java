@@ -3,12 +3,9 @@ package com.sapfir.helpers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
 
 public class ContestOperations {
 
@@ -50,8 +47,8 @@ public class ContestOperations {
             String month_2_end_date;
 
             //Deactivating all seasonal and monthly contests (if any)
-            deactivateContest("seasonal");
-            deactivateContest("monthly");
+            deactivateContestByType("seasonal");
+            deactivateContestByType("monthly");
 
             //Determining start and end dates depending on contest season
             Log.trace("Determining start and end dates...");
@@ -173,7 +170,7 @@ public class ContestOperations {
         }
     }
 
-    public void deactivateContest(String contestType) {
+    public void deactivateContestByType(String contestType) {
         Log.debug("Deactivating contest...");
         int resultSet;
         String sql = "UPDATE contest SET is_active = 0 " +
@@ -185,6 +182,16 @@ public class ContestOperations {
 
         if (resultSet > 0){ Log.info( contestType + " contest successfully deactivated"); }
         else { Log.info("Contest deactivation: no active " + contestType +" contests found"); }
+    }
+
+    public void deactivateContest(String contestId) {
+
+        String sql = "update `main`.`contest`\n" +
+                "set `is_active` = '0'\n" +
+                "where (`id` = '" + contestId + "');";
+
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
     }
 
     public void activateMonth2contest() {
