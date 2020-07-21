@@ -27,6 +27,6 @@ public class Test_DeactivateMonth2Contest {
 	public void test() {
 		ContestOperations co = new ContestOperations(conn);
 
-		co.deactivateContest("monthly");
+		co.deactivateContestByType("monthly");
 	}
 }

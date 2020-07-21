@@ -47,8 +47,8 @@ public class ContestOperations {
             String month_2_end_date;
 
             //Deactivating all seasonal and monthly contests (if any)
-            deactivateContest("seasonal");
-            deactivateContest("monthly");
+            deactivateContestByType("seasonal");
+            deactivateContestByType("monthly");
 
             //Determining start and end dates depending on contest season
             Log.trace("Determining start and end dates...");
@@ -112,7 +112,7 @@ public class ContestOperations {
 
                 sql = conn.prepareStatement("INSERT INTO contest \n" +
                         "(id, type, year, month, season, start_date, end_date, is_active, date_created)\n" +
-                        "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?);");
+                        "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
                 Log.debug("Adding seasonal contest...");
                 sql.setString(1, "seasonal");
@@ -123,6 +123,7 @@ public class ContestOperations {
                 sql.setString(6, seasonal_end_date);
                 sql.setInt(7, 1);
                 sql.setString(8, dtOp.getTimestamp());
+                sql.setInt(9, 250);
                 sql.executeUpdate();
                 Log.info("Successfully added " + season + " " + year + " contest");
 
@@ -135,6 +136,7 @@ public class ContestOperations {
                 sql.setString(6, month_1_end_date);
                 sql.setInt(7, 1);
                 sql.setString(8, dtOp.getTimestamp());
+                sql.setInt(9, 0);
                 sql.executeUpdate();
                 Log.info("Successfully added month 1 contest");
 
@@ -147,6 +149,7 @@ public class ContestOperations {
                 sql.setString(6, month_2_end_date);
                 sql.setInt(7, 0);
                 sql.setString(8, dtOp.getTimestamp());
+                sql.setInt(9, 0);
                 sql.executeUpdate();
                 Log.info("Successfully added month 2 contest");
 
@@ -167,7 +170,7 @@ public class ContestOperations {
         }
     }
 
-    public void deactivateContest(String contestType) {
+    public void deactivateContestByType(String contestType) {
         Log.debug("Deactivating contest...");
         int resultSet;
         String sql = "UPDATE contest SET is_active = 0 " +
@@ -179,6 +182,16 @@ public class ContestOperations {
 
         if (resultSet > 0){ Log.info( contestType + " contest successfully deactivated"); }
         else { Log.info("Contest deactivation: no active " + contestType +" contests found"); }
+    }
+
+    public void deactivateContest(String contestId) {
+
+        String sql = "update `main`.`contest`\n" +
+                "set `is_active` = '0'\n" +
+                "where (`id` = '" + contestId + "');";
+
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
     }
 
     public void activateMonth2contest() {

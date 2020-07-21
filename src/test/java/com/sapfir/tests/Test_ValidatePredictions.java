@@ -50,13 +50,13 @@ public class Test_ValidatePredictions {
         for (String predictionId : predictionsToValidate) {
 
             // Step 3.1: Have individual prediction inspected for season
-            PredictionValidationTier1 predValSeas = new PredictionValidationTier1(conn, seasContestId, predictionId);
+            PredictionValidation predValSeas = new PredictionValidation(conn, seasContestId, predictionId);
             int seasStatus = predValSeas.getStatus();
             if (seasStatus > 1 && seasStatus != 41) { Log.warn("Status for prediction " + predictionId + ": " + seasStatus + " - " + vs.getDescription(seasStatus)); }
             predOp.updateValidityStatus(predictionId, seasStatus, "seasonal");
 
             // Step 3.2: Have individual prediction inspected for month 1
-            PredictionValidationTier1 predValMon1 = new PredictionValidationTier1(conn, mon1ContestId, predictionId);
+            PredictionValidation predValMon1 = new PredictionValidation(conn, mon1ContestId, predictionId);
             int mon1Status = predValMon1.getStatus();
 
             if ( // update monthly status only if prediction belongs to monthly contest
@@ -76,7 +76,7 @@ public class Test_ValidatePredictions {
             }
 
             // Step 3.3: Have individual prediction inspected for month 2
-            PredictionValidationTier1 predValMon2 = new PredictionValidationTier1(conn, mon2ContestId, predictionId);
+            PredictionValidation predValMon2 = new PredictionValidation(conn, mon2ContestId, predictionId);
             int mon2Status = predValMon2.getStatus();
 
             if ( // update monthly status only if prediction belongs to monthly contest

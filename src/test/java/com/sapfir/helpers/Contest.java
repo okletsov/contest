@@ -1,5 +1,6 @@
 package com.sapfir.helpers;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,9 +34,80 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "id", sql);
 	}
 
-	public String getContestType () {
+	public String getSeasContestId() {
+//		Method finds seasonal contest id if monthly contest id was provided
+
+		String sql = "select \n" +
+				"\tc2.id \n" +
+				"from contest c \n" +
+				"\tjoin contest c2 on \n" +
+				"\t\tc.season = c2.season\n" +
+				"\t\tand c.`year` = c2.`year` \n" +
+				"where 1=1\n" +
+				"\tand c.id = '" + contestId + "'\n" +
+				"\tand c2.`type` = 'seasonal';";
+
+		return dbOp.getSingleValue(conn, "id", sql);
+	}
+
+	public String getContestType() {
 		String sql = "select type from contest where id = '" + contestId + "';";
 		return dbOp.getSingleValue(conn, "type", sql);
+	}
+
+	private String getContestSeason() {
+		String sql = "select season from contest where id = '" + contestId + "';";
+		return dbOp.getSingleValue(conn, "season", sql);
+	}
+
+	public BigDecimal getEntranceFee() {
+		String sql = "select entrance_fee from contest where id = '" + contestId + "';";
+		return new BigDecimal(dbOp.getSingleValue(conn, "entrance_fee", sql));
+	}
+
+	public int getParticipantsCount(String contestId) {
+
+		Contest c = new Contest(conn, contestId);
+		String contestType = c.getContestType();
+
+		String sql;
+
+		if(contestType.equals("seasonal")) {
+
+			sql = "select \n" +
+					"\tcount(uscp.id) as participants_count\n" +
+					"from contest c \n" +
+					"\tjoin user_seasonal_contest_participation uscp on uscp.contest_id = c.id \n" +
+					"\tjoin user_nickname un on un.user_id = uscp.user_id \n" +
+					"where 1=1 \n" +
+					"\tand c.id = '" + contestId + "'\n" +
+					"\tand un.is_active = 1;";
+		} else {
+			sql = "select \n" +
+					"\tcount(t1.user_id) as participants_count\n" +
+					"from (\n" +
+					"\tselect \n" +
+					"\t\tcount(p.id) as predictions\n" +
+					"\t\t, p.user_id \n" +
+					"\tfrom prediction p\n" +
+					"\t\tjoin validity_statuses vs on vs.status = p.monthly_validity_status \n" +
+					"\twhere 1=1\n" +
+					"\t\tand monthly_contest_id = '" + contestId + "'\n" +
+					"\t\tand vs.count_in_contest \n" +
+					"\tgroup by \n" +
+					"\t\tp.user_id \n" +
+					"\t) t1\n" +
+					"where 1=1\n" +
+					"\tand predictions >= 30\n" +
+					";";
+		}
+
+		return Integer.parseInt(dbOp.getSingleValue(conn, "participants_count", sql));
+	}
+
+	private int getContestYear() {
+		String sql = "select year from contest where id = '" + contestId + "';";
+		return Integer.parseInt(dbOp.getSingleValue(conn, "year", sql));
 	}
 
 	public LocalDateTime getStartDate() {
@@ -56,64 +128,6 @@ public class Contest {
 
 	public LocalDateTime getEndDatePlus24hrs() {
 		return getEndDate().plusHours(24);
-	}
-
-	public LocalDateTime getSeasStartDate() {
-		String sql = "select start_date from contest where id = '" + contestId + "';";
-		String stringStartDate = dbOp.getSingleValue(conn, "start_date", sql);
-		return dtOp.convertToDateTimeFromString(stringStartDate);
-	}
-
-	public LocalDateTime getSeasEndDate() {
-		String sql = "select end_date from contest where id = '" + contestId + "';";
-		String stringEndDate = dbOp.getSingleValue(conn, "end_date", sql);
-		return dtOp.convertToDateTimeFromString(stringEndDate);
-	}
-
-	public LocalDateTime getSeasEndDate24() {
-		LocalDateTime seasEndDate = getSeasEndDate();
-		return seasEndDate.plusHours(24);
-	}
-
-	public LocalDateTime getSeasLastDayStart() {
-		LocalDateTime seasEndDate = getSeasEndDate();
-		return seasEndDate.minusHours(24);
-	}
-
-	public LocalDateTime getMonStartDate(int monthIndex){
-		String sql = "select c2.start_date " +
-				"from contest c1 " +
-				"join contest c2 on c1.year = c2.year " +
-				"and c1.season = c2.season " +
-				"where c1.id = '" + contestId + "' " +
-				"and c2.month = " + monthIndex + "; ";
-
-		String stringStartDate = dbOp.getSingleValue(conn, "start_date", sql);
-		return dtOp.convertToDateTimeFromString(stringStartDate);
-	}
-
-	public LocalDateTime getMonEndDate(int monthIndex){
-		String sql = "select c2.end_date " +
-				"from contest c1 " +
-				"join contest c2 on c1.year = c2.year " +
-				"and c1.season = c2.season " +
-				"where c1.id = '" + contestId + "' " +
-				"and c2.month = " + monthIndex + "; ";
-
-		String stringStartDate = dbOp.getSingleValue(conn, "end_date", sql);
-		return dtOp.convertToDateTimeFromString(stringStartDate);
-	}
-
-	public LocalDateTime getMonEndDate24(int monthIndex) {
-		// This method adds 24h to month end date
-		LocalDateTime monEndDate = getMonEndDate(monthIndex);
-		return monEndDate.plusHours(24);
-	}
-
-	public LocalDateTime getMonLastDayStart(int monthIndex) {
-		//This method subtracts 23hr 59m 59s from month end date
-		LocalDateTime monEndDate = getMonEndDate(monthIndex);
-		return monEndDate.minusSeconds(86399);
 	}
 
 	public ArrayList<String> getPredictionsToValidate() {
@@ -155,5 +169,36 @@ public class Contest {
 				"\t, t2.initial_date_scheduled asc\n" +
 				"\t, t2.date_predicted asc;";
 		return dbOp.getArray(conn, "id", sql);
+	}
+
+	public ArrayList<String> getSeasIdsForAnnContest() {
+
+//			Must be initialized with "Autumn" "Seasonal" contest id
+		boolean isSeasonal = getContestType().equals("seasonal");
+		boolean isAutumn = getContestSeason().equals("Autumn");
+		if (!isSeasonal || !isAutumn) { return null; }
+
+		int contestYear = getContestYear();
+		int nextYear = contestYear + 1;
+
+		String sql = "select \n" +
+				"\tc.id\n" +
+				"from contest c \n" +
+				"where 1=1\n" +
+				"\tand c.id = '" + contestId + "'\n" +
+				"\tor (\n" +
+				"\t\tc.year = " + contestYear + "\n" +
+				"\t\tand c.season = 'Winter'\n" +
+				"\t\tand c.`type` = 'seasonal'\n" +
+				"\t)\n" +
+				"\tor (\n" +
+				"\t\tc.year = " + nextYear + "\n" +
+				"\t\tand c.season = 'Spring'\n" +
+				"\t\tand c.`type` = 'seasonal'\n" +
+				"\t)\n" +
+				"; -- finding contest ids";
+
+		return dbOp.getArray(conn, "id", sql);
+
 	}
 }

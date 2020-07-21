@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class PredictionOperations {
 
@@ -38,21 +37,6 @@ public class PredictionOperations {
         String sql = "select date_scheduled from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
         return dbOp.getSingleValue(conn, "date_scheduled", sql);
-    }
-
-    public String getDbDatePredicted(String predictionID) {
-        String sql = "select date_predicted from prediction where id = '" + predictionID + "';";
-        DatabaseOperations dbOp = new DatabaseOperations();
-        return dbOp.getSingleValue(conn, "date_predicted", sql);
-    }
-
-    public String getDbOriginalDateScheduled(String predictionId) {
-        String sql = "select min(previous_date_scheduled) as original_date_scheduled " +
-                "from prediction_schedule_changes " +
-                "where prediction_id = '" + predictionId + "';";
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        return dbOp.getSingleValue(conn, "original_date_scheduled", sql);
     }
 
     public String getDbInitialDateScheduled(String predictionId) {
@@ -116,24 +100,6 @@ public class PredictionOperations {
         String sql = "select event_identifier from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
         return dbOp.getSingleValue(conn, "event_identifier", sql);
-    }
-
-    public String getFirstPredictionByUserForEvent(String eventIdentifier, String userId) {
-        // Update sql to include validity statuses !!!
-
-        String sql = "select id\n" +
-                "from prediction\n" +
-                "where date_predicted = (\n" +
-                "                        select min(date_predicted)\n" +
-                "                        from prediction \n" +
-                "                        where event_identifier = '" + eventIdentifier + "'\n" +
-                "                        and user_id = '" + userId + "'\n" +
-                "                        and (validity_status is null or validity_status not in (10))\n" +
-                "                        )\n" +
-                ";";
-
-        DatabaseOperations dbOp = new DatabaseOperations();
-        return dbOp.getSingleValue(conn, "id", sql);
     }
 
     public String getDbUserPickName(String predictionId) {
@@ -973,13 +939,6 @@ public class PredictionOperations {
             updateDetailedScore(predictionID);
             updateUnitOutcome(predictionID);
         } else {Log.debug("No update needed"); }
-    }
-
-    public void setMonthContestIdToNull(String predictionId) {
-        String sql = "update prediction set monthly_contest_id = null where id = '" + predictionId + "';";
-
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        eq.cleanUp();
     }
 
     public void updateValidityStatus(String predictionId, int status, String contestType) {
