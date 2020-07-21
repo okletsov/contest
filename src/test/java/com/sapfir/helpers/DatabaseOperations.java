@@ -70,6 +70,22 @@ public class DatabaseOperations {
         return value;
     }
 
+    public String arrayToStringForInClause(ArrayList<String> array) {
+        String result = "(";
+
+        for (int i = 0; i < array.size(); i++) {
+           result = result + "'" + array.get(i) + "'";
+
+           if (i == array.size() - 1) {
+               result = result + ")";
+           } else {
+               result = result + ", ";
+           }
+        }
+
+        return result;
+    }
+
     public ArrayList<String> getArray(Connection conn, String columnLabel, String sql){
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
         ResultSet rs = eq.getSelectResult();

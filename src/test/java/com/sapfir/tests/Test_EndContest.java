@@ -37,7 +37,7 @@ public class Test_EndContest {
 
 //        Step 1: Specify contest id to end and find its type (seasonal vs monthly)
 
-        String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
+        String contestId = "5b6dd5a7-29ea-11ea-9120-74852a015562";
 
         Contest c = new Contest(conn, contestId);
         String contestType = c.getContestType();
@@ -46,7 +46,7 @@ public class Test_EndContest {
 
         List<HashMap<String,Object>> generalResultsToWrite = contRes.getGeneralContestResultsToWrite(contestId);
         contResOp.writeGeneralContestResults(generalResultsToWrite);
-
+/*
         if (contestType.equals("seasonal")) {
 
 //            Step 3: Writing winning strick
@@ -80,6 +80,6 @@ public class Test_EndContest {
 //        Step 6: Deactivating contest
         ContestOperations contOp = new ContestOperations(conn);
         contOp.deactivateContest(contestId);
-
+*/
     }
 }

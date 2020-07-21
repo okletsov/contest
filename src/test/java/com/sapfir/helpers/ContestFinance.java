@@ -6,6 +6,7 @@ import sun.rmi.runtime.Log;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.ArrayList;
 
 public class ContestFinance {
 
@@ -45,6 +46,21 @@ public class ContestFinance {
 
     private BigDecimal seasPrize() {
         return getSumEntranceFees().multiply(BigDecimal.valueOf(0.8));
+    }
+
+    private BigDecimal getAnnPrize() {
+
+        BigDecimal annPrize = BigDecimal.valueOf(0);
+
+        Contest c = new Contest(conn, contestId);
+        ArrayList<String> contestIds = c.getSeasIdsForAnnContest();
+
+        for (String id : contestIds) {
+            ContestFinance cf = new ContestFinance(conn, id);
+            annPrize = annPrize.add(cf.getSumEntranceFees().multiply(BigDecimal.valueOf(0.2)));
+        }
+
+        return annPrize;
     }
 
     private BigDecimal getSeasPlacesPrize() {
@@ -117,6 +133,25 @@ public class ContestFinance {
         if (contestType.equals("monthly") && place == 3) { return getMonThirdPlaceAward(c.getParticipantsCount(contestId)); }
         return BigDecimal.valueOf(0);
 
+    }
+
+    private BigDecimal getAnnFirstPlaceAward() {
+        return getAnnPrize().multiply(BigDecimal.valueOf(0.5));
+    }
+
+    private BigDecimal getAnnSecondPlaceAward() {
+        return getAnnPrize().multiply(BigDecimal.valueOf(0.3));
+    }
+
+    private BigDecimal getAnnThirdPlaceAward() {
+        return getAnnPrize().multiply(BigDecimal.valueOf(0.2));
+    }
+
+    public BigDecimal getAnnFinanceActionValue(int place) {
+        if (place == 1) { return getAnnFirstPlaceAward(); }
+        if (place == 2) { return getAnnSecondPlaceAward(); }
+        if (place == 3) { return getAnnThirdPlaceAward(); }
+        return BigDecimal.valueOf(0);
     }
 
     public int getFinanceActionId(int place, String contestId) {

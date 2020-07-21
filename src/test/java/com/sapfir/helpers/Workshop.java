@@ -28,6 +28,11 @@ public class Workshop {
         PredictionOperations predOp = new PredictionOperations(conn);
         Contest contest = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
 
+        ArrayList<String> ids =  contest.getSeasIdsForAnnContest();
+        String forInClause = dbOp.arrayToStringForInClause(ids);
+
+        ContestFinance cf = new ContestFinance(conn, "2deb734e-ce85-11e8-8022-74852a015562");
+
        String sql = "-- roi in contest by users\n" +
                "select \n" +
                "\tt3.nickname\n" +

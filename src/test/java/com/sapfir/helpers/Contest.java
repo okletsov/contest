@@ -55,6 +55,11 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "type", sql);
 	}
 
+	private String getContestSeason() {
+		String sql = "select season from contest where id = '" + contestId + "';";
+		return dbOp.getSingleValue(conn, "season", sql);
+	}
+
 	public BigDecimal getEntranceFee() {
 		String sql = "select entrance_fee from contest where id = '" + contestId + "';";
 		return new BigDecimal(dbOp.getSingleValue(conn, "entrance_fee", sql));
@@ -98,6 +103,11 @@ public class Contest {
 		}
 
 		return Integer.parseInt(dbOp.getSingleValue(conn, "participants_count", sql));
+	}
+
+	private int getContestYear() {
+		String sql = "select year from contest where id = '" + contestId + "';";
+		return Integer.parseInt(dbOp.getSingleValue(conn, "year", sql));
 	}
 
 	public LocalDateTime getStartDate() {
@@ -159,5 +169,36 @@ public class Contest {
 				"\t, t2.initial_date_scheduled asc\n" +
 				"\t, t2.date_predicted asc;";
 		return dbOp.getArray(conn, "id", sql);
+	}
+
+	public ArrayList<String> getSeasIdsForAnnContest() {
+
+//			Must be initialized with "Autumn" "Seasonal" contest id
+		boolean isSeasonal = getContestType().equals("seasonal");
+		boolean isAutumn = getContestSeason().equals("Autumn");
+		if (!isSeasonal || !isAutumn) { return null; }
+
+		int contestYear = getContestYear();
+		int nextYear = contestYear + 1;
+
+		String sql = "select \n" +
+				"\tc.id\n" +
+				"from contest c \n" +
+				"where 1=1\n" +
+				"\tand c.id = '" + contestId + "'\n" +
+				"\tor (\n" +
+				"\t\tc.year = " + contestYear + "\n" +
+				"\t\tand c.season = 'Winter'\n" +
+				"\t\tand c.`type` = 'seasonal'\n" +
+				"\t)\n" +
+				"\tor (\n" +
+				"\t\tc.year = " + nextYear + "\n" +
+				"\t\tand c.season = 'Spring'\n" +
+				"\t\tand c.`type` = 'seasonal'\n" +
+				"\t)\n" +
+				"; -- finding contest ids";
+
+		return dbOp.getArray(conn, "id", sql);
+
 	}
 }
