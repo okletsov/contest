@@ -18,155 +18,131 @@ public class ContestOperations {
 
     public void addContest(String year, String season) {
         /*
-            This method will check if seasonal contest for a given year and season already exist:
-                if YES - display a message
-                if NO - proceed with method execution
-
             Method does the following:
-             - deactivates any existing seasonal and monthly contests
              - inserts seasonal contest and two monthly contests
              - seasonal and Month 1 contests inserted in active state
          */
 
-        String sql_find_contest = "select id from contest " +
-                                  "where year = " + year +
-                                  " and season = '" + season +
-                                  "' and type = 'seasonal';";
-        DatabaseOperations dbOp = new DatabaseOperations();
-        String existingContestID =  dbOp.getSingleValue(conn,"id", sql_find_contest);
+        PreparedStatement sql = null;
+        String seasonal_start_date;
+        String seasonal_end_date;
+        String month_1_start_date;
+        String month_1_end_date;
+        String month_2_start_date;
+        String month_2_end_date;
 
-        //Checking if contest already exist
-        if (existingContestID == null) {
+        //Determining start and end dates depending on contest season
+        Log.trace("Determining start and end dates...");
 
-            PreparedStatement sql = null;
-            String seasonal_start_date;
-            String seasonal_end_date;
-            String month_1_start_date;
-            String month_1_end_date;
-            String month_2_start_date;
-            String month_2_end_date;
+        //Set days in February to 29 for leap years
+        String februaryDays = "28";
+        if (Integer.parseInt(year) % 4 == 0) {
+            februaryDays = "29";
+        }
 
-            //Deactivating all seasonal and monthly contests (if any)
-            deactivateContestByType("seasonal");
-            deactivateContestByType("monthly");
+        switch (season) {
+            case "Autumn":
+                seasonal_start_date = year + "-08-31 21:00:01";
+                seasonal_end_date = year + "-11-30 22:00:00";
+                month_1_start_date = seasonal_start_date;
+                month_1_end_date = year + "-09-30 20:59:59";
+                month_2_start_date = year + "-09-30 21:00:00";
+                month_2_end_date = year + "-10-31 21:59:59";
+                break;
+            case "Spring":
+                seasonal_start_date = year + "-02-" + februaryDays + " 22:00:01";
+                seasonal_end_date = year + "-05-31 21:00:00";
+                month_1_start_date = seasonal_start_date;
+                month_1_end_date = year + "-03-31 20:59:59";
+                month_2_start_date = year + "-03-31 21:00:00";
+                month_2_end_date = year + "-04-30 20:59:59";
+                break;
+            case "Winter":
+                //Increasing year by 1
+                int nextYearInt = Integer.parseInt(year) + 1;
+                String nextYear = Integer.toString(nextYearInt);
 
-            //Determining start and end dates depending on contest season
-            Log.trace("Determining start and end dates...");
-
-            //Set days in February to 29 for leap years
-            String februaryDays = "28";
-            if (Integer.parseInt(year) % 4 == 0) {
-                februaryDays = "29";
-            }
-
-            switch (season) {
-                case "Autumn":
-                    seasonal_start_date = year + "-08-31 21:00:01";
-                    seasonal_end_date = year + "-11-30 22:00:00";
-                    month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-09-30 20:59:59";
-                    month_2_start_date = year + "-09-30 21:00:00";
-                    month_2_end_date = year + "-10-31 21:59:59";
-                    break;
-                case "Spring":
-                    seasonal_start_date = year + "-02-" + februaryDays + " 22:00:01";
-                    seasonal_end_date = year + "-05-31 21:00:00";
-                    month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-03-31 20:59:59";
-                    month_2_start_date = year + "-03-31 21:00:00";
-                    month_2_end_date = year + "-04-30 20:59:59";
-                    break;
-                case "Winter":
-                    //Increasing year by 1
-                    int nextYearInt = Integer.parseInt(year) + 1;
-                    String nextYear = Integer.toString(nextYearInt);
-
-                    seasonal_start_date = year + "-11-30 22:00:01";
-                    seasonal_end_date = nextYear + "-02-" + februaryDays + " 22:00:00";
-                    month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-12-31 21:59:59";
-                    month_2_start_date = year + "-12-31 22:00:00";
-                    month_2_end_date = nextYear + "-01-31 21:59:59";
-                    break;
-                case "Summer":
-                    seasonal_start_date = year + "-05-31 21:00:01";
-                    seasonal_end_date = year + "-08-31 21:00:00";
-                    month_1_start_date = seasonal_start_date;
-                    month_1_end_date = year + "-06-30 20:59:59";
-                    month_2_start_date = year + "-06-30 21:00:00";
-                    month_2_end_date = year + "-07-31 20:59:59";
-                    break;
-                default:
-                    seasonal_start_date = null;
-                    seasonal_end_date = null;
-                    month_1_start_date = null;
-                    month_1_end_date = null;
-                    month_2_start_date = null;
-                    month_2_end_date = null;
-                    Log.fatal("Incorrect season entered: " + season);
-                    System.exit(0);
-            }
-
-            try {
-                DateTimeOperations dtOp = new DateTimeOperations();
-
-                sql = conn.prepareStatement("INSERT INTO contest \n" +
-                        "(id, type, year, month, season, start_date, end_date, is_active, date_created)\n" +
-                        "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-
-                Log.debug("Adding seasonal contest...");
-                sql.setString(1, "seasonal");
-                sql.setString(2, year);
-                sql.setString(3, null);
-                sql.setString(4, season);
-                sql.setString(5, seasonal_start_date);
-                sql.setString(6, seasonal_end_date);
-                sql.setInt(7, 1);
-                sql.setString(8, dtOp.getTimestamp());
-                sql.setInt(9, 250);
-                sql.executeUpdate();
-                Log.info("Successfully added " + season + " " + year + " contest");
-
-                Log.debug("Adding month 1 contest...");
-                sql.setString(1, "monthly");
-                sql.setString(2, year);
-                sql.setString(3, "1");
-                sql.setString(4, season);
-                sql.setString(5, month_1_start_date);
-                sql.setString(6, month_1_end_date);
-                sql.setInt(7, 1);
-                sql.setString(8, dtOp.getTimestamp());
-                sql.setInt(9, 0);
-                sql.executeUpdate();
-                Log.info("Successfully added month 1 contest");
-
-                Log.debug("Adding month 2 contest...");
-                sql.setString(1, "monthly");
-                sql.setString(2, year);
-                sql.setString(3, "2");
-                sql.setString(4, season);
-                sql.setString(5, month_2_start_date);
-                sql.setString(6, month_2_end_date);
-                sql.setInt(7, 0);
-                sql.setString(8, dtOp.getTimestamp());
-                sql.setInt(9, 0);
-                sql.executeUpdate();
-                Log.info("Successfully added month 2 contest");
-
-                sql.close();
-
-            } catch (SQLException ex) {
-                Log.fatal("SQLException: " + ex.getMessage());
-                Log.fatal("SQLState: " + ex.getSQLState());
-                Log.fatal("VendorError: " + ex.getErrorCode());
-                Log.trace("Stack trace: ", ex);
-                Log.fatal("Failing sql statement: " + sql);
+                seasonal_start_date = year + "-11-30 22:00:01";
+                seasonal_end_date = nextYear + "-02-" + februaryDays + " 22:00:00";
+                month_1_start_date = seasonal_start_date;
+                month_1_end_date = year + "-12-31 21:59:59";
+                month_2_start_date = year + "-12-31 22:00:00";
+                month_2_end_date = nextYear + "-01-31 21:59:59";
+                break;
+            case "Summer":
+                seasonal_start_date = year + "-05-31 21:00:01";
+                seasonal_end_date = year + "-08-31 21:00:00";
+                month_1_start_date = seasonal_start_date;
+                month_1_end_date = year + "-06-30 20:59:59";
+                month_2_start_date = year + "-06-30 21:00:00";
+                month_2_end_date = year + "-07-31 20:59:59";
+                break;
+            default:
+                seasonal_start_date = null;
+                seasonal_end_date = null;
+                month_1_start_date = null;
+                month_1_end_date = null;
+                month_2_start_date = null;
+                month_2_end_date = null;
+                Log.fatal("Incorrect season entered: " + season);
                 System.exit(0);
-            }
+        }
 
-        } else {
-            Log.error("Adding contest: " + year + " " + season +
-                         " contest already exist in database with id " + existingContestID);
+        try {
+            DateTimeOperations dtOp = new DateTimeOperations();
+
+            sql = conn.prepareStatement("INSERT INTO contest \n" +
+                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)\n" +
+                    "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+
+            Log.debug("Adding seasonal contest...");
+            sql.setString(1, "seasonal");
+            sql.setString(2, year);
+            sql.setString(3, null);
+            sql.setString(4, season);
+            sql.setString(5, seasonal_start_date);
+            sql.setString(6, seasonal_end_date);
+            sql.setInt(7, 1);
+            sql.setString(8, dtOp.getTimestamp());
+            sql.setInt(9, 250);
+            sql.executeUpdate();
+            Log.info("Successfully added " + season + " " + year + " contest");
+
+            Log.debug("Adding month 1 contest...");
+            sql.setString(1, "monthly");
+            sql.setString(2, year);
+            sql.setString(3, "1");
+            sql.setString(4, season);
+            sql.setString(5, month_1_start_date);
+            sql.setString(6, month_1_end_date);
+            sql.setInt(7, 1);
+            sql.setString(8, dtOp.getTimestamp());
+            sql.setInt(9, 0);
+            sql.executeUpdate();
+            Log.info("Successfully added month 1 contest");
+
+            Log.debug("Adding month 2 contest...");
+            sql.setString(1, "monthly");
+            sql.setString(2, year);
+            sql.setString(3, "2");
+            sql.setString(4, season);
+            sql.setString(5, month_2_start_date);
+            sql.setString(6, month_2_end_date);
+            sql.setInt(7, 0);
+            sql.setString(8, dtOp.getTimestamp());
+            sql.setInt(9, 0);
+            sql.executeUpdate();
+            Log.info("Successfully added month 2 contest");
+
+            sql.close();
+
+        } catch (SQLException ex) {
+            Log.fatal("SQLException: " + ex.getMessage());
+            Log.fatal("SQLState: " + ex.getSQLState());
+            Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            Log.fatal("Failing sql statement: " + sql);
+            System.exit(0);
         }
     }
 
