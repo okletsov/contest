@@ -2,7 +2,6 @@ package com.sapfir.helpers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.rmi.runtime.Log;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -34,7 +33,7 @@ public class ContestFinance {
 //            If the contest passed in during initialization is monthly, we still need to get its parent seasonal
 //            contest id in order to get participants count and calculate sum of entrance fees
 
-            seasContestId = c.getSeasContestId();
+            seasContestId = c.getSeasContestIdByMonContestId();
 
             Contest cSeas = new Contest(conn, seasContestId);
             entranceFee = cSeas.getEntranceFee();
