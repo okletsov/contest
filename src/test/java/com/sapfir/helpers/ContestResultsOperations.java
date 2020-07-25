@@ -54,14 +54,8 @@ public class ContestResultsOperations {
             ContestResults cr = new ContestResults(conn);
 
             String contestType = c.getContestType();
-            int annualPoints;
-
-            if (contestType.equals("seasonal")) {
-                annualPoints = cr.getAnnualPointsByPlace(place);
-            } else {
-                annualPoints = 0;
-            }
-
+            int annualPoints = 0;
+            if (contestType.equals("seasonal")) { annualPoints = cr.getAnnualPointsByPlace(place); }
 
 //            Step 3: generate and execute update statement
 
