@@ -100,7 +100,7 @@ public class Contest {
 		Contest c = new Contest(conn, contestId);
 		String contestType = c.getContestType();
 
-		String sql;
+		String sql = null;
 
 		if(contestType.equals("seasonal")) {
 
@@ -112,7 +112,7 @@ public class Contest {
 					"where 1=1 \n" +
 					"\tand c.id = '" + contestId + "'\n" +
 					"\tand un.is_active = 1;";
-		} else {
+		} else if (contestType.equals("monthly")) {
 			sql = "select \n" +
 					"\tcount(t1.user_id) as participants_count\n" +
 					"from (\n" +

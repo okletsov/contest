@@ -41,7 +41,7 @@ public class ContestResults {
         DatabaseOperations dbOp = new DatabaseOperations();
 
         String contestType = c.getContestType();
-        String sql;
+        String sql = null;
 
         if (contestType.equals("seasonal")) {
             sql = "select \n" +
@@ -163,7 +163,7 @@ public class ContestResults {
                     "\t\t) t4 -- calculating raw contest result measures\n" +
                     "\t) t5 -- applying rules for user who did no make 100 predictions\n" +
                     "; -- applying rules for users with less than 30 active days";
-        } else {
+        } else if (contestType.equals("monthly")){
             sql = "select \n" +
                     "\tt5.place\n" +
                     "\t, t5.nickname\n" +

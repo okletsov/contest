@@ -23,13 +23,13 @@ public class ContestFinance {
         Contest c = new Contest(conn, contestId);
 
         String contestType = c.getContestType();
-        String seasContestId;
-        BigDecimal entranceFee;
+        String seasContestId = null;
+        BigDecimal entranceFee = null;
 
         if (contestType.equals("seasonal")) {
             seasContestId = contestId;
             entranceFee = c.getEntranceFee();
-        } else {
+        } else if (contestType.equals("monthly")){
 //            If the contest passed in during initialization is monthly, we still need to get its parent seasonal
 //            contest id in order to get participants count and calculate sum of entrance fees
 

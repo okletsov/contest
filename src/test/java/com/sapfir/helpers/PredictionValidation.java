@@ -134,11 +134,11 @@ public class PredictionValidation {
 
         PredictionOperations predOp = new PredictionOperations(conn);
         int countRemainingPredictions = predOp.getRemainingPredictionsCount(predictionId, contestId);
-        int predictionsAmountRequired;
+        int predictionsAmountRequired = 0;
 
         if (contestType.equals("seasonal")) {
             predictionsAmountRequired = 100;
-        } else { // "monthly" is the only other option
+        } else if (contestType.equals("monthly")) {
             predictionsAmountRequired = 30;
         }
 
