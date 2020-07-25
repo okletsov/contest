@@ -18,6 +18,11 @@ public class Contest {
 		this.contestId = contestId;
 	}
 
+	public Contest(Connection conn) {
+		this.conn = conn;
+		this.contestId = null;
+	}
+
 	public String getMonContestId(int month) {
 		DatabaseOperations dbOp = new DatabaseOperations();
 
@@ -34,7 +39,7 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "id", sql);
 	}
 
-	public String getSeasContestId() {
+	public String getSeasContestIdByMonContestId() {
 //		Method finds seasonal contest id if monthly contest id was provided
 
 		String sql = "select \n" +
@@ -46,6 +51,31 @@ public class Contest {
 				"where 1=1\n" +
 				"\tand c.id = '" + contestId + "'\n" +
 				"\tand c2.`type` = 'seasonal';";
+
+		return dbOp.getSingleValue(conn, "id", sql);
+	}
+
+	public String getAnnContestIdByYear(int year) {
+
+		String sql = "select \n" +
+				"\tc.id \n" +
+				"from contest c \n" +
+				"where 1=1\n" +
+				"\tand c.year = " + year + "\n" +
+				"    and c.type = 'annual';";
+
+		return dbOp.getSingleValue(conn, "id", sql);
+	}
+
+	public String getSeasContestIdByYearAndSeason(int year, String season) {
+
+		String sql = "select \n" +
+				"\tc.id \n" +
+				"from contest c \n" +
+				"where 1=1\n" +
+				"\tand c.type = 'seasonal'\n" +
+				"\tand c.year = " + year + "\n" +
+				"    and c.season = '" + season + "';";
 
 		return dbOp.getSingleValue(conn, "id", sql);
 	}

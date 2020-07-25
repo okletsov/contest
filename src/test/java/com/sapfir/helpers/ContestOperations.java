@@ -16,12 +16,16 @@ public class ContestOperations {
         this.conn = conn;
     }
 
-    public void addContest(String year, String season) {
+    public void addContest(int year, String season) {
         /*
             Method does the following:
              - inserts seasonal contest and two monthly contests
              - seasonal and Month 1 contests inserted in active state
          */
+
+        Contest c = new Contest(conn);
+        String annContestId;
+        String seasContestId;
 
         PreparedStatement sql = null;
         String seasonal_start_date;
@@ -36,7 +40,7 @@ public class ContestOperations {
 
         //Set days in February to 29 for leap years
         String februaryDays = "28";
-        if (Integer.parseInt(year) % 4 == 0) {
+        if (year % 4 == 0) {
             februaryDays = "29";
         }
 
@@ -59,7 +63,7 @@ public class ContestOperations {
                 break;
             case "Winter":
                 //Increasing year by 1
-                int nextYearInt = Integer.parseInt(year) + 1;
+                int nextYearInt = year + 1;
                 String nextYear = Integer.toString(nextYearInt);
 
                 seasonal_start_date = year + "-11-30 22:00:01";
@@ -92,12 +96,12 @@ public class ContestOperations {
             DateTimeOperations dtOp = new DateTimeOperations();
 
             sql = conn.prepareStatement("INSERT INTO contest \n" +
-                    "(id, type, year, month, season, start_date, end_date, is_active, date_created)\n" +
+                    "(id, type, year, month, season, start_date, end_date, is_active, date_created, entrance_fee)\n" +
                     "VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
             Log.debug("Adding seasonal contest...");
             sql.setString(1, "seasonal");
-            sql.setString(2, year);
+            sql.setInt(2, year);
             sql.setString(3, null);
             sql.setString(4, season);
             sql.setString(5, seasonal_start_date);
@@ -110,7 +114,7 @@ public class ContestOperations {
 
             Log.debug("Adding month 1 contest...");
             sql.setString(1, "monthly");
-            sql.setString(2, year);
+            sql.setInt(2, year);
             sql.setString(3, "1");
             sql.setString(4, season);
             sql.setString(5, month_1_start_date);
@@ -123,7 +127,7 @@ public class ContestOperations {
 
             Log.debug("Adding month 2 contest...");
             sql.setString(1, "monthly");
-            sql.setString(2, year);
+            sql.setInt(2, year);
             sql.setString(3, "2");
             sql.setString(4, season);
             sql.setString(5, month_2_start_date);
@@ -133,6 +137,43 @@ public class ContestOperations {
             sql.setInt(9, 0);
             sql.executeUpdate();
             Log.info("Successfully added month 2 contest");
+
+            if (season.equals("Autumn")) {
+
+//                Insert new annual contest (in active state)
+
+                Log.debug("Adding annual contest...");
+
+                sql.setString(1, "annual");
+                sql.setInt(2, year);
+                sql.setString(3, null);
+                sql.setString(4, null);
+                sql.setString(5, seasonal_start_date);
+                sql.setString(6, seasonal_end_date);
+                sql.setInt(7, 1);
+                sql.setString(8, dtOp.getTimestamp());
+                sql.setInt(9, 0);
+
+                sql.executeUpdate();
+
+//                  Add relationship between seasonal and annual contest
+
+                annContestId = c.getAnnContestIdByYear(year);
+                seasContestId = c.getSeasContestIdByYearAndSeason(year, season);
+                addAnnXSeasRelationship(annContestId, seasContestId);
+
+                Log.info("Successfully added " + year + " annual contest");
+
+            } else if (season.equals("Winter") || season.equals("Spring")) {
+//                Update end date for annual contest
+//                Add relationship between seasonal and annual contests
+
+                annContestId = c.getAnnContestIdByYear(year);
+                seasContestId = c.getSeasContestIdByYearAndSeason(year, season);
+
+                addAnnXSeasRelationship(annContestId, seasContestId);
+                updateEndDate(annContestId, seasonal_end_date);
+            }
 
             sql.close();
 
@@ -194,6 +235,44 @@ public class ContestOperations {
         ExecuteQuery eq2 = new ExecuteQuery(conn, activate_month2);
         eq2.cleanUp();
         Log.info("Month 2 contest successfully activated");
+    }
+
+    private void addAnnXSeasRelationship(String annContestId, String seasContestId) {
+
+        PreparedStatement sql = null;
+
+        try {
+            sql = conn.prepareStatement(
+                    "INSERT INTO `main`.`annual_x_seasonal_contest` (`id`, `annual_contest_id`, `seasonal_contest_id`) " +
+                            "VALUES (uuid(), ?, ?);"
+            );
+
+            sql.setString(1, annContestId);
+            sql.setString(2, seasContestId);
+
+            sql.executeUpdate();
+            sql.close();
+
+            Log.info("Added relationship between annual and seasonal contests");
+
+        } catch (SQLException ex) {
+            Log.error("SQLException: " + ex.getMessage());
+            Log.error("SQLState: " + ex.getSQLState());
+            Log.error("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            Log.error("Failing sql statement: " + sql);
+        }
+    }
+
+    private void updateEndDate(String contestId, String endDate) {
+
+        Contest c = new Contest(conn);
+
+        String sql = "UPDATE `main`.`contest` " +
+                "SET `end_date` = '" + endDate + "' WHERE (`id` = '" + contestId + "');";
+
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
     }
 
     public String getActiveSeasonalContestID() {

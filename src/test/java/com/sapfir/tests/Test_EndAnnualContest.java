@@ -45,5 +45,7 @@ public class Test_EndAnnualContest {
 //        Step 3: Writing annual contest placement awards
 //        contFinOp.writeAnnContestPlacementAwards(annContestWinners);
 
+//        Step 4: Deactivate annual contest
+
     }
 }
