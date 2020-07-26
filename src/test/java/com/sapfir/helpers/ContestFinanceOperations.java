@@ -45,15 +45,14 @@ public class ContestFinanceOperations {
 
             try {
                 sql = conn.prepareStatement(
-                        "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `nickname`, `action_value`) " +
-                                "VALUES (uuid(), ?, ?, ?, ?, ?);"
+                        "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `action_value`) " +
+                                "VALUES (uuid(), ?, ?, ?, ?);"
                 );
 
                 sql.setString(1, userId);
                 sql.setString(2, contestId);
                 sql.setInt(3, financeActionId);
-                sql.setString(4, nickname);
-                sql.setBigDecimal(5, actionValue);
+                sql.setBigDecimal(4, actionValue);
 
                 sql.executeUpdate();
                 sql.close();
@@ -99,15 +98,14 @@ public class ContestFinanceOperations {
 
             try {
                 sql = conn.prepareStatement(
-                        "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `nickname`, `action_value`) " +
-                                "VALUES (uuid(), ?, ?, ?, ?, ?);"
+                        "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `action_value`) " +
+                                "VALUES (uuid(), ?, ?, ?, ?);"
                 );
 
                 sql.setString(1, userId);
                 sql.setString(2, contestId);
                 sql.setInt(3, financeActionId);
-                sql.setString(4, nickname);
-                sql.setBigDecimal(5, actionValue);
+                sql.setBigDecimal(4, actionValue);
 
                 sql.executeUpdate();
                 sql.close();
@@ -148,15 +146,14 @@ public class ContestFinanceOperations {
 
             try {
                 sql = conn.prepareStatement(
-                        "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `nickname`, `action_value`) " +
-                                "VALUES (uuid(), ?, ?, ?, ?, ?);"
+                        "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `action_value`) " +
+                                "VALUES (uuid(), ?, ?, ?, ?);"
                 );
 
                 sql.setString(1, userId);
                 sql.setString(2, contestId);
                 sql.setInt(3, financeActionId);
-                sql.setString(4, nickname);
-                sql.setBigDecimal(5, actionValue);
+                sql.setBigDecimal(4, actionValue);
 
                 sql.executeUpdate();
                 sql.close();
