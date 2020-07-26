@@ -203,32 +203,13 @@ public class Contest {
 
 	public ArrayList<String> getSeasIdsForAnnContest() {
 
-//			Must be initialized with "Autumn" "Seasonal" contest id
-		boolean isSeasonal = getContestType().equals("seasonal");
-		boolean isAutumn = getContestSeason().equals("Autumn");
-		if (!isSeasonal || !isAutumn) { return null; }
-
-		int contestYear = getContestYear();
-		int nextYear = contestYear + 1;
-
 		String sql = "select \n" +
-				"\tc.id\n" +
-				"from contest c \n" +
+				"\taxsc.seasonal_contest_id \n" +
+				"from annual_x_seasonal_contest axsc \n" +
 				"where 1=1\n" +
-				"\tand c.id = '" + contestId + "'\n" +
-				"\tor (\n" +
-				"\t\tc.year = " + contestYear + "\n" +
-				"\t\tand c.season = 'Winter'\n" +
-				"\t\tand c.`type` = 'seasonal'\n" +
-				"\t)\n" +
-				"\tor (\n" +
-				"\t\tc.year = " + nextYear + "\n" +
-				"\t\tand c.season = 'Spring'\n" +
-				"\t\tand c.`type` = 'seasonal'\n" +
-				"\t)\n" +
-				"; -- finding contest ids";
+				"\tand axsc.annual_contest_id = '" + contestId + "';";
 
-		return dbOp.getArray(conn, "id", sql);
+		return dbOp.getArray(conn, "annual_x_seasonal_contest", sql);
 
 	}
 }
