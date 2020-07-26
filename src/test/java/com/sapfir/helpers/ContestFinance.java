@@ -164,6 +164,9 @@ public class ContestFinance {
         if (contestType.equals("monthly") && place == 1) { return 4; }
         if (contestType.equals("monthly") && place == 2) { return 5; }
         if (contestType.equals("monthly") && place == 3) { return 6; }
+        if (contestType.equals("annual") && place == 1) { return 9; }
+        if (contestType.equals("annual") && place == 2) { return 10; }
+        if (contestType.equals("annual") && place == 3) { return 11; }
 
         return 0;
     }
