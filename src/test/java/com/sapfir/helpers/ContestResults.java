@@ -275,6 +275,408 @@ public class ContestResults {
                     "\twhere 1=1\n" +
                     "\t\tand t4.bets >= 30\n" +
                     "\t) t5;";
+        } else if (contestType.equals("annual")) {
+
+            ArrayList<String> seasIdsForAnnContest = c.getSeasIdsForAnnContest();
+            String seasIds = dbOp.arrayToStringForInClause(seasIdsForAnnContest);
+
+            sql = "select \n" +
+                    "\tt13.place\n" +
+                    "\t, (\n" +
+                    "\t\tselect -- get annual contest_id per user\n" +
+                    "\t\t\tc.id as annual_contest_id\n" +
+                    "\t\tfrom contest c \n" +
+                    "\t\t\tjoin annual_x_seasonal_contest axsc on axsc.annual_contest_id = c.id\n" +
+                    "\t\t\tjoin cr_general cg on cg.contest_id = axsc.seasonal_contest_id \n" +
+                    "\t\t\tjoin contest c2 on c2.id = cg.contest_id \n" +
+                    "\t\twhere 1=1\n" +
+                    "\t\t\tand c.id = '" + contestId + "' -- annual contest_id\n" +
+                    "\t\t\tand cg.user_id = t13.user_id\n" +
+                    "\t\tgroup by cg.user_id \n" +
+                    "\t) as contest_id \n" +
+                    "\t, t13.user_id\n" +
+                    "\t, t13.nickname\n" +
+                    "\t, t13.sum_annual_points\n" +
+                    "\t, t13.best_place\n" +
+                    "\t, t13.best_place_count\n" +
+                    "\t, t13.second_best_place\n" +
+                    "\t, t13.second_best_place_count\n" +
+                    "\t, t13.third_best_place\n" +
+                    "\t, t13.avg_roi\n" +
+                    "from (\n" +
+                    "\tselect -- sort users according to rules\n" +
+                    "\t\t(\n" +
+                    "\t\t\trow_number() over(\n" +
+                    "\t\t\t\torder by\n" +
+                    "\t\t\t\t\tt12.points desc\n" +
+                    "\t\t\t\t\t, t12.best_place asc\n" +
+                    "\t\t\t\t\t, t12.best_place_count desc\n" +
+                    "\t\t\t\t\t, t12.second_best_place asc\n" +
+                    "\t\t\t\t\t, t12.second_best_place_count desc\n" +
+                    "\t\t\t\t\t, t12.third_best_place asc\n" +
+                    "\t\t\t\t\t, t12.avg_roi desc\n" +
+                    "\t\t\t\t)\n" +
+                    "\t\t) as place\n" +
+                    "\t\t, t12.user_id\n" +
+                    "\t\t, t12.username as nickname\n" +
+                    "\t\t, t12.points as sum_annual_points\n" +
+                    "\t\t, t12.best_place\n" +
+                    "\t\t, t12.best_place_count\n" +
+                    "\t\t, t12.second_best_place\n" +
+                    "\t\t, t12.second_best_place_count\n" +
+                    "\t\t, t12.third_best_place\n" +
+                    "\t\t, t12.avg_roi\n" +
+                    "\tfrom (\n" +
+                    "\t\tselect -- get sum of annual points and avg_roi\n" +
+                    "\t\t\tt11.user_id\n" +
+                    "\t\t\t, t11.username\n" +
+                    "\t\t\t, sum(cg6.annual_points) as points\n" +
+                    "\t\t\t, t11.best_place\n" +
+                    "\t\t\t, t11.best_place_count\n" +
+                    "\t\t\t, t11.second_best_place\n" +
+                    "\t\t\t, t11.second_best_place_count\n" +
+                    "\t\t\t, t11.third_best_place\n" +
+                    "\t\t\t, round(avg(cg6.roi), 2) as avg_roi\n" +
+                    "\t\tfrom \n" +
+                    "\t\t\tcr_general cg6\n" +
+                    "\t\tjoin (\n" +
+                    "\t\t\tselect -- get third_best_place including users who don't have it \n" +
+                    "\t\t\t\tt10.user_id\n" +
+                    "\t\t\t\t, t10.username\n" +
+                    "\t\t\t\t, t10.best_place\n" +
+                    "\t\t\t\t, t10.best_place_count\n" +
+                    "\t\t\t\t, t10.second_best_place\n" +
+                    "\t\t\t\t, t10.second_best_place_count\n" +
+                    "\t\t\t\t, t9.third_best_place\n" +
+                    "\t\t\tfrom (\n" +
+                    "\t\t\t\tselect -- get third_best_place for users who have it\n" +
+                    "\t\t\t\t\tt8.user_id\n" +
+                    "\t\t\t\t\t, t8.username\n" +
+                    "\t\t\t\t\t, t8.best_place\n" +
+                    "\t\t\t\t\t, t8.best_place_count\n" +
+                    "\t\t\t\t\t, t8.second_best_place\n" +
+                    "\t\t\t\t\t, t8.second_best_place_count\n" +
+                    "\t\t\t\t\t, min(cg5.place) as third_best_place\n" +
+                    "\t\t\t\tfrom cr_general cg5\n" +
+                    "\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\tselect -- get count of second best places including users who don't have it\n" +
+                    "\t\t\t\t\t\t\tt7.user_id\n" +
+                    "\t\t\t\t\t\t\t, t7.username\n" +
+                    "\t\t\t\t\t\t\t, t7.best_place\n" +
+                    "\t\t\t\t\t\t\t, t7.best_place_count\n" +
+                    "\t\t\t\t\t\t\t, t7.second_best_place\n" +
+                    "\t\t\t\t\t\t\t, t6.second_best_place_count\n" +
+                    "\t\t\t\t\t\tfrom (\n" +
+                    "\t\t\t\t\t\t\tselect -- get count of second best places for users who have it\n" +
+                    "\t\t\t\t\t\t\t\tt5.user_id\n" +
+                    "\t\t\t\t\t\t\t\t, t5.username\n" +
+                    "\t\t\t\t\t\t\t\t, t5.best_place\n" +
+                    "\t\t\t\t\t\t\t\t, t5.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t, t5.second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t, count(cg4.place) as second_best_place_count\n" +
+                    "\t\t\t\t\t\t\tfrom cr_general cg4\n" +
+                    "\t\t\t\t\t\t\t\tright join (\n" +
+                    "\t\t\t\t\t\t\t\t\tselect -- get second_best_place for including users who don't have it\n" +
+                    "\t\t\t\t\t\t\t\t\t\tt4.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t3.second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\tfrom ( \n" +
+                    "\t\t\t\t\t\t\t\t\t\tselect -- get second_best_place for users who have it \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tt2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, min(cg3.place) as second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tfrom cr_general cg3 \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tjoin (\t\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best_place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t) t2 on t2.user_id = cg3.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.place > t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tgroup by \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tt2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.username\n" +
+                    "\t\t\t\t\t\t\t\t\t) t3\n" +
+                    "\t\t\t\t\t\t\t\t\t\tright join ( -- joining to still get users who don't have second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) as best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t) t4 on t4.user_id = t3.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t) t5 on t5.user_id = cg4.user_id \n" +
+                    "\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\tand cg4.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\tand cg4.place = t5.second_best_place\n" +
+                    "\t\t\t\t\t\t\tgroup by t5.user_id\n" +
+                    "\t\t\t\t\t\t) t6\n" +
+                    "\t\t\t\t\t\t\tright join (\n" +
+                    "\t\t\t\t\t\t\t\t\tselect -- get second_best_place for including users who don't have it\n" +
+                    "\t\t\t\t\t\t\t\t\t\tt4.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t3.second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\tfrom ( \n" +
+                    "\t\t\t\t\t\t\t\t\t\tselect -- get second_best_place for users who have it \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tt2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, min(cg3.place) as second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tfrom cr_general cg3 \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tjoin (\t\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best_place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t) t2 on t2.user_id = cg3.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.place > t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tgroup by t2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t) t3\n" +
+                    "\t\t\t\t\t\t\t\t\t\tright join ( -- joining to still get users who don't have second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) as best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t) t4 on t4.user_id = t3.user_id\n" +
+                    "\t\t\t\t\t\t\t) t7 on t7.user_id = t6.user_id\n" +
+                    "\t\t\t\t\t\t) t8 on t8.user_id = cg5.user_id \n" +
+                    "\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\tand cg5.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\tand cg5.place > t8.second_best_place\n" +
+                    "\t\t\t\tgroup by cg5.user_id \n" +
+                    "\t\t\t) t9\n" +
+                    "\t\t\t\tright join (\n" +
+                    "\t\t\t\t\t\tselect -- get count of second best places including users who don't have it\n" +
+                    "\t\t\t\t\t\t\tt7.user_id\n" +
+                    "\t\t\t\t\t\t\t, t7.username\n" +
+                    "\t\t\t\t\t\t\t, t7.best_place\n" +
+                    "\t\t\t\t\t\t\t, t7.best_place_count\n" +
+                    "\t\t\t\t\t\t\t, t7.second_best_place\n" +
+                    "\t\t\t\t\t\t\t, t6.second_best_place_count\n" +
+                    "\t\t\t\t\t\tfrom (\n" +
+                    "\t\t\t\t\t\t\tselect -- get count of second best places for users who have it\n" +
+                    "\t\t\t\t\t\t\t\tt5.user_id\n" +
+                    "\t\t\t\t\t\t\t\t, t5.username\n" +
+                    "\t\t\t\t\t\t\t\t, t5.best_place\n" +
+                    "\t\t\t\t\t\t\t\t, t5.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t, t5.second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t, count(cg4.place) as second_best_place_count\n" +
+                    "\t\t\t\t\t\t\tfrom cr_general cg4\n" +
+                    "\t\t\t\t\t\t\t\tright join (\n" +
+                    "\t\t\t\t\t\t\t\t\tselect -- get second_best_place for including users who don't have it\n" +
+                    "\t\t\t\t\t\t\t\t\t\tt4.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t3.second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\tfrom ( \n" +
+                    "\t\t\t\t\t\t\t\t\t\tselect -- get second_best_place for users who have it \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tt2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, min(cg3.place) as second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tfrom cr_general cg3 \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tjoin (\t\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best_place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t) t2 on t2.user_id = cg3.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.place > t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tgroup by t2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t) t3\n" +
+                    "\t\t\t\t\t\t\t\t\t\tright join ( -- joining to still get users who don't have second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) as best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t) t4 on t4.user_id = t3.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t) t5 on t5.user_id = cg4.user_id \n" +
+                    "\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\tand cg4.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\tand cg4.place = t5.second_best_place\n" +
+                    "\t\t\t\t\t\t\tgroup by t5.user_id\n" +
+                    "\t\t\t\t\t\t) t6\n" +
+                    "\t\t\t\t\t\t\tright join (\n" +
+                    "\t\t\t\t\t\t\t\t\tselect -- get second_best_place for including users who don't have it\n" +
+                    "\t\t\t\t\t\t\t\t\t\tt4.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t4.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t, t3.second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\tfrom ( \n" +
+                    "\t\t\t\t\t\t\t\t\t\tselect -- get second_best_place for users who have it \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tt2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.username\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, t2.best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t, min(cg3.place) as second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tfrom cr_general cg3 \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tjoin (\t\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best_place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t) t2 on t2.user_id = cg3.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tand cg3.place > t2.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\tgroup by t2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t) t3\n" +
+                    "\t\t\t\t\t\t\t\t\t\tright join ( -- joining to still get users who don't have second_best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tselect -- get count of best places per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tcg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, u.username \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t, count(cg2.id) as best_place_count\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg2\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin (\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tselect -- get best place per user\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tcg.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t, min(cg.place) as best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tfrom cr_general cg \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\tand cg.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\tgroup by cg.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\t) t1 on t1.user_id = cg2.user_id\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tjoin user u on u.id = cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t\twhere 1=1\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.place = t1.best_place\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\t\tand cg2.contest_id in " + seasIds + "\n" +
+                    "\t\t\t\t\t\t\t\t\t\t\tgroup by cg2.user_id \n" +
+                    "\t\t\t\t\t\t\t\t\t\t) t4 on t4.user_id = t3.user_id\n" +
+                    "\t\t\t\t\t\t\t) t7 on t7.user_id = t6.user_id\n" +
+                    "\t\t\t\t) t10 on t10.user_id = t9.user_id\n" +
+                    "\t\t\t) t11 on t11.user_id = cg6.user_id \n" +
+                    "\t\twhere 1=1\n" +
+                    "\t\t\tand cg6.contest_id in " + seasIds + "\n" +
+                    "\t\tgroup by t11.user_id\n" +
+                    "\t) t12\n" +
+                    ") t13;";
         }
 
         return dbOp.getListOfHashMaps(conn, sql);

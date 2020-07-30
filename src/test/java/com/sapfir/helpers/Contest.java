@@ -209,7 +209,7 @@ public class Contest {
 				"where 1=1\n" +
 				"\tand axsc.annual_contest_id = '" + contestId + "';";
 
-		return dbOp.getArray(conn, "annual_x_seasonal_contest", sql);
+		return dbOp.getArray(conn, "seasonal_contest_id", sql);
 
 	}
 }
