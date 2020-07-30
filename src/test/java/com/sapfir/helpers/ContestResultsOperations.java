@@ -184,4 +184,62 @@ public class ContestResultsOperations {
         }
     }
 
+    public void writeAnnContestResults(List<HashMap<String,Object>> results) {
+
+        PreparedStatement sql = null;
+
+        for (int i = 0; i < results.size(); i++) {
+
+            String nickname = results.get(i).get("nickname").toString();
+
+            Log.info("Writing annual contest results for " + nickname);
+
+//            Step 1: getting data to insert from the result set
+
+            String userId = results.get(i).get("user_id").toString();
+            String contestId = results.get(i).get("contest_id").toString();
+            int place = Integer.parseInt(results.get(i).get("place").toString());
+            int sumAnnualPoints = Integer.parseInt(results.get(i).get("sum_annual_points").toString());
+            int bestPlace = Integer.parseInt(results.get(i).get("best_place").toString());
+            int bestPlaceCount = Integer.parseInt(results.get(i).get("best_place_count").toString());
+            Object secondBestPlace = results.get(i).get("second_best_place");
+            Object secondBestPlaceCount = results.get(i).get("second_best_place_count");
+            Object thirdBestPlace = results.get(i).get("third_best_place");
+            BigDecimal avgRoi = new BigDecimal(results.get(i).get("avg_roi").toString());
+
+//            Step 2: generate and execute update statement
+
+            try {
+                sql = conn.prepareStatement(
+                        "INSERT INTO `main`.`cr_annual` (`id`, `user_id`, `contest_id`, `place`, `sum_annual_points`, `best_place`, `best_place_count`, `second_best_place`, `second_best_place_count`, `third_best_place`, `avg_roi`) " +
+                                "VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                );
+
+                sql.setString(1, userId);
+                sql.setString(2, contestId);
+                sql.setInt(3, place);
+                sql.setInt(4, sumAnnualPoints);
+                sql.setInt(5, bestPlace);
+                sql.setInt(6, bestPlaceCount);
+                sql.setObject(7, secondBestPlace);
+                sql.setObject(8, secondBestPlaceCount);
+                sql.setObject(9, thirdBestPlace);
+                sql.setBigDecimal(10, avgRoi);
+
+                sql.executeUpdate();
+                sql.close();
+
+                Log.info("Done");
+
+            } catch (SQLException ex) {
+                Log.error("SQLException: " + ex.getMessage());
+                Log.error("SQLState: " + ex.getSQLState());
+                Log.error("VendorError: " + ex.getErrorCode());
+                Log.trace("Stack trace: ", ex);
+                Log.error("Failing sql statement: " + sql);
+            }
+        }
+
+    }
+
 }

@@ -32,20 +32,28 @@ public class Test_EndAnnualContest {
     public void endAnnualContest() {
 
         ContestResults contRes = new ContestResults(conn);
+        ContestResultsOperations contResOp = new ContestResultsOperations(conn);
         ContestFinanceOperations contFinOp = new ContestFinanceOperations(conn);
+        ContestOperations contOp = new ContestOperations(conn);
 
 
-//        Step 1: Specify id of a seasonal contest which indicates start of the annual contest
-//        (Autumn seasonal contest id of the previous year)
-        String contestId = "2deb734e-ce85-11e8-8022-74852a015562";
+//        Step 1: Specify id of an annual contest
+        String contestId = "0afbf8c9-ce22-11ea-93d2-74852a015562";
 
-//        Step 2: Getting winners of annual contest
-        List<HashMap<String,Object>> annContestWinners = contRes.getFirstThreeAnnPlaces(contestId);
+//        Step 2: Getting results of annual contest
+        List<HashMap<String,Object>> annContestResults = contRes.getGeneralContestResultsToWrite(contestId);
 
-//        Step 3: Writing annual contest placement awards
-//        contFinOp.writeAnnContestPlacementAwards(annContestWinners);
+//        Step 3: Writing annual contest results
+        contResOp.writeAnnContestResults(annContestResults);
 
-//        Step 4: Deactivate annual contest
+//        Step 4: Getting annual contest winners
+//        List<HashMap<String,Object>> firstThreeAnnPlaces  = contRes.getFirstThreeAnnPlaces(contestId);
+
+//        Step 5: Writing annual contest placement awards
+//        contFinOp.writeAnnContestPlacementAwards(firstThreeAnnPlaces);
+
+//        Step 6: Deactivate annual contest
+//        contOp.deactivateContest(contestId);
 
     }
 }
