@@ -1,8 +1,6 @@
 package com.sapfir.tests;
 
 import com.sapfir.helpers.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -12,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Test_EndContest {
-
-    private static final Logger Log = LogManager.getLogger(Test_EndContest.class.getName());
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -46,7 +42,7 @@ public class Test_EndContest {
 
         List<HashMap<String,Object>> generalResultsToWrite = contRes.getGeneralContestResultsToWrite(contestId);
         contResOp.writeGeneralContestResults(generalResultsToWrite);
-/*
+
         if (contestType.equals("seasonal")) {
 
 //            Step 3: Writing winning strick
@@ -80,6 +76,6 @@ public class Test_EndContest {
 //        Step 6: Deactivating contest
         ContestOperations contOp = new ContestOperations(conn);
         contOp.deactivateContest(contestId);
-*/
+
     }
 }

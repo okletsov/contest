@@ -70,10 +70,6 @@ public class ContestFinanceOperations {
 
     }
 
-    public void writeAnnContestPlacementAwards(List<HashMap<String,Object>> results) {
-//        ToDo: implement method
-    }
-
     public void writeContestBiggestOddsAwards(List<HashMap<String,Object>> results) {
 
         PreparedStatement sql = null;
