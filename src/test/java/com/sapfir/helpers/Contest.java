@@ -85,11 +85,6 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "type", sql);
 	}
 
-	private String getContestSeason() {
-		String sql = "select season from contest where id = '" + contestId + "';";
-		return dbOp.getSingleValue(conn, "season", sql);
-	}
-
 	public BigDecimal getEntranceFee() {
 		String sql = "select entrance_fee from contest where id = '" + contestId + "';";
 		return new BigDecimal(dbOp.getSingleValue(conn, "entrance_fee", sql));
@@ -133,11 +128,6 @@ public class Contest {
 		}
 
 		return Integer.parseInt(dbOp.getSingleValue(conn, "participants_count", sql));
-	}
-
-	private int getContestYear() {
-		String sql = "select year from contest where id = '" + contestId + "';";
-		return Integer.parseInt(dbOp.getSingleValue(conn, "year", sql));
 	}
 
 	public LocalDateTime getStartDate() {

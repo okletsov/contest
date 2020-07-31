@@ -1,15 +1,11 @@
 package com.sapfir.helpers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.ArrayList;
 
 public class ContestFinance {
 
-    private static final Logger Log = LogManager.getLogger(ContestFinance.class.getName());
     private final Connection conn;
     private final String contestId;
 
@@ -40,6 +36,7 @@ public class ContestFinance {
         }
 
         BigDecimal participantsCount = BigDecimal.valueOf(c.getParticipantsCount(seasContestId));
+        assert entranceFee != null;
         return  entranceFee.multiply(participantsCount);
     }
 
@@ -130,6 +127,9 @@ public class ContestFinance {
         if (contestType.equals("monthly") && place == 1) { return getMonFirstPlaceAward(c.getParticipantsCount(contestId)); }
         if (contestType.equals("monthly") && place == 2) { return getMonSecondPlaceAward(c.getParticipantsCount(contestId)); }
         if (contestType.equals("monthly") && place == 3) { return getMonThirdPlaceAward(c.getParticipantsCount(contestId)); }
+        if (contestType.equals("annual") && place == 1) { return getAnnFirstPlaceAward(); }
+        if (contestType.equals("annual") && place == 2) { return getAnnSecondPlaceAward(); }
+        if (contestType.equals("annual") && place == 3) { return getAnnThirdPlaceAward(); }
         return BigDecimal.valueOf(0);
 
     }
@@ -144,13 +144,6 @@ public class ContestFinance {
 
     private BigDecimal getAnnThirdPlaceAward() {
         return getAnnPrize().multiply(BigDecimal.valueOf(0.2));
-    }
-
-    public BigDecimal getAnnFinanceActionValue(int place) {
-        if (place == 1) { return getAnnFirstPlaceAward(); }
-        if (place == 2) { return getAnnSecondPlaceAward(); }
-        if (place == 3) { return getAnnThirdPlaceAward(); }
-        return BigDecimal.valueOf(0);
     }
 
     public int getFinanceActionId(int place, String contestId) {

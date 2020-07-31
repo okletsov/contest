@@ -1,8 +1,6 @@
 package com.sapfir.tests;
 
 import com.sapfir.helpers.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -12,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Test_EndAnnualContest {
-
-    private static final Logger Log = LogManager.getLogger(Test_EndAnnualContest.class.getName());
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -47,13 +43,13 @@ public class Test_EndAnnualContest {
         contResOp.writeAnnContestResults(annContestResults);
 
 //        Step 4: Getting annual contest winners
-//        List<HashMap<String,Object>> firstThreeAnnPlaces  = contRes.getFirstThreeAnnPlaces(contestId);
+        List<HashMap<String,Object>> firstThreeAnnPlaces = contRes.getFirstThreePlaces(contestId);
 
 //        Step 5: Writing annual contest placement awards
-//        contFinOp.writeAnnContestPlacementAwards(firstThreeAnnPlaces);
+        contFinOp.writeContestPlacementAwards(firstThreeAnnPlaces);
 
 //        Step 6: Deactivate annual contest
-//        contOp.deactivateContest(contestId);
+        contOp.deactivateContest(contestId);
 
     }
 }
