@@ -22,7 +22,6 @@ public class ContestResultsOperations {
     public void writeGeneralContestResults(List<HashMap<String,Object>> results) {
 
         PreparedStatement sql = null;
-        int lastValidPlace = 0;
 
         for (int i = 0; i < results.size(); i++) {
 
@@ -43,11 +42,7 @@ public class ContestResultsOperations {
             BigDecimal units = new BigDecimal(results.get(i).get("units").toString());
             BigDecimal roi = new BigDecimal(results.get(i).get("roi").toString());
 
-            if (place == 0) {
-                place = lastValidPlace + 1;
-            } else {
-                lastValidPlace = place;
-            }
+            if (place == 0) { place = results.size(); }
 
 //            Step 2: find annual points corresponding to a place
             Contest c = new Contest(conn, contestId);
