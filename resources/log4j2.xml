@@ -8,7 +8,7 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %c{1} - %msg%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-                <SizeBasedTriggeringPolicy size="100 KB"/>
+                <SizeBasedTriggeringPolicy size="200 KB"/>
             </Policies>
         </RollingFile>
         <Console name = "Console">
