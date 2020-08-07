@@ -258,8 +258,18 @@ public class PredictionsInspection {
         String locator = "#" + predictionID + " .odd span a";
         WebElement element = driver.findElement(By.cssSelector(locator));
         String market = element.getText().trim();
+        String url = element.getAttribute("href");
         Log.debug("Successfully got market");
         return market;
+    }
+
+    public String getMarketUrl(String predictionID) {
+        Log.debug("Getting market url...");
+        String locator = "#" + predictionID + " .odd span a";
+        WebElement element = driver.findElement(By.cssSelector(locator));
+        String marketUrl = element.getAttribute("href");
+        Log.debug("Successfully got market");
+        return marketUrl;
     }
 
     public String getMainScore(String predictionID) {
