@@ -828,6 +828,8 @@ public class PredictionOperations {
             DateTimeOperations dateOp = new DateTimeOperations();
 
             int userPick = pred.getUserPick(predictionID);
+            String feedUrl = "https://www.oddsportal.com/community/feed/item/" + predictionID.replace("feed_item_", "");
+
             PreparedStatement sql = null;
             try {
                 sql = conn.prepareStatement(
@@ -837,8 +839,8 @@ public class PredictionOperations {
                                 "tournament_name, main_score, detailed_score, result, date_scheduled, \n" +
                                 "date_predicted, competitors, market, option1_name, option1_value, \n" +
                                 "option2_name, option2_value, option3_name, option3_value, user_pick_name, \n" +
-                                "user_pick_value, unit_outcome, date_created, market_url) \n" +
-                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                                "user_pick_value, unit_outcome, date_created, market_url, feed_url) \n" +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
                 );
                 sql.setString(1, predictionID);
                 sql.setString(2, cop.getActiveSeasonalContestID());
@@ -867,6 +869,7 @@ public class PredictionOperations {
                 sql.setBigDecimal(25, pred.getUnitOutcome(predictionID));
                 sql.setString(26, dateOp.getTimestamp());
                 sql.setString(27, pred.getMarketUrl(predictionID));
+                sql.setString(28, feedUrl);
 
                 sql.executeUpdate();
                 sql.close();
