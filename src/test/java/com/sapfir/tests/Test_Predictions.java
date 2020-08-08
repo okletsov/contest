@@ -20,7 +20,7 @@ public class Test_Predictions {
 
     private static final Logger Log = LogManager.getLogger(Test_Predictions.class.getName());
 
-    private DatabaseOperations dbOp = new DatabaseOperations();
+    private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
     private WebDriver driver;
 

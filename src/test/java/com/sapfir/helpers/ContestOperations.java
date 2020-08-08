@@ -187,20 +187,6 @@ public class ContestOperations {
         }
     }
 
-    public void deactivateContestByType(String contestType) {
-        Log.debug("Deactivating contest...");
-        int resultSet;
-        String sql = "UPDATE contest SET is_active = 0 " +
-                     "WHERE type = '" + contestType + "' AND is_active = 1;";
-
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        resultSet = eq.getRowsAffected();
-        eq.cleanUp();
-
-        if (resultSet > 0){ Log.info( contestType + " contest successfully deactivated"); }
-        else { Log.info("Contest deactivation: no active " + contestType +" contests found"); }
-    }
-
     public void deactivateContest(String contestId) {
 
         String sql = "update `main`.`contest`\n" +
@@ -213,16 +199,8 @@ public class ContestOperations {
 
     public void activateMonth2contest() {
         /*
-            This method does two things:
-                - deactivates any month 1 active contests
-                - activates month 2 contest that belong to currently active seasonal contest
+            This method activates month 2 contest that belong to currently active seasonal contest
          */
-
-        Log.debug("Deactivating month 1 contest...");
-        String deactivate_month1 = "UPDATE contest SET is_active = 0 where type = 'monthly' and is_active = 1;";
-        ExecuteQuery eq1 = new ExecuteQuery(conn, deactivate_month1);
-        eq1.cleanUp();
-        Log.info("Month 1 contest successfully deactivated");
 
         Log.debug("Activating month 2 contest");
         String activate_month2 = "UPDATE contest c1 " +
@@ -265,8 +243,6 @@ public class ContestOperations {
     }
 
     private void updateEndDate(String contestId, String endDate) {
-
-        Contest c = new Contest(conn);
 
         String sql = "UPDATE `main`.`contest` " +
                 "SET `end_date` = '" + endDate + "' WHERE (`id` = '" + contestId + "');";

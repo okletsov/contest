@@ -17,7 +17,7 @@ public class PredictionsInspection {
 
     private static final Logger Log = LogManager.getLogger(PredictionsInspection.class.getName());
 
-    private WebDriver driver;
+    private final WebDriver driver;
 
     private String getResultLocator(String predictionId) {
         return "#" + predictionId + " .odd [class*=\"status-text-\"]";
@@ -258,7 +258,6 @@ public class PredictionsInspection {
         String locator = "#" + predictionID + " .odd span a";
         WebElement element = driver.findElement(By.cssSelector(locator));
         String market = element.getText().trim();
-        String url = element.getAttribute("href");
         Log.debug("Successfully got market");
         return market;
     }

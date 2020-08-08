@@ -10,7 +10,7 @@ import java.sql.Connection;
 
 public class Test_ActivateMonth2Contest {
 
-	private DatabaseOperations dbOp = new DatabaseOperations();
+	private final DatabaseOperations dbOp = new DatabaseOperations();
 	private Connection conn = null;
 
 	@BeforeClass
