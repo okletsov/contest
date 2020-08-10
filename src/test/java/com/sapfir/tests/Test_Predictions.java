@@ -1,9 +1,6 @@
 package com.sapfir.tests;
 
-import com.sapfir.helpers.BrowserDriver;
-import com.sapfir.helpers.DatabaseOperations;
-import com.sapfir.helpers.PredictionOperations;
-import com.sapfir.helpers.Properties;
+import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +46,13 @@ public class Test_Predictions {
     @AfterClass
     public void tearDown() {
         driver.quit();
+
+//        Insert background job timestamp
+        BackgroundJobs bj = new BackgroundJobs(conn);
+        String jobName = Test_Predictions.class.getSimpleName();
+        bj.addToBackgroundJobLog(jobName);
+
+//        Close connection
         dbOp.closeConnection(conn);
     }
 

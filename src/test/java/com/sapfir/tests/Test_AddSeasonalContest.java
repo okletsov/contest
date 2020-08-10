@@ -1,5 +1,6 @@
 package com.sapfir.tests;
 
+import com.sapfir.helpers.BackgroundJobs;
 import com.sapfir.helpers.ContestOperations;
 import com.sapfir.helpers.DatabaseOperations;
 import org.testng.annotations.AfterClass;
@@ -31,5 +32,10 @@ public class Test_AddSeasonalContest {
 		String season = System.getProperty("season");
 
 		co.addContest(year, season);
+
+//			Insert background job timestamp
+		BackgroundJobs bj = new BackgroundJobs(conn);
+		String jobName = Test_AddSeasonalContest.class.getSimpleName();
+		bj.addToBackgroundJobLog(jobName);
 	}
 }

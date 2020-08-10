@@ -51,5 +51,10 @@ public class Test_EndAnnualContest {
 //        Step 6: Deactivate annual contest
         contOp.deactivateContest(contestId);
 
+//        Step 7: insert background job timestamp
+        BackgroundJobs bj = new BackgroundJobs(conn);
+        String jobName = Test_EndAnnualContest.class.getSimpleName();
+        bj.addToBackgroundJobLog(jobName);
+
     }
 }

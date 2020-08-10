@@ -77,5 +77,10 @@ public class Test_EndContest {
         ContestOperations contOp = new ContestOperations(conn);
         contOp.deactivateContest(contestId);
 
+//        Step 7: insert background job timestamp
+        BackgroundJobs bj = new BackgroundJobs(conn);
+        String jobName = Test_EndContest.class.getSimpleName();
+        bj.addToBackgroundJobLog(jobName);
+
     }
 }

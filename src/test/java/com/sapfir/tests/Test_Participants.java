@@ -1,9 +1,6 @@
 package com.sapfir.tests;
 
-import com.sapfir.helpers.BrowserDriver;
-import com.sapfir.helpers.DatabaseOperations;
-import com.sapfir.helpers.Properties;
-import com.sapfir.helpers.UserOperations;
+import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.CommonElements;
 import com.sapfir.pageClasses.HomePageBeforeLogin;
 import com.sapfir.pageClasses.LoginPage;
@@ -59,5 +56,10 @@ public class Test_Participants {
 
         ArrayList <String> participants =  pp.getParticipantUsernames();
         uo.inspectParticipants(participants);
+
+//        Insert background job timestamp
+        BackgroundJobs bj = new BackgroundJobs(conn);
+        String jobName = Test_Participants.class.getSimpleName();
+        bj.addToBackgroundJobLog(jobName);
     }
 }

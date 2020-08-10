@@ -1,5 +1,6 @@
 package com.sapfir.tests;
 
+import com.sapfir.helpers.BackgroundJobs;
 import com.sapfir.helpers.ContestOperations;
 import com.sapfir.helpers.DatabaseOperations;
 import org.testng.annotations.AfterClass;
@@ -28,5 +29,10 @@ public class Test_ActivateMonth2Contest {
 		ContestOperations co = new ContestOperations(conn);
 
 		co.activateMonth2contest();
+
+//			Insert background job timestamp
+		BackgroundJobs bj = new BackgroundJobs(conn);
+		String jobName = Test_ActivateMonth2Contest.class.getSimpleName();
+		bj.addToBackgroundJobLog(jobName);
 	}
 }
