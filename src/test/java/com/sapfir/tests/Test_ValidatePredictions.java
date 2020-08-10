@@ -97,6 +97,11 @@ public class Test_ValidatePredictions {
 
         }
 
+//        Step 4: insert background job timestamp
+        BackgroundJobs bj = new BackgroundJobs(conn);
+        String jobName = Test_ValidatePredictions.class.getSimpleName();
+        bj.addToBackgroundJobLog(jobName);
+
         Log.info("Predictions validation finished");
     }
 }

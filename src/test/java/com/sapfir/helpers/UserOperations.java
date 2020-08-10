@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class UserOperations {
 
-    private Connection conn;
+    private final Connection conn;
 
     public UserOperations(Connection conn) {
         this.conn = conn;

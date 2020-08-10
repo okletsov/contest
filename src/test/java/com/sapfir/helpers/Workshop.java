@@ -1,6 +1,7 @@
 package com.sapfir.helpers;
 
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -26,9 +27,7 @@ public class Workshop {
         PredictionOperations predOp = new PredictionOperations(conn);
         Contest contest = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
 
-        String id = "feed_item_4172985503";
-        String trimmed = id.replace("feed_item_", "");
-        String url = "https://www.oddsportal.com/community/feed/item/" + trimmed;
+        String className = Workshop.class.getSimpleName();
 
         System.out.println("stop here");
 
