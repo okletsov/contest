@@ -96,6 +96,7 @@ public class PredictionsInspection {
                 break;
             default:
                 Log.error("Result not supported");
+                return null;
         }
         return unitOutcome;
     }
