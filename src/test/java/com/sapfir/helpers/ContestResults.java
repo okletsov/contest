@@ -728,7 +728,11 @@ public class ContestResults {
                 "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc) -\n" +
                 "\t\t\t\t\trow_number () over (partition by \n" +
                 "\t\t\t\t\t\t\t\t\t\t\tp3.user_id\n" +
-                "\t\t\t\t\t\t\t\t\t\t\t, p3.result \n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, case \n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\twhen p3.result = 'void-won' then 'won'\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\twhen p3.result = 'void-lost' then 'lost'\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\telse p3.result\n" +
+                "\t\t\t\t\t\t\t\t\t\t\tend\n" +
                 "\t\t\t\t\t\t\t\t\t\torder by \n" +
                 "\t\t\t\t\t\t\t\t\t\t\tp3.user_id \n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
