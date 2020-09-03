@@ -90,7 +90,8 @@ public class ContestResults {
                         "\t\t\t\t\twhen t3.count_void = 1 then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'void' then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'won' then t3.user_pick_value\n" +
-                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value\t\t\t\n" +
+                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value * 0.5\t\t\t\n" +
+                        "\t\t\t\t\twhen t3.result = 'void-lost' then '0.5'\t\t\t\n" +
                         "\t\t\t\tend \n" +
                         "\t\t\t) as decimal(5,2)) as won\n" +
                         "\t\t\t, sum(case when t3.unit_outcome <= 0 then t3.unit_outcome end) * -1 as lost\n" +
@@ -204,10 +205,11 @@ public class ContestResults {
                         "\t\t\t\t\twhen t3.count_void = 1 then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'void' then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'won' then t3.user_pick_value\n" +
-                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value\t\t\t\n" +
+                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value * 0.5\t\t\t\n" +
+                        "\t\t\t\t\twhen t3.result = 'void-lost' then '0.5'\t\t\t\n" +
                         "\t\t\t\tend \n" +
                         "\t\t\t) as decimal(5,2)) as won\n" +
-                        "\t\t\t, sum(case when t3.unit_outcome < 0 then t3.unit_outcome end) * -1 as lost\n" +
+                        "\t\t\t, sum(case when t3.unit_outcome <= 0 then t3.unit_outcome end) * -1 as lost\n" +
                         "\t\t\t, cast(sum(t3.unit_outcome) as decimal(5,2)) as units\n" +
                         "\t\t\t, cast((sum(t3.unit_outcome) / sum(case when t3.result = 'not-played' then 0 else 1 end)) * 100 as decimal(5,2)) as roi\n" +
                         "\t\tfrom (\n" +
