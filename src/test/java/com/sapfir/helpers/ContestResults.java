@@ -90,7 +90,7 @@ public class ContestResults {
                         "\t\t\t\t\twhen t3.count_void = 1 then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'void' then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'won' then t3.user_pick_value\n" +
-                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value * 0.5\t\t\t\n" +
+                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value * 0.5 + 0.5\t\t\t\n" +
                         "\t\t\t\t\twhen t3.result = 'void-lost' then '0.5'\t\t\t\n" +
                         "\t\t\t\tend \n" +
                         "\t\t\t) as decimal(5,2)) as won\n" +
@@ -205,7 +205,7 @@ public class ContestResults {
                         "\t\t\t\t\twhen t3.count_void = 1 then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'void' then '1'\n" +
                         "\t\t\t\t\twhen t3.result = 'won' then t3.user_pick_value\n" +
-                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value * 0.5\t\t\t\n" +
+                        "\t\t\t\t\twhen t3.result = 'void-won' then t3.user_pick_value * 0.5 + 0.5\t\t\t\n" +
                         "\t\t\t\t\twhen t3.result = 'void-lost' then '0.5'\t\t\t\n" +
                         "\t\t\t\tend \n" +
                         "\t\t\t) as decimal(5,2)) as won\n" +
