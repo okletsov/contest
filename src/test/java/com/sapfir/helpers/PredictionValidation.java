@@ -151,21 +151,6 @@ public class PredictionValidation {
         predOp.updateWarningStatus(predictionId, status, contestType);
     }
 
-    private void checkForAnomalyOdd() {
-        /*
-            Anomaly odd = bagovaya stavka
-            Until a better solution is implemented we will manually inspect odds with payout > 105%
-
-            To know what bets have a payout value we will need to see the db value for option2_value
-            if it exists (> 0) the payout value can be calculated
-         */
-
-        if (payout > 1.05) {
-            Log.warn("Prediction with ID: " + predictionId + " potentially does not count. Payout = " + payout + ". Check for anomaly odd");
-        }
-
-    }
-
     // Get validity status
     public int getStatus() {
 
@@ -235,7 +220,7 @@ public class PredictionValidation {
         if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction == 2) { updateWarningStatus(2); } // Step 2.7.2
         if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction > 2) { return 27; } // Step 2.7.3
 
-//        if (option2Value > 0) { checkForAnomalyOdd(); } // Step 2.8 (warning only in logs)
+        if (option2Value > 0 && payout >= 1.05) { return 60; } // Step 2.8
 
         if (dateScheduledKnown && isBeforeLastDay(initialDateScheduled)) {
 
