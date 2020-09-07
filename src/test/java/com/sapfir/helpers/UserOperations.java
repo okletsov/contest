@@ -96,7 +96,7 @@ public class UserOperations {
                 if CANNOT find - display an error message
                 if CAN find - proceed with method execution:
                   Get userID:
-                    if CAN find: insert participation ID into `user_seasonal_contest_participation` table
+                    if CAN find: insert participation ID (if it doesn't exist) into `user_seasonal_contest_participation` table
                     if CANNOT find
                         - increase counter
                         - display an error message that user does not exist in database
