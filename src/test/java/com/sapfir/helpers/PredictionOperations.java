@@ -614,7 +614,7 @@ public class PredictionOperations {
 
         String sql = "select " + contestType + "_validity_status from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
-        return Integer.parseInt(dbOp.getSingleValue(conn, "seasonal_validity_status", sql));
+        return Integer.parseInt(dbOp.getSingleValue(conn, contestType + "_validity_status", sql));
     }
 
     public float getDbUserPickValue(String predictionId) {

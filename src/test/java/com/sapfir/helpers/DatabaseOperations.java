@@ -63,6 +63,7 @@ public class DatabaseOperations {
             Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
             Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.fatal("SQL query: " + sql);
             Log.trace("Stack trace: ", ex);
             System.exit(0);
         }
@@ -99,6 +100,7 @@ public class DatabaseOperations {
             Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
             Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.fatal("SQL query: " + sql);
             Log.trace("Stack trace: ", ex);
             System.exit(0);
         }
@@ -128,6 +130,7 @@ public class DatabaseOperations {
             Log.fatal("SQLException: " + ex.getMessage());
             Log.fatal("SQLState: " + ex.getSQLState());
             Log.fatal("VendorError: " + ex.getErrorCode());
+            Log.fatal("SQL query: " + sql);
             Log.trace("Stack trace: ", ex);
             System.exit(0);
         }
