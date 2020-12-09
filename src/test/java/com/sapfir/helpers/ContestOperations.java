@@ -40,7 +40,7 @@ public class ContestOperations {
 
         //Set days in February to 29 for leap years
         String februaryDays = "28";
-        if (year % 4 == 0) {
+        if ((year + 1) % 4 == 0) {
             februaryDays = "29";
         }
 
