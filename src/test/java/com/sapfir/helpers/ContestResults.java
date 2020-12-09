@@ -157,6 +157,7 @@ public class ContestResults {
                         "\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                         "\t\t\t\t, t2.initial_date_scheduled asc\n" +
                         "\t\t\t\t, t2.date_predicted asc\n" +
+                        "\t\t\t\t, t2.id asc\n" +
                         "\t\t\t) t3 -- all predictions that count in contest with correct unit_outcome based on status \n" +
                         "\t\tgroup by \n" +
                         "\t\t\tt3.nickname\n" +
@@ -270,6 +271,7 @@ public class ContestResults {
                         "\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                         "\t\t\t\t, t2.initial_date_scheduled asc\n" +
                         "\t\t\t\t, t2.date_predicted asc\n" +
+                        "\t\t\t\t, t2.id asc\n" +
                         "\t\t\t) t3 -- all predictions that count in contest with correct unit_outcome based on status \n" +
                         "\t\tgroup by \n" +
                         "\t\t\tt3.nickname\n" +
@@ -727,7 +729,8 @@ public class ContestResults {
                 "\t\t\t\t\t\t\t\t\t\t\tp3.user_id\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
-                "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc) -\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.id asc) -\n" +
                 "\t\t\t\t\trow_number () over (partition by \n" +
                 "\t\t\t\t\t\t\t\t\t\t\tp3.user_id\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, case \n" +
@@ -739,7 +742,8 @@ public class ContestResults {
                 "\t\t\t\t\t\t\t\t\t\t\tp3.user_id \n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
-                "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc)\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t, t2.id asc)\n" +
                 "\t\t\t\t) as grp\n" +
                 "\t\t\t\t, p3.id\n" +
                 "\t\t\t\t, p3.user_id \n" +
@@ -788,6 +792,7 @@ public class ContestResults {
                 "\t\t\t\t, case when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t, t2.initial_date_scheduled asc\n" +
                 "\t\t\t\t, t2.date_predicted asc\n" +
+                "\t\t\t\t, t2.id asc\n" +
                 "\t\t\t) t3\n" +
                 "\t\twhere 1=1\n" +
                 "\t\t\tand t3.result = 'won'\n" +

@@ -187,7 +187,8 @@ public class Contest {
 				"order by \n" +
 				"\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
 				"\t, t2.initial_date_scheduled asc\n" +
-				"\t, t2.date_predicted asc;";
+				"\t, t2.date_predicted asc\n" +
+				"\t, t2.id asc;";
 		return dbOp.getArray(conn, "id", sql);
 	}
 

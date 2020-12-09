@@ -130,6 +130,7 @@ public class PredictionOperations {
                 "\t\t\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t, t2.initial_date_scheduled asc\n" +
                 "\t\t\t\t, date_predicted asc\n" +
+                "\t\t\t\t, t2.id asc\n" +
                 "\t\t) row_num\n" +
                 "\t\t, t2.id\n" +
                 "\tfrom (\n" +
@@ -205,6 +206,7 @@ public class PredictionOperations {
                 "\t\t\t\t\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
                 "\t                    , date_predicted asc\n" +
+                "\t                    , t2.id asc\n" +
                 "\t\t\t\t\t) row_num\n" +
                 "\t\t, t2.id\n" +
                 "\tfrom (\n" +
@@ -276,6 +278,7 @@ public class PredictionOperations {
                 "\t\t\t\t\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
                 "\t                    , date_predicted asc\n" +
+                "\t                    , t2.id asc\n" +
                 "\t\t\t\t\t) row_num\n" +
                 "\t\t, t2.id\n" +
                 "\tfrom (\n" +
@@ -348,6 +351,7 @@ public class PredictionOperations {
                 "\t\t\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t, t2.initial_date_scheduled asc\n" +
                 "\t\t\t\t, date_predicted asc\n" +
+                "\t\t\t\t, t2.id asc\n" +
                 "\t\t) row_num\n" +
                 "\t\t, t2.id\n" +
                 "\tfrom (\n" +
@@ -484,6 +488,7 @@ public class PredictionOperations {
                 "\t\t\t\t\t\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
                 "\t\t                    , date_predicted asc\n" +
+                "\t\t                    , t2.id asc\n" +
                 "\t\t\t\t\t\t) row_num\n" +
                 "\t\t, t2.id\n" +
                 "\t\t, t2.initial_date_scheduled\n" +
@@ -602,6 +607,7 @@ public class PredictionOperations {
                 "\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t, t2.initial_date_scheduled asc\n" +
                 "\t\t, t2.date_predicted asc\n" +
+                "\t\t, t2.id asc\n" +
                 "\t) t3;";
 
         DatabaseOperations dbOp = new DatabaseOperations();
