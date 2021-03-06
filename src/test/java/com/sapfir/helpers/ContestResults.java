@@ -48,8 +48,8 @@ public class ContestResults {
                 sql = "select \n" +
                         "\t(\n" +
                         "\t\tcase \n" +
-                        "\t\t\twhen t5.active_days >=30 then (row_number() over (order by \n" +
-                        "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcase when t5.active_days >= 30 then 0 else 1 end\n" +
+                        "\t\t\twhen t5.active_days >=20 then (row_number() over (order by \n" +
+                        "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcase when t5.active_days >= 20 then 0 else 1 end\n" +
                         "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t, t5.units desc\n" +
                         "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t)\n" +
                         "\t\t\t\t\t\t\t\t\t\t)\n" +
@@ -165,7 +165,7 @@ public class ContestResults {
                         "\t\t\t, t3.seasonal_contest_id\n" +
                         "\t\t) t4 -- calculating raw contest result measures\n" +
                         "\t) t5 -- applying rules for user who did no make 100 predictions\n" +
-                        "; -- applying rules for users with less than 30 active days";
+                        "; -- applying rules for users with less than 20 active days";
                 break;
             case "monthly":
                 sql = "select \n" +
