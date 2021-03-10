@@ -451,7 +451,7 @@ public class PredictionOperations {
         String eventIdentifier = getDbEventIdentifier(predictionId);
         String market = getDbMarket(predictionId);
         String userPickName = getDbUserPickName(predictionId);
-        String competitors = getDbCompetitors(predictionId);
+        String competitors = getDbCompetitors(predictionId).replace("'", "''");
 
         String sql = "select \n" +
                 "\tt1.row_num \n" +
