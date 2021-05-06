@@ -731,7 +731,7 @@ public class ContestResults {
                 "\t\t\t\t\t\t\t\t\t\t\t, t2.initial_date_scheduled asc\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, t2.date_predicted asc\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, t2.id asc) -\n" +
-                "\t\t\t\t\trow_number () over (partition by \n" +
+                "\t\t\t\t\trow_number() over (partition by \n" +
                 "\t\t\t\t\t\t\t\t\t\t\tp3.user_id\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t, case \n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\twhen p3.result = 'void-won' then 'won'\n" +
