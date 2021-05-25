@@ -822,6 +822,16 @@ public class PredictionOperations {
         Log.debug("Success. New monthly_contest_id: " + monthlyContestId);
     }
 
+    public void setMonthlyContestIdToNull(String predictionId) {
+
+        String sql = "update `main`.`prediction`\n" +
+                "set `monthly_contest_id` = null\n" +
+                "where (`id` = '" + predictionId + "');";
+
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        eq.cleanUp();
+    }
+
     public void addPrediction(String predictionID, String username) {
         Log.debug("Adding prediction to database...");
 
