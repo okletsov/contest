@@ -44,7 +44,9 @@ public class Test_ValidatePredictions {
         String mon2ContestId = contest.getMonContestId(2);
 
         // Step 2: Get the list of predictions to validate
-        ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
+         ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
+//        ArrayList<String> predictionsToValidate = new ArrayList<>();
+//        predictionsToValidate.add("feed_item_4839557103");
 
         // Step 3: Individually validate each prediction
         for (String predictionId : predictionsToValidate) {
