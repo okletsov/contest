@@ -39,7 +39,7 @@ public class TournamentPage {
     private void clickResultsButton() {
         resultsButton.click();
         SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(resultsButton, 10);
+        sm.waitForElement(resultsButton, 60);
         PageFactory.initElements(driver, this);
     }
 
