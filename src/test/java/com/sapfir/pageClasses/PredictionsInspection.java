@@ -344,8 +344,9 @@ public class PredictionsInspection {
             String sport = getSport(predictionID).replaceAll("\\s+","");
             String region = getRegion(predictionID).replaceAll("\\s+","");
             String market = getMarket(predictionID).replaceAll("\\s+","");
+            int year = Integer.parseInt(System.getProperty("year"));
 
-            identifier = sport + region + market;
+            identifier = sport + region + market + year;
 
             /*
             Warning message if identifier does not contain the word "winner" as the expectation
