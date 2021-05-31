@@ -728,6 +728,13 @@ public class PredictionOperations {
         return dateScheduled != null;
     }
 
+    public boolean isMonContestIdKnown(String predictionId) {
+        Contest contest = new Contest(conn);
+
+        String monContestId = contest.getMonContestIdByPredictionId(predictionId);
+        return monContestId != null;
+    }
+
     public boolean isQuarterGoal(String predictionId) {
         PredictionOperations predOp = new PredictionOperations(conn);
         String market = predOp.getDbMarket(predictionId);
@@ -820,16 +827,6 @@ public class PredictionOperations {
         eq.cleanUp();
 
         Log.debug("Success. New monthly_contest_id: " + monthlyContestId);
-    }
-
-    public void setMonthlyContestIdToNull(String predictionId) {
-
-        String sql = "update `main`.`prediction`\n" +
-                "set `monthly_contest_id` = null\n" +
-                "where (`id` = '" + predictionId + "');";
-
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        eq.cleanUp();
     }
 
     public void addPrediction(String predictionID, String username) {

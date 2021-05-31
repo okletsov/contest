@@ -51,6 +51,14 @@ public class Test_ValidatePredictions {
         // Step 3: Individually validate each prediction
         for (String predictionId : predictionsToValidate) {
 
+            // Step 3.0: Insert monthly contest id if known
+            boolean monContestIdKnown = predOp.isMonContestIdKnown(predictionId);
+
+            if (monContestIdKnown) {
+                String monContestId = contest.getMonContestIdByPredictionId(predictionId);
+                predOp.updateMonthlyContestId(predictionId, monContestId);
+            }
+
             // Step 3.1: Have individual prediction inspected for season
             PredictionValidation predValSeas = new PredictionValidation(conn, seasContestId, predictionId);
             int seasStatus = predValSeas.getStatus();
@@ -59,44 +67,15 @@ public class Test_ValidatePredictions {
 
             // Step 3.2: Have individual prediction inspected for month 1
             PredictionValidation predValMon1 = new PredictionValidation(conn, mon1ContestId, predictionId);
-            int mon1Status = predValMon1.getStatus();
 
-            if ( // update monthly status only if prediction belongs to monthly contest
-                    mon1Status != 11 &&
-                    mon1Status != 12 &&
-                    mon1Status != 13
-            ) {
-                if ( // log a warning only if prediction status is specific to monthly contest
-                        mon1Status == 3 ||
-                        mon1Status == 51 ||
-                        mon1Status == 52 ||
-                        mon1Status == 53
-                ) {
-                    Log.warn("Month 1 status for prediction " + predictionId + ": " + mon1Status + " - " + vs.getDescription(mon1Status));
-                }
-                predOp.updateValidityStatus(predictionId, mon1Status, "monthly");
-            }
+            int mon1Status = predValMon1.getStatus();
+            predOp.updateValidityStatus(predictionId, mon1Status, "monthly");
 
             // Step 3.3: Have individual prediction inspected for month 2
             PredictionValidation predValMon2 = new PredictionValidation(conn, mon2ContestId, predictionId);
+
             int mon2Status = predValMon2.getStatus();
-
-            if ( // update monthly status only if prediction belongs to monthly contest
-                    mon2Status != 11 &&
-                    mon2Status != 12 &&
-                    mon2Status != 13
-            ) {
-                if ( // log a warning only if prediction status is specific to monthly contest
-                        mon2Status == 3 ||
-                        mon2Status == 51 ||
-                        mon2Status == 52 ||
-                        mon2Status == 53
-                ) {
-                    Log.warn("Month 2 status for prediction " + predictionId + ": " + mon2Status + " - " + vs.getDescription(mon2Status));
-                }
-                predOp.updateValidityStatus(predictionId, mon2Status, "monthly");
-            }
-
+            predOp.updateValidityStatus(predictionId, mon2Status, "monthly");
         }
 
 //        Step 4: insert background job timestamp

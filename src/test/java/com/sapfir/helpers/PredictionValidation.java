@@ -157,12 +157,9 @@ public class PredictionValidation {
         /*
             Step 0: check is validity_status was overruled
             Step 1: check if prediction should at all belong to current contest
-                    1.1.1 Checking if event was originally scheduled within contest time frame and whether inspection is for seasonal contest
-                    1.1.2 Checking if event was originally scheduled within contest time frame and if inspection is for monthly contest, set monthly_contest_id to null
-                    1.2.1 If date_scheduled is unknown and if inspecting for seasonal contest, check if contest is already over
-                    1.2.2 If date_scheduled is unknown and if inspecting for monthly contest, check if contest is already over and set monthly_contest_id to null
+                    1.1 Checking if event was originally scheduled within contest time frame
+                    1.2 If date_scheduled is unknown check if contest is already over
                     1.3 Check if user already has 100 valid predictions
-                    1.4 If inspecting for monthly contest - it is a point to assign monthly_contest_id to prediction
             Step 2: if step 1 is ok check if user violated any rules for which prediction should be count lost:
                     2.1 Check if user_pick_value is less than 1.5 or more than 15
                     2.2 Check if prediction is quarter goal and user_pick_value is less than 2
@@ -201,29 +198,9 @@ public class PredictionValidation {
 
         if (validityStatusOverruled) { return validityStatus; } // Step 0
 
-        if (!eventDateBelongsToContest() && contestType.equals("seasonal")) { return 11; } // Step 1.1.1
-
-        if (!eventDateBelongsToContest() && contestType.equals("monthly")) { // Step 1.1.2
-            PredictionOperations predOp = new PredictionOperations(conn);
-            predOp.setMonthlyContestIdToNull(predictionId);
-            return 11;
-        }
-
-        if (!dateScheduledKnown && todayDateTime.isAfter(endDate) && contestType.equals("seasonal")) { return 12; } // Step 1.2.1
-
-        if (!dateScheduledKnown && todayDateTime.isAfter(endDate) && contestType.equals("monthly")) { // Step 1.2.2
-            PredictionOperations predOp = new PredictionOperations(conn);
-            predOp.setMonthlyContestIdToNull(predictionId);
-            return 12;
-        }
-
+        if (!eventDateBelongsToContest()) { return 11; } // Step 1.1
+        if (!dateScheduledKnown && todayDateTime.isAfter(endDate)) { return 12; } // Step 1.2
         if (indexInSeasContest > 100) { return 13; } // Step 1.3
-
-        if (contestType.equals("monthly")) { // Step 1.4
-
-            PredictionOperations predOp = new PredictionOperations(conn);
-            predOp.updateMonthlyContestId(predictionId, contestId);
-        }
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
         if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2

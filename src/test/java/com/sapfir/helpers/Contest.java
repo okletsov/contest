@@ -39,6 +39,73 @@ public class Contest {
 		return dbOp.getSingleValue(conn, "id", sql);
 	}
 
+	public String getMonContestIdByPredictionId(String predictionId) {
+
+		String sql = "SELECT\n" +
+				"\tc.id\n" +
+				"from\n" +
+				"\tcontest c\n" +
+				"where 1 = 1\n" +
+				"\tand c.`type` = 'monthly'\n" +
+				"\tand c.start_date < (\n" +
+				"\tselect\n" +
+				"\t\tmin(t1.date_scheduled) as initial_date_scheduled\n" +
+				"\tfrom\n" +
+				"\t\t(\n" +
+				"\t\tselect\n" +
+				"\t\t\tp.id\n" +
+				"\t\t\t, p.date_scheduled\n" +
+				"\t\t\t, p.date_predicted\n" +
+				"\t\tfrom\n" +
+				"\t\t\tprediction p\n" +
+				"\t\twhere 1 = 1\n" +
+				"\t\t\tand p.id = '" + predictionId + "'\n" +
+				"\tunion all -- to combine date_scheduled and previous_date_scheduled\n" +
+				"\t\tselect\n" +
+				"\t\t\tpsc.prediction_id\n" +
+				"\t\t\t, psc.previous_date_scheduled\n" +
+				"\t\t\t, p2.date_predicted\n" +
+				"\t\tfrom\n" +
+				"\t\t\tprediction_schedule_changes psc\n" +
+				"\t\tjoin prediction p2 on\n" +
+				"\t\t\tpsc.prediction_id = p2.id\n" +
+				"\t\twhere 1 = 1\n" +
+				"\t\t\tand psc.prediction_id = '" + predictionId + "' ) t1\n" +
+				"\twhere 1 = 1\n" +
+				"\tgroup by\n" +
+				"\t\tt1.id )\n" +
+				"\tand c.end_date > (\n" +
+				"\tselect\n" +
+				"\t\tmin(t1.date_scheduled) as initial_date_scheduled\n" +
+				"\tfrom\n" +
+				"\t\t(\n" +
+				"\t\tselect\n" +
+				"\t\t\tp.id\n" +
+				"\t\t\t, p.date_scheduled\n" +
+				"\t\t\t, p.date_predicted\n" +
+				"\t\tfrom\n" +
+				"\t\t\tprediction p\n" +
+				"\t\twhere 1 = 1\n" +
+				"\t\t\tand p.id = '" + predictionId + "'\n" +
+				"\tunion all\n" +
+				"\t\t-- to combine date_scheduled and previous_date_scheduled\n" +
+				"\t\tselect\n" +
+				"\t\t\tpsc.prediction_id\n" +
+				"\t\t\t, psc.previous_date_scheduled\n" +
+				"\t\t\t, p2.date_predicted\n" +
+				"\t\tfrom\n" +
+				"\t\t\tprediction_schedule_changes psc\n" +
+				"\t\tjoin prediction p2 on\n" +
+				"\t\t\tpsc.prediction_id = p2.id\n" +
+				"\t\twhere 1 = 1\n" +
+				"\t\t\tand psc.prediction_id = '" + predictionId + "' ) t1\n" +
+				"\twhere 1 = 1\n" +
+				"\tgroup by t1.id );";
+
+		DatabaseOperations dbOp = new DatabaseOperations();
+		return dbOp.getSingleValue(conn, "id", sql);
+	}
+
 	public String getSeasContestIdByMonContestId() {
 //		Method finds seasonal contest id if monthly contest id was provided
 
