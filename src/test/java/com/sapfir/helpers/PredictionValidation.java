@@ -159,7 +159,7 @@ public class PredictionValidation {
             Step 1: check if prediction should at all belong to current contest
                     1.1 Checking if event was originally scheduled within contest time frame
                     1.2 If date_scheduled is unknown check if contest is already over
-                    1.3 Check if user already has 100 valid predictions
+                    1.3 Check if user already has 100 valid predictions for seasonal contest
             Step 2: if step 1 is ok check if user violated any rules for which prediction should be count lost:
                     2.1 Check if user_pick_value is less than 1.5 or more than 15
                     2.2 Check if prediction is quarter goal and user_pick_value is less than 2
@@ -200,7 +200,7 @@ public class PredictionValidation {
 
         if (!eventDateBelongsToContest()) { return 11; } // Step 1.1
         if (!dateScheduledKnown && todayDateTime.isAfter(endDate)) { return 12; } // Step 1.2
-        if (indexInSeasContest > 100) { return 13; } // Step 1.3
+        if (contestType.equals("seasonal") && indexInSeasContest > 100) { return 13; } // Step 1.3
 
         if (userPickValue < 1.5 || userPickValue > 15) { return 21; } // Step 2.1
         if (userPickValue >= 1.5 && userPickValue < 2 && predictionQuarterGoal)  { return 22; } // Step 2.2

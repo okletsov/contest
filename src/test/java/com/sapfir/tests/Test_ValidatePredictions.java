@@ -46,18 +46,10 @@ public class Test_ValidatePredictions {
         // Step 2: Get the list of predictions to validate
          ArrayList<String> predictionsToValidate = contest.getPredictionsToValidate();
 //        ArrayList<String> predictionsToValidate = new ArrayList<>();
-//        predictionsToValidate.add("feed_item_4839557103");
+//        predictionsToValidate.add("feed_item_4784094303");
 
         // Step 3: Individually validate each prediction
         for (String predictionId : predictionsToValidate) {
-
-            // Step 3.0: Insert monthly contest id if known
-            boolean monContestIdKnown = predOp.isMonContestIdKnown(predictionId);
-
-            if (monContestIdKnown) {
-                String monContestId = contest.getMonContestIdByPredictionId(predictionId);
-                predOp.updateMonthlyContestId(predictionId, monContestId);
-            }
 
             // Step 3.1: Have individual prediction inspected for season
             PredictionValidation predValSeas = new PredictionValidation(conn, seasContestId, predictionId);
@@ -65,17 +57,25 @@ public class Test_ValidatePredictions {
             if (seasStatus > 1 && seasStatus != 41) { Log.warn("Status for prediction " + predictionId + ": " + seasStatus + " - " + vs.getDescription(seasStatus)); }
             predOp.updateValidityStatus(predictionId, seasStatus, "seasonal");
 
-            // Step 3.2: Have individual prediction inspected for month 1
+            // Step 3.2: Insert monthly contest id if known
+            boolean monContestIdKnown = predOp.isMonContestIdKnown(predictionId);
+
+            if (monContestIdKnown && seasStatus != 13) {
+                String monContestId = contest.getMonContestIdByPredictionId(predictionId);
+                predOp.updateMonthlyContestId(predictionId, monContestId);
+            }
+
+            // Step 3.3: Have individual prediction inspected for month 1
             PredictionValidation predValMon1 = new PredictionValidation(conn, mon1ContestId, predictionId);
 
             int mon1Status = predValMon1.getStatus();
-            predOp.updateValidityStatus(predictionId, mon1Status, "monthly");
+            if (mon1Status != 11 && mon1Status != 12) { predOp.updateValidityStatus(predictionId, mon1Status, "monthly"); }
 
-            // Step 3.3: Have individual prediction inspected for month 2
+            // Step 3.4: Have individual prediction inspected for month 2
             PredictionValidation predValMon2 = new PredictionValidation(conn, mon2ContestId, predictionId);
 
             int mon2Status = predValMon2.getStatus();
-            predOp.updateValidityStatus(predictionId, mon2Status, "monthly");
+            if (mon2Status != 11 && mon2Status != 12) { predOp.updateValidityStatus(predictionId, mon2Status, "monthly"); }
         }
 
 //        Step 4: insert background job timestamp
