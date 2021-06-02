@@ -164,11 +164,20 @@ public class ContestOperations {
 
                 Log.info("Successfully added " + year + " annual contest");
 
-            } else if (season.equals("Winter") || season.equals("Spring")) {
+            } else if (season.equals("Winter")) {
 //                Update end date for annual contest
 //                Add relationship between seasonal and annual contests
 
                 annContestId = c.getAnnContestIdByYear(year);
+                seasContestId = c.getSeasContestIdByYearAndSeason(year, season);
+
+                addAnnXSeasRelationship(annContestId, seasContestId);
+                updateEndDate(annContestId, seasonal_end_date);
+            } else if (season.equals("Spring")) {
+//                Update end date for annual contest
+//                Add relationship between seasonal and annual contests
+
+                annContestId = c.getAnnContestIdByYear(year - 1);
                 seasContestId = c.getSeasContestIdByYearAndSeason(year, season);
 
                 addAnnXSeasRelationship(annContestId, seasContestId);
