@@ -13,22 +13,14 @@ public class ContestResults {
         this.conn = conn;
     }
 
-    public int getAnnualPointsByPlace(int place) {
-        if (place == 1) {
-            return 10;
+    public int getAnnualPointsByPlaceAndParticipants(int place, int participants) {
+        if (place > 2) {
+            return participants - place + 1;
         } else if (place == 2) {
-            return 8;
-        } else if (place == 3) {
-            return 6;
-        } else if (place == 4) {
-            return 5;
-        } else if (place == 5) {
-            return 4;
-        } else if (place == 6) {
-            return 3;
-        } else if (place == 7) {
-            return 2;
-        } else if (place == 8) {
+            return participants - place + 2;
+        } else if (place == 1) {
+            return participants - place + 3;
+        } else if (place == 0) { // is true only when participant is on the last place
             return 1;
         } else {
             return 0;

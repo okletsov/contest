@@ -42,15 +42,15 @@ public class ContestResultsOperations {
             BigDecimal units = new BigDecimal(results.get(i).get("units").toString());
             BigDecimal roi = new BigDecimal(results.get(i).get("roi").toString());
 
-            if (place == 0) { place = results.size(); }
-
 //            Step 2: find annual points corresponding to a place
             Contest c = new Contest(conn, contestId);
             ContestResults cr = new ContestResults(conn);
 
             String contestType = c.getContestType();
             int annualPoints = 0;
-            if (contestType.equals("seasonal")) { annualPoints = cr.getAnnualPointsByPlace(place); }
+            if (contestType.equals("seasonal")) {
+                annualPoints = cr.getAnnualPointsByPlaceAndParticipants(place, results.size());
+            }
 
 //            Step 3: generate and execute update statement
 

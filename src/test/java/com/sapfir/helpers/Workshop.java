@@ -27,7 +27,8 @@ public class Workshop {
         PredictionOperations predOp = new PredictionOperations(conn);
         Contest contest = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
 
-        String className = Workshop.class.getSimpleName();
+        ContestResults cr = new ContestResults(conn);
+        int points = cr.getAnnualPointsByPlaceAndParticipants(2, 4);
 
         System.out.println("stop here");
 
