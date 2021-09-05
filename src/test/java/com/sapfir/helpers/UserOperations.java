@@ -96,16 +96,20 @@ public class UserOperations {
                 if CANNOT find - display an error message
                 if CAN find - proceed with method execution:
                   Get userID:
-                    if CAN find: insert participation ID (if it doesn't exist) into `user_seasonal_contest_participation` table
+                    if CAN find:
+                        - insert participation ID (if it doesn't exist) into `user_seasonal_contest_participation` table
+                        - insert entrance fee into `cr_finance` table
                     if CANNOT find
                         - increase counter
                         - display an error message that user does not exist in database
                         - (optional) add user to database
                         - (optional) add participation ID to `user_seasonal_contest_participation` table
+                        - (optional) add entrance fee to `cr_finance` table
              */
 
         Log.info("Inspecting participants...");
         ContestOperations co = new ContestOperations(conn);
+        ContestFinanceOperations cfo = new ContestFinanceOperations(conn);
         String contestID = co.getActiveSeasonalContestID();
         if (contestID != null) {
             int counter = 0;
@@ -113,11 +117,13 @@ public class UserOperations {
                 String userID = getUserID(username);
                 if (userID != null) {
                     addParticipationID(contestID, username);
+                    cfo.addEntranceFee(contestID, username);
                 } else {
                     counter = counter + 1;
                     Log.warn("User " + username + " does not exist in database");
 //                addUser(username, "New Participant");
 //                addParticipationID(contestID, username);
+//                cfo.addEntranceFee(contestID, username);
                 }
             }
             if (counter == 0) { Log.info("Inspection complete: all participants exist and linked to contest"); }

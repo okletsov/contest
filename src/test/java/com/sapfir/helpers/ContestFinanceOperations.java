@@ -167,4 +167,43 @@ public class ContestFinanceOperations {
         }
     }
 
+    public void addEntranceFee(String contestId, String username) {
+
+        PreparedStatement sql = null;
+
+//        Step 1: get data to insert
+
+        UserOperations uo = new UserOperations(conn);
+        String userId = uo.getUserID(username);
+
+        Contest c = new Contest(conn, contestId);
+        BigDecimal entranceFee = c.getEntranceFee();
+        BigDecimal entranceFeeToInsert = entranceFee.multiply(BigDecimal.valueOf(-1));
+
+//        Step 2: generate and execute insert statement
+
+        try {
+            sql = conn.prepareStatement(
+                    "INSERT INTO `main`.`cr_finance` (`id`, `user_id`, `contest_id`, `finance_action_id`, `action_value`) " +
+                            "VALUES (uuid(), ?, ?, ?, ?);"
+            );
+
+            sql.setString(1, userId);
+            sql.setString(2, contestId);
+            sql.setInt(3, 12);
+            sql.setBigDecimal(4, entranceFeeToInsert);
+
+            sql.executeUpdate();
+            sql.close();
+
+            Log.info("Done");
+
+        } catch (SQLException ex) {
+            Log.error("SQLException: " + ex.getMessage());
+            Log.error("SQLState: " + ex.getSQLState());
+            Log.error("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            Log.error("Failing sql statement: " + sql);
+        }
+    }
 }
