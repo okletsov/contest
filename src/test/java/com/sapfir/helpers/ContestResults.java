@@ -741,7 +741,11 @@ public class ContestResults {
                 "\t\t\t\t, p3.user_id \n" +
                 "\t\t\t\t, p3.seasonal_contest_id \n" +
                 "\t\t\t\t, un.nickname \n" +
-                "\t\t\t\t, p3.result\n" +
+                "\t\t\t\t, (case\n" +
+                "\t\t\t\t\twhen vs.count_lost = 1 and vs.count_in_contest = 1 then 'lost'\n" +
+                "\t\t\t\t\twhen vs.count_void = 1 and vs.count_in_contest = 1 then 'void'\n" +
+                "\t\t\t\t\telse p3.`result` \n" +
+                "\t\t\t\t\tend) as result \n" +
                 "\t\t\t\t, p3.user_pick_value\n" +
                 "\t\t\t\t, t2.initial_date_scheduled\n" +
                 "\t\t\t\t, t2.date_predicted\n" +
