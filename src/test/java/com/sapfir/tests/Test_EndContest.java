@@ -33,7 +33,7 @@ public class Test_EndContest {
 
 //        Step 1: Specify contest id to end and find its type (seasonal vs monthly)
 
-        String contestId = "7a19d8f7-39c6-11eb-a6ac-74852a015562";
+        String contestId = "d298418c-0e33-11ec-ab01-288316e63e84";
 
         Contest c = new Contest(conn, contestId);
         String contestType = c.getContestType();
