@@ -46,7 +46,7 @@ public class ProfilePage {
         Log.debug("Clicking Following tab...");
         followingTab.click();
         //Waiting for Save Changes button to know the tab finished loading
-        sm.waitForElement(saveChangesButton, 10);
+        sm.waitForElement(saveChangesButton, 30);
 
         Log.debug("Viewing Participants");
     }
