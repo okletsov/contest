@@ -33,7 +33,7 @@ public class EventPage {
     String getDetailedScoreHelper() {
         //Wait for "Final result" test to appear then proceed to method execution
         SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(driver.findElement(By.id("side-menu")), 300);
+        sm.waitForElement(driver.findElement(By.id("side-menu")), 900);
 
         String detailedScore = "";
         if (sm.isElementPresent("css", mainScoreLocator)){
