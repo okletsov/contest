@@ -25,10 +25,10 @@ public class Workshop {
 
         DateTimeOperations dtOp = new DateTimeOperations();
         PredictionOperations predOp = new PredictionOperations(conn);
-        Contest contest = new Contest(conn, "2deb734e-ce85-11e8-8022-74852a015562");
+        Contest contest = new Contest(conn, "d28a83e2-0e33-11ec-ab01-288316e63e84");
 
         ContestResults cr = new ContestResults(conn);
-        int points = cr.getAnnualPointsByPlaceAndParticipants(2, 4);
+        List<HashMap<String,Object>> streak = cr.getContestResultsWinningStrickToWrite("d28a83e2-0e33-11ec-ab01-288316e63e84");
 
         System.out.println("stop here");
 
