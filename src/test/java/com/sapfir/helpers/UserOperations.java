@@ -98,7 +98,6 @@ public class UserOperations {
                   Get userID:
                     if CAN find:
                         - insert participation ID (if it doesn't exist) into `user_seasonal_contest_participation` table
-                        - insert entrance fee into `cr_finance` table
                     if CANNOT find
                         - increase counter
                         - display an error message that user does not exist in database
@@ -109,7 +108,6 @@ public class UserOperations {
 
         Log.info("Inspecting participants...");
         ContestOperations co = new ContestOperations(conn);
-        ContestFinanceOperations cfo = new ContestFinanceOperations(conn);
         String contestID = co.getActiveSeasonalContestID();
         if (contestID != null) {
             int counter = 0;
@@ -117,7 +115,6 @@ public class UserOperations {
                 String userID = getUserID(username);
                 if (userID != null) {
                     addParticipationID(contestID, username);
-                    cfo.addEntranceFee(contestID, username);
                 } else {
                     counter = counter + 1;
                     Log.warn("User " + username + " does not exist in database");
@@ -146,12 +143,14 @@ public class UserOperations {
 
     private void addParticipationID(String contestID, String username) {
         /*
-            This method inserts a record (if does not exist) into 'user_seasonal_contest_participation' table
-            That table indicate seasonal contests user participated in
+            This method inserts a record (if it does not exist) into 'user_seasonal_contest_participation' table
+            That table indicates seasonal contests user participated in
          */
-        Log.debug("Adding Participation ID for " + username + "...");
+        Log.debug("Adding Participation ID and entrance fee for " + username + "...");
         String participationID = getParticipationID(contestID, username);
         if (participationID == null) {
+            ContestFinanceOperations cfo = new ContestFinanceOperations(conn);
+            cfo.addEntranceFee(contestID, username);
             String userID = getUserID(username);
             String sqlParticipant_x_Contest = "insert into user_seasonal_contest_participation" +
                     "(id, user_id, contest_id) " +
