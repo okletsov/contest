@@ -38,6 +38,7 @@ public class Test_Predictions {
         LoginPage lp = new LoginPage(driver);
         CommonElements ce = new CommonElements(driver);
 
+        ce.clickRejectAllCookiesButton();
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();

@@ -22,6 +22,12 @@ public class CommonElements {
     @FindBy(css = "#user-header-r2 li:nth-child(5) a")
     public WebElement username;
 
+    @FindBy(id = "onetrust-reject-all-handler")
+    public WebElement rejectAllCookiesButton;
+
+    @FindBy(id = "onetrust-banner-sdk")
+    public WebElement cookiesBanner;
+
     public void openProfilePage(){
 
         SeleniumMethods sm = new SeleniumMethods(driver);
@@ -33,5 +39,12 @@ public class CommonElements {
         //Waiting for the Following Tab button to appear to know the page finished loading
         sm.waitForElement(pp.followingTab, 10);
         Log.info("Navigated to Profile page");
+    }
+
+    public void clickRejectAllCookiesButton(){
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.waitForElement(rejectAllCookiesButton, 10);
+        rejectAllCookiesButton.click();
     }
 }
