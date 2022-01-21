@@ -25,9 +25,6 @@ public class CommonElements {
     @FindBy(id = "onetrust-reject-all-handler")
     public WebElement rejectAllCookiesButton;
 
-    @FindBy(id = "onetrust-banner-sdk")
-    public WebElement cookiesBanner;
-
     public void openProfilePage(){
 
         SeleniumMethods sm = new SeleniumMethods(driver);
