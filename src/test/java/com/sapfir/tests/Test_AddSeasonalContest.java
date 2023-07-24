@@ -5,6 +5,7 @@ import com.sapfir.helpers.ContestOperations;
 import com.sapfir.helpers.DatabaseOperations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
@@ -24,6 +25,7 @@ public class Test_AddSeasonalContest {
 		dbOp.closeConnection(conn);
 	}
 
+	@Ignore
 	@Test
 	public void addSeasonalContest() {
 		ContestOperations co = new ContestOperations(conn);

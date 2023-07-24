@@ -6,6 +6,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class SeleniumMethods {
         this.driver = driver;
     }
 
-    public void waitForElement (WebElement element, int timeout){
+    public void waitForElement (WebElement element, Duration timeout){
         Log.trace("Waiting for element...");
         WebDriverWait wait = new WebDriverWait(driver, timeout);
         wait.until(ExpectedConditions.visibilityOf(element));

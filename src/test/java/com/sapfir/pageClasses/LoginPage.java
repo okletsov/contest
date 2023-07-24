@@ -9,6 +9,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import java.time.Duration;
+
 public class LoginPage {
 
     private static final Logger Log = LogManager.getLogger(LoginPage.class.getName());
@@ -49,7 +51,7 @@ public class LoginPage {
         loginButton.click();
         Log.debug("Clicked Login button");
 
-        sm.waitForElement(ce.username, 10);
+        sm.waitForElement(ce.username, Duration.ofSeconds(10));
         Log.info("Successfully logged in");
     }
 }

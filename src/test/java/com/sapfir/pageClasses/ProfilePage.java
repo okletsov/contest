@@ -10,6 +10,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.Assert;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class ProfilePage {
         Log.debug("Clicking Following tab...");
         followingTab.click();
         //Waiting for Save Changes button to know the tab finished loading
-        sm.waitForElement(saveChangesButton, 30);
+        sm.waitForElement(saveChangesButton, Duration.ofSeconds(30));
 
         Log.debug("Viewing Participants");
     }
@@ -76,7 +77,7 @@ public class ProfilePage {
         Assert.assertTrue(usernameExist,
                 "Participant " + username + " exist in database, but is not present in Following tab");
         driver.findElement(By.cssSelector(locator)).click();
-        sm.waitForElement(feedTab, 10);
+        sm.waitForElement(feedTab, Duration.ofSeconds(10));
     }
 
     public void viewPredictions(String username) {

@@ -10,15 +10,19 @@ public class Properties {
 
     private static final Logger Log = LogManager.getLogger(Properties.class.getName());
 
-    private String databaseURL;
-    private String databaseUsername;
-    private String databasePassword;
+    private final String databaseURL;
+    private final String databaseUsername;
+    private final String databasePassword;
 
-    private String siteUrl;
-    private String siteUsername;
-    private String sitePassword;
+    private final String siteUrl;
+    private final String siteUsername;
+    private final String sitePassword;
 
-    private String headless;
+    private final String sandboxSiteUrl;
+    private final String sandboxUsername;
+    private final String sandboxPassword;
+
+    private final String headless;
 
     public Properties() {
         java.util.Properties properties = new java.util.Properties();
@@ -42,6 +46,10 @@ public class Properties {
         this.siteUsername = properties.getProperty("site_username");
         this.sitePassword = properties.getProperty("site_password");
 
+        this.sandboxSiteUrl = properties.getProperty("sandbox_url");
+        this.sandboxUsername = properties.getProperty("sandbox_username");
+        this.sandboxPassword = properties.getProperty("sandbox_password");
+
         this.headless = properties.getProperty("headless");
     }
 
@@ -52,6 +60,10 @@ public class Properties {
     public String getSiteUrl() {return siteUrl;}
     public String getSiteUsername() {return siteUsername;}
     public String getSitePassword() {return sitePassword;}
+
+    public String getSandboxUrl() {return sandboxSiteUrl;}
+    public String getSandboxUsername() {return sandboxUsername;}
+    public String getSandboxPassword() {return sandboxPassword;}
 
     public String getHeadless() {return headless;}
 }

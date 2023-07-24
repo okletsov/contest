@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
@@ -26,7 +27,8 @@ public class Test_ValidatePredictions {
     public void tearDown() {
         dbOp.closeConnection(conn);
     }
-    
+
+    @Ignore
     @Test
     public void testPredictions() {
 

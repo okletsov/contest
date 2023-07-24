@@ -12,6 +12,7 @@ import org.openqa.selenium.support.PageFactory;
 
 import java.lang.reflect.Array;
 import java.sql.SQLSyntaxErrorException;
+import java.time.Duration;
 import java.util.List;
 
 public class TournamentPage {
@@ -39,7 +40,7 @@ public class TournamentPage {
     private void clickResultsButton() {
         resultsButton.click();
         SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(resultsButton, 60);
+        sm.waitForElement(resultsButton, Duration.ofSeconds(60));
         PageFactory.initElements(driver, this);
     }
 
@@ -66,11 +67,11 @@ public class TournamentPage {
 
         //Waiting for page to load
         SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(activePage, 60);
+        sm.waitForElement(activePage, Duration.ofSeconds(60));
         String activePageLabel = activePage.getText();
         int activePageIndex = Integer.parseInt(activePageLabel);
         while (activePageIndex != nextPageIndex) {
-            sm.waitForElement(activePage, 60);
+            sm.waitForElement(activePage, Duration.ofSeconds(60));
             activePageLabel = activePage.getText();
             activePageIndex = Integer.parseInt(activePageLabel);
         }

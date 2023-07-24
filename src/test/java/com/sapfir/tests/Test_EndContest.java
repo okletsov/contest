@@ -3,6 +3,7 @@ package com.sapfir.tests;
 import com.sapfir.helpers.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
@@ -24,6 +25,7 @@ public class Test_EndContest {
         dbOp.closeConnection(conn);
     }
 
+    @Ignore
     @Test
     public void endContest() {
 

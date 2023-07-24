@@ -8,6 +8,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import java.time.Duration;
+
 public class CommonElements {
 
     private static final Logger Log = LogManager.getLogger(CommonElements.class.getName());
@@ -34,14 +36,14 @@ public class CommonElements {
         username.click();
 
         //Waiting for the Following Tab button to appear to know the page finished loading
-        sm.waitForElement(pp.followingTab, 10);
+        sm.waitForElement(pp.followingTab, Duration.ofSeconds(10));
         Log.info("Navigated to Profile page");
     }
 
     public void clickRejectAllCookiesButton(){
 
         SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(rejectAllCookiesButton, 10);
+        sm.waitForElement(rejectAllCookiesButton, Duration.ofSeconds(10));
         rejectAllCookiesButton.click();
     }
 }

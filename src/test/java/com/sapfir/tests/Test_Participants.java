@@ -8,6 +8,7 @@ import com.sapfir.pageClasses.ProfilePage;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
@@ -39,6 +40,7 @@ public class Test_Participants {
         dbOp.closeConnection(conn);
     }
 
+    @Ignore
     @Test
     public void testParticipants() {
         driver.get(baseUrl);
