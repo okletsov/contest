@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker { image 'maven:3.9.3-eclipse-temurin-11' } }
+    agent any
     stages {
         stage('build') {
             steps {
@@ -11,8 +11,12 @@ pipeline {
                 '''
             }
         }
+        stage('Tests Execution') {
+            steps {
+                sh 'mvn test -Dtest=com/sapfir/tests/Test_Sandbox#testSimpleLogin'
+            }
+        }
     }
-
     post {
             always {
                 echo 'This will always run'
