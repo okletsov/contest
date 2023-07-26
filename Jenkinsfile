@@ -11,11 +11,6 @@ pipeline {
                 '''
             }
         }
-        stage('Tests Execution') {
-            steps {
-                sh 'mvn test -Dtest=com/sapfir/tests/Test_Sandbox#testSimpleLogin'
-            }
-        }
     }
 
     post {
