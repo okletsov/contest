@@ -13,7 +13,14 @@ pipeline {
         }
         stage('Tests Execution') {
             steps {
-                sh 'mvn test -Dtest=com/sapfir/tests/Test_Sandbox#testSimpleLogin'
+                sh '''DD_GIT_DEFAULT_BRANCH='master'
+                      DD_LOGS_ENABLED=true
+                      DD_CIVISIBILITY_ENABLED=true\
+                      DD_SITE=us5.datadoghq.com\
+                      DD_ENV=ci\
+                      DD_SERVICE=contest\
+                      MAVEN_OPTS=-javaagent:$HOME/.datadog/dd-java-agent.jar\
+                      mvn test -Dtest=com/sapfir/tests/Test_Sandbox#testSimpleLogin '''
             }
         }
     }
