@@ -28,7 +28,7 @@ public class Test_Sandbox {
 		driver.quit();
 	}
 
-	@Test
+	@Test(description = "This test verifies ability to login to a sandbox website")
 	public void testSimpleLogin() {
 		driver.get(sandboxBaseUrl);
 

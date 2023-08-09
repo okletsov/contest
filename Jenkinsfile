@@ -1,8 +1,17 @@
 pipeline {
     agent any
-        options {
-            datadog(collectLogs: true, tags: ["foo:bar", "bar:baz"])
-        }
+    options {
+        datadog(tags: ["foo:bar", "bar:baz"])
+    }
+    parameters {
+        booleanParam(name: 'Triggered_by_cron', defaultValue: false, description: 'Whether the job was triggered by a cron job')
+    }
+    triggers {
+        parameterizedCron('''
+                TZ=America/New_York
+                30 09 * * * %Triggered_by_cron=true
+        ''')
+    }
     stages {
         stage('build') {
             steps {
