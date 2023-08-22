@@ -21,8 +21,11 @@ public class CommonElements {
         PageFactory.initElements(driver, this);
     }
 
-    @FindBy(css = "#user-header-r2 li:nth-child(5) a")
+    @FindBy(css = ".bg-gray-dark .text-orange-main")
     public WebElement username;
+
+    @FindBy(css = ".bg-gray-dark .bg-gray-dark li:nth-child(1)")
+    public WebElement profileButton;
 
     @FindBy(id = "onetrust-reject-all-handler")
     public WebElement rejectAllCookiesButton;
@@ -32,8 +35,9 @@ public class CommonElements {
         SeleniumMethods sm = new SeleniumMethods(driver);
         ProfilePage pp = new ProfilePage(driver);
 
-        Log.debug("Clicking Username...");
+        Log.debug("Clicking Username and then clicking Profile...");
         username.click();
+        profileButton.click();
 
         //Waiting for the Following Tab button to appear to know the page finished loading
         sm.waitForElement(pp.followingTab, Duration.ofSeconds(10));

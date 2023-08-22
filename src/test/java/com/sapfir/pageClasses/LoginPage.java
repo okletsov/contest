@@ -22,14 +22,14 @@ public class LoginPage {
         PageFactory.initElements(driver, this);
     }
 
-    @FindBy(id = "login-username1")
+    @FindBy(id = "login-username-sign")
     private WebElement usernameField;
 
-    @FindBy(id = "login-password1")
+    @FindBy(id = "login-password-sign-m")
     private WebElement passwordField;
 
-    @FindBy(css = "#col-content [name=login-submit]")
-    private WebElement loginButton;
+    @FindBy(name = "login-submit")
+    private WebElement loginButtonInsideModal;
 
     public void signIn(){
         Properties prop = new Properties();
@@ -48,7 +48,7 @@ public class LoginPage {
         Log.debug("Filled password");
 
         Log.debug("Clicking Login button...");
-        loginButton.click();
+        loginButtonInsideModal.click();
         Log.debug("Clicked Login button");
 
         sm.waitForElement(ce.username, Duration.ofSeconds(10));

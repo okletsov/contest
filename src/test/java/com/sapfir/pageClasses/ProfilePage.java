@@ -25,11 +25,11 @@ public class ProfilePage {
         PageFactory.initElements(driver, this);
     }
 
-    @FindBy(id = "feed_menu_following")
+    @FindBy(css = ".bg-black-main ul li:nth-child(4)")
     public WebElement followingTab;
 
-    @FindBy(css = "#profile-following [type=submit]")
-    private WebElement saveChangesButton;
+    @FindBy(css = ".mt-3 .ml-auto")
+    private WebElement firstUnfollowButton;
 
     @FindBy(id = "feed_menu_feeds")
     private WebElement feedTab;
@@ -47,7 +47,7 @@ public class ProfilePage {
         Log.debug("Clicking Following tab...");
         followingTab.click();
         //Waiting for Save Changes button to know the tab finished loading
-        sm.waitForElement(saveChangesButton, Duration.ofSeconds(30));
+        sm.waitForElement(firstUnfollowButton, Duration.ofSeconds(30));
 
         Log.debug("Viewing Participants");
     }
