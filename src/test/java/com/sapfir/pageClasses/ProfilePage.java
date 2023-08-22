@@ -37,7 +37,7 @@ public class ProfilePage {
     @FindBy(className = "view-more")
     private WebElement viewMoreButton;
 
-    @FindBy(css = "#profile-following .item")
+    @FindBy(css = ".mt-3.items-center > .bg-gray-light")
     private List<WebElement> participants;
 
     public void viewParticipants() {
@@ -61,8 +61,10 @@ public class ProfilePage {
         for (int i = 0; i < participants.size(); i++){
             //Getting the child index of each user to generate unique css
             childIndex = i + 2;
+
+            // .mt-3.items-center > :nth-child(3) .underline
             username = driver.findElement(By.cssSelector(
-                    "#profile-following .item:nth-child(" + Integer.toString(childIndex) +") .username")).getText();
+                    ".mt-3.items-center > :nth-child(" + Integer.toString(childIndex) +") .underline")).getText();
             usernames.add(username.trim());
         }
         return usernames;

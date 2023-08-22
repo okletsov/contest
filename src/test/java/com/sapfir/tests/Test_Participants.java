@@ -56,11 +56,11 @@ public class Test_Participants {
         pp.viewParticipants();
 
         ArrayList <String> participants =  pp.getParticipantUsernames();
-/*        uo.inspectParticipants(participants);
+        uo.inspectParticipants(participants);
 
 //        Insert background job timestamp
         BackgroundJobs bj = new BackgroundJobs(conn);
         String jobName = Test_Participants.class.getSimpleName();
-        bj.addToBackgroundJobLog(jobName); */
+        bj.addToBackgroundJobLog(jobName);
     }
 }
