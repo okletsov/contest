@@ -31,7 +31,7 @@ public class ProfilePage {
     @FindBy(css = ".mt-3 .ml-auto")
     private WebElement firstUnfollowButton;
 
-    @FindBy(id = "feed_menu_feeds")
+    @FindBy(css = ".active-item-feed + li")
     private WebElement feedTab;
 
     @FindBy(className = "view-more")
@@ -46,7 +46,7 @@ public class ProfilePage {
 
         Log.debug("Clicking Following tab...");
         followingTab.click();
-        //Waiting for Save Changes button to know the tab finished loading
+        //Waiting for the first Unfollow button to appear
         sm.waitForElement(firstUnfollowButton, Duration.ofSeconds(30));
 
         Log.debug("Viewing Participants");
@@ -71,7 +71,7 @@ public class ProfilePage {
     }
 
     public void clickParticipantUsername(String username){
-        String locator = "#profile-following .username[title=" + username + "]";
+        String locator = "[href=\"/profile/" + username + "/\"]";
 
         SeleniumMethods sm = new SeleniumMethods(driver);
         boolean usernameExist = sm.isElementPresent("css", locator);

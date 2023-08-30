@@ -58,7 +58,6 @@ public class Test_Predictions {
         dbOp.closeConnection(conn);
     }
 
-    @Ignore
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
     public void testPredictions(String username) {
 
