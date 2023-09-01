@@ -98,8 +98,8 @@ public class ProfilePage {
         boolean noPredictionsTextPresent;
 
         do{
-            predictionsPresent = sm.isElementPresent("css", ".feed-item");
-            noPredictionsTextPresent = sm.isElementPresent("css", ".message-info.feed-end[style=\"display: block;\"]");
+            predictionsPresent = sm.isElementPresent("css", "[currenttab='feed']");
+            noPredictionsTextPresent = sm.isElementPresent("css", ".tab-content .text-white-main .w-full");
         } while (!predictionsPresent && !noPredictionsTextPresent);
 
         if (predictionsPresent) {
@@ -110,7 +110,7 @@ public class ProfilePage {
         if (noPredictionsTextPresent) {Log.info("User does not have any predictions");}
     }
 
-    private void clickViewMoreButton() {
+    private void   clickViewMoreButton() {
         /*
             This method will keep clicking View More button until all predictions are loaded
 

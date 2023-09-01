@@ -126,14 +126,21 @@ public class PredictionsInspection {
     }
 
     public List<String> getPredictions() {
-        Log.trace("Getting list of prediction IDs...");
-        List<WebElement> predictionsList = driver.findElements(By.className("feed-item"));
+        Log.trace("Getting list of predictions...");
+        List<WebElement> predictionsList = driver.findElements(By.cssSelector(".tab-content .owner-data"));
         List<String> predictionIDs = new ArrayList<>();
 
+/*        TO DO:
+            - new website design no longer has prediction IDs in DOM
+            - think about new design if API approach doesn't work, for example:
+                - generate ids based on the information available in the DOM
+                - make sure generated IDs don't have dynamic information (e.g. event start date)
+                - can base IDs on the time user made a prediction
+*/
         for (WebElement prediction : predictionsList) {
             predictionIDs.add(prediction.getAttribute("id"));
         }
-        Log.trace("Successfully got list of prediction IDs");
+        Log.trace("Successfully got list of predictions");
         return predictionIDs;
     }
 
