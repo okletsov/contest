@@ -28,8 +28,8 @@ public class ProfilePage {
     @FindBy(css = ".bg-black-main ul li:nth-child(4)")
     public WebElement followingTab;
 
-    @FindBy(css = ".mt-3 .ml-auto")
-    private WebElement firstUnfollowButton;
+    @FindBy(css = ".mt-3.items-center > :nth-child(2) .underline")
+    private WebElement firstParticipant;
 
     @FindBy(css = ".active-item-feed + li")
     private WebElement feedTab;
@@ -47,7 +47,7 @@ public class ProfilePage {
         Log.debug("Clicking Following tab...");
         followingTab.click();
         //Waiting for the first Unfollow button to appear
-        sm.waitForElement(firstUnfollowButton, Duration.ofSeconds(30));
+        sm.waitForElement(firstParticipant, Duration.ofSeconds(30));
 
         Log.debug("Viewing Participants");
     }

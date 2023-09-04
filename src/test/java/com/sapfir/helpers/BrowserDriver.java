@@ -1,12 +1,11 @@
 package com.sapfir.helpers;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 public class BrowserDriver {
 
-    private WebDriver driver;
+    private ChromeDriver driver;
 
     public BrowserDriver() {
         Properties prop = new Properties();
@@ -21,7 +20,7 @@ public class BrowserDriver {
         }
     }
 
-    public WebDriver getDriver() {
+    public ChromeDriver getDriver() {
         return driver;
     }
 }

@@ -4,8 +4,8 @@ import com.sapfir.helpers.Properties;
 import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
@@ -15,9 +15,9 @@ public class LoginPage {
 
     private static final Logger Log = LogManager.getLogger(LoginPage.class.getName());
 
-    private WebDriver driver;
+    private final ChromeDriver driver;
 
-    public LoginPage(WebDriver driver){
+    public LoginPage(ChromeDriver driver){
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
@@ -31,7 +31,7 @@ public class LoginPage {
     @FindBy(name = "login-submit")
     private WebElement loginButtonInsideModal;
 
-    public void signIn(){
+    public void signIn() {
         Properties prop = new Properties();
         SeleniumMethods sm = new SeleniumMethods(driver);
         CommonElements ce = new CommonElements(driver);

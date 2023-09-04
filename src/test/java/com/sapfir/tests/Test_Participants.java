@@ -5,10 +5,9 @@ import com.sapfir.pageClasses.CommonElements;
 import com.sapfir.pageClasses.HomePageBeforeLogin;
 import com.sapfir.pageClasses.LoginPage;
 import com.sapfir.pageClasses.ProfilePage;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
@@ -18,7 +17,7 @@ public class Test_Participants {
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
-    private WebDriver driver;
+    private ChromeDriver driver;
     private String baseUrl;
 
     @BeforeClass
