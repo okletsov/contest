@@ -60,6 +60,12 @@
       <artifactId>okhttp</artifactId>
       <version>4.11.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-devtools-v115</artifactId>
+      <version>4.12.1</version>
+    </dependency>
+
   </dependencies>
 
   <build>
