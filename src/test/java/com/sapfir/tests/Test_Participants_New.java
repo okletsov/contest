@@ -54,13 +54,15 @@ public class Test_Participants_New {
         DevToolsHelpers dtHelpers = new DevToolsHelpers();
 
         // Setting up a listener to monitor and save participants
-        dtHelpers.getResponseBody(devTools, "ajax-following");
+        dtHelpers.captureResponseBody(devTools, "ajax-following");
 
         // Logging and viewing the "Following tab" to trigger API call with the list of participants
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
         pp.viewParticipants();
+
+        System.out.println(dtHelpers.getResponseBody());
 
 //        ArrayList <String> participants =  pp.getParticipantUsernames();
 //        uo.inspectParticipants(participants);
