@@ -21,6 +21,7 @@ public class BrowserDriver {
         if (headless.equals("true")){
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");
+            options.addArguments("--window-size=1920,1080");
             this.driver = new ChromeDriver(options);
             setDevTools(driver);
             limitChromeDriverLogs();

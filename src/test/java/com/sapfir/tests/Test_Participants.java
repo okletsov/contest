@@ -1,11 +1,13 @@
 package com.sapfir.tests;
 
+import com.sapfir.apiUtils.JsonHelpers;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.CommonElements;
 import com.sapfir.pageClasses.HomePageBeforeLogin;
 import com.sapfir.pageClasses.LoginPage;
 import com.sapfir.pageClasses.ProfilePage;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.devtools.DevTools;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -19,6 +21,7 @@ public class Test_Participants {
     private Connection conn = null;
     private ChromeDriver driver;
     private String baseUrl;
+    private DevTools devTools;
 
     @BeforeClass
     public void setUp() {
@@ -28,6 +31,7 @@ public class Test_Participants {
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
+        devTools = bd.getDevTools();
 
         Properties prop = new Properties();
         baseUrl = prop.getSiteUrl();
@@ -48,13 +52,23 @@ public class Test_Participants {
         CommonElements ce = new CommonElements(driver);
         ProfilePage pp = new ProfilePage(driver);
         UserOperations uo = new UserOperations(conn);
+        DevToolsHelpers dtHelpers = new DevToolsHelpers();
+        JsonHelpers jsonHelpers = new JsonHelpers();
 
+        // Setting up a listener to monitor and save json data
+        dtHelpers.captureResponseBody(devTools, "ajax-following");
+
+        // Logging in and viewing the "Following tab" to trigger API call with the list of participants
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
         pp.viewParticipants();
 
-        ArrayList <String> participants =  pp.getParticipantUsernames();
+        // Getting the list of participants from json response
+        String followingJson = dtHelpers.getResponseBody();
+        ArrayList<String> participants = jsonHelpers.getUsernames(followingJson);
+
+        // Inspecting participants
         uo.inspectParticipants(participants);
 
 //        Insert background job timestamp
