@@ -1,4 +1,4 @@
-package com.sapfir.tests;
+package com.sapfir.Sandbox;
 
 import com.sapfir.helpers.BrowserDriver;
 import com.sapfir.helpers.Properties;

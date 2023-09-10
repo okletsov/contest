@@ -1,4 +1,4 @@
-package com.sapfir.apiUtils;
+package com.sapfir.Sandbox;
 
 import com.sapfir.helpers.BrowserDriver;
 import com.sapfir.helpers.Properties;
@@ -14,7 +14,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import java.io.IOException;
 import java.util.Set;
 
-public class SandboxApi {
+public class ApiSandbox {
 
     public static void main(final String... args) throws IOException {
 
