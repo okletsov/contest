@@ -21,7 +21,7 @@ public class JsonHelpers {
 
             for (String individualUserid: userIds) {
                 JsonNode userDetails = rootNode.at("/d/info/" + individualUserid);
-                usernames.add(userDetails.get("Username").toString());
+                usernames.add(userDetails.get("Username").toString().replaceAll("\"", ""));
             }
 
         }  catch (Exception e) {
