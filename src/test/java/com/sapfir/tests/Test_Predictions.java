@@ -29,6 +29,7 @@ public class Test_Predictions {
 
 //        conn = dbOp.connectToDatabase();
 
+        // Setting up ChromeDriver
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
@@ -44,10 +45,10 @@ public class Test_Predictions {
         ProfilePage pp = new ProfilePage(driver);
 
         // Getting access to devTools
-        DevToolsHelpers dtHelpers = new DevToolsHelpers();
         DevTools devTools = bd.getDevTools();
 
-        // Setting up a listener to monitor and save json response
+        // Setting up a listener to monitor and save json response with the list of participants
+        DevToolsHelpers dtHelpers = new DevToolsHelpers();
         dtHelpers.captureResponseBody(devTools, "ajax-following");
 
         // Performing actions in UI
@@ -56,6 +57,7 @@ public class Test_Predictions {
         lp.signIn();
         ce.openProfilePage();
         pp.viewParticipants();
+        pp.clickFeedTab();
 
         // Capturing json response with the list of participants
         this.followingJson = dtHelpers.getResponseBody();

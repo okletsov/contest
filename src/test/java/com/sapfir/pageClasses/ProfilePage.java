@@ -31,7 +31,10 @@ public class ProfilePage {
     @FindBy(css = ".mt-3.items-center > :nth-child(2) .underline")
     private WebElement firstParticipant;
 
-    @FindBy(css = ".active-item-feed + li")
+    @FindBy(css = "[currenttab=\"feed\"]")
+    private WebElement firstPrediction;
+
+    @FindBy(css = ".bg-black-main .no-scrollbar li:nth-child(2)")
     private WebElement feedTab;
 
     @FindBy(className = "view-more")
@@ -50,6 +53,18 @@ public class ProfilePage {
         sm.waitForElement(firstParticipant, Duration.ofSeconds(30));
 
         Log.debug("Viewing Participants");
+    }
+
+    public void clickFeedTab() {
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+
+        Log.debug("Clicking the Feed tab...");
+        feedTab.click();
+        //Waiting for the first Unfollow button to appear
+        sm.waitForElement(firstPrediction, Duration.ofSeconds(30));
+
+        Log.debug("Successfully clicked Feed Tab");
     }
 
     public ArrayList getParticipantUsernames() {
