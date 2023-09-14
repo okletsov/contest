@@ -1,10 +1,12 @@
 package com.sapfir.tests;
 
+import com.sapfir.apiUtils.JsonHelpers;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.devtools.DevTools;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -20,11 +22,12 @@ public class Test_Predictions {
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
     private ChromeDriver driver;
+    private String followingJson;
 
     @BeforeClass
     public void setUp() {
 
-        conn = dbOp.connectToDatabase();
+//        conn = dbOp.connectToDatabase();
 
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
@@ -34,14 +37,28 @@ public class Test_Predictions {
         String baseUrl = prop.getSiteUrl();
         driver.get(baseUrl);
 
+        // Getting necessary page classes
         HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
         LoginPage lp = new LoginPage(driver);
         CommonElements ce = new CommonElements(driver);
+        ProfilePage pp = new ProfilePage(driver);
 
+        // Getting access to devTools
+        DevToolsHelpers dtHelpers = new DevToolsHelpers();
+        DevTools devTools = bd.getDevTools();
+
+        // Setting up a listener to monitor and save json response
+        dtHelpers.captureResponseBody(devTools, "ajax-following");
+
+        // Performing actions in UI
         ce.clickRejectAllCookiesButton();
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
+        pp.viewParticipants();
+
+        // Capturing json response with the list of participants
+        this.followingJson = dtHelpers.getResponseBody();
     }
 
     @AfterClass
@@ -49,17 +66,25 @@ public class Test_Predictions {
         driver.quit();
 
 //        Insert background job timestamp
+
+        /*
         BackgroundJobs bj = new BackgroundJobs(conn);
         String jobName = Test_Predictions.class.getSimpleName();
         bj.addToBackgroundJobLog(jobName);
 
 //        Close connection
         dbOp.closeConnection(conn);
+
+         */
     }
 
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
     public void testPredictions(String username) {
 
+        JsonHelpers jsonHelpers = new JsonHelpers();
+        String jsonUserId = jsonHelpers.getUserIdByUsername(followingJson, username);
+
+        /*
         ProfilePage pp = new ProfilePage(driver);
         PredictionsInspection pi = new PredictionsInspection(driver);
         PredictionOperations predOp = new PredictionOperations(driver, conn);
@@ -69,8 +94,13 @@ public class Test_Predictions {
         pp.viewPredictions(username);
 
         List<String> predictions = pi.getPredictions();
+
+         */
+
 //        List<String> predictions = new ArrayList<>();
 //        predictions.add("feed_item_3191037203");
+
+        /*
 
         for (String predictionID: predictions) {
             boolean predictionRemoved = pi.predictionRemoved(predictionID);
@@ -88,7 +118,13 @@ public class Test_Predictions {
                 }
             }
         }
+
+         */
         CommonElements ce = new CommonElements(driver);
+
+        /*
         ce.openProfilePage();
+
+         */
     }
 }

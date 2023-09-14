@@ -21,7 +21,8 @@ public class JsonHelpers {
 
             for (String individualUserid: userIds) {
                 JsonNode userDetails = rootNode.at("/d/info/" + individualUserid);
-                usernames.add(userDetails.get("Username").toString().replaceAll("\"", ""));
+                String username = userDetails.get("Username").toString().replaceAll("\"", "");
+                usernames.add(username);
             }
 
         }  catch (Exception e) {
@@ -31,7 +32,38 @@ public class JsonHelpers {
         return usernames;
     }
 
-    public List<String> getUserIds(String jsonWithFollowingUsers) {
+    public String getUserIdByUsername(String jsonWithFollowingUsers, String usernameToSearchIdFor) {
+
+        String foundUserId = "";
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonWithFollowingUsers);
+
+            // Getting all userIds from the json
+            List<String> userIds = getUserIds(jsonWithFollowingUsers);
+
+            // Looping through userId objects to get usernames
+            for (String individualUserid: userIds) {
+                JsonNode userDetails = rootNode.at("/d/info/" + individualUserid);
+
+                // Getting username for a given userId
+                String username = userDetails.get("Username").toString().replaceAll("\"", "");
+
+                // When username we are searching userId for is found, save userId to a variable and then return
+                if (usernameToSearchIdFor.equals(username)) {
+                    foundUserId = individualUserid;
+                }
+            }
+
+        }  catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return foundUserId;
+    }
+
+    private List<String> getUserIds(String jsonWithFollowingUsers) {
 
         List<String> userIds = new ArrayList<>();
 
