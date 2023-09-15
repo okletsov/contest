@@ -1,5 +1,6 @@
 package com.sapfir.apiUtils;
 
+import com.sapfir.helpers.DateTimeOperations;
 import com.sapfir.helpers.Properties;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,6 +25,17 @@ public class ApiHelpers {
     }
 
     private static final Logger Log = LogManager.getLogger(ApiHelpers.class.getName());
+
+    public String createPredictionsRequestUrl(String userId) {
+
+        Properties props = new Properties();
+        String siteUrl = props.getSiteUrl();
+
+        DateTimeOperations dateTimeOperations = new DateTimeOperations();
+        String unixTimestamp = dateTimeOperations.getUnixTimestamp();
+
+        return siteUrl + "/ajax-communityFeed/profile/" + userId + "/" + unixTimestamp + "/";
+    }
 
     public void makeRequest() throws IOException {
 

@@ -37,4 +37,9 @@ public class DateTimeOperations {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		return dateTime.format(formatter);
 	}
+
+	public String getUnixTimestamp() {
+		long unixTimestampMillis = System.currentTimeMillis() / 1000;
+		return String.valueOf(unixTimestampMillis);
+	}
 }

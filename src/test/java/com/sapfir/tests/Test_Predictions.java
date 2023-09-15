@@ -1,5 +1,6 @@
 package com.sapfir.tests;
 
+import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.JsonHelpers;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
@@ -52,7 +53,7 @@ public class Test_Predictions {
         // Setting up a listener to monitor and save json response with the list of participants
         DevToolsHelpers dtHelpers = new DevToolsHelpers();
         dtHelpers.captureResponseBody(devTools, "ajax-following");
-        dtHelpers.captureRequestHeaders(devTools, "ajax-communityFeed");
+        dtHelpers.captureRequestHeaders(devTools, "/ajax-communityFeed/profile/24836901");
 
         // Performing actions in UI
         ce.clickRejectAllCookiesButton();
@@ -91,6 +92,9 @@ public class Test_Predictions {
 
         JsonHelpers jsonHelpers = new JsonHelpers();
         String jsonUserId = jsonHelpers.getUserIdByUsername(followingJson, username);
+
+        ApiHelpers apiHelpers = new ApiHelpers(driver);
+        String requestUrl = apiHelpers.createPredictionsRequestUrl(jsonUserId);
 
         /*
         ProfilePage pp = new ProfilePage(driver);
