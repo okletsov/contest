@@ -2,17 +2,34 @@ package com.sapfir.helpers;
 
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v115.network.Network;
+import org.openqa.selenium.devtools.v115.network.model.Headers;
 import org.openqa.selenium.devtools.v115.network.model.RequestId;
+
+import java.util.HashMap;
 
 public class DevToolsHelpers {
 
     private String responseBody;
+    private HashMap<String, String> requestHeaders = new HashMap<>();
 
-    public void getRequestHeaders(DevTools devTools, String url) {
+    public void captureRequestHeaders(DevTools devTools, String requestUrl) {
         devTools.addListener(Network.requestWillBeSent(), request -> {
-            if (request.getRequest().getUrl().contains(url)) {
-                // todo: save request headers to a variable, create a public getter to access headers
-                System.out.println("Stop here");
+            if (request.getRequest().getUrl().contains(requestUrl)) {
+
+                // Getting request headers
+                Headers headers = request.getRequest().getHeaders();
+
+                // Parsing through request headers to save them in a variable
+                for (String key : headers.keySet()) {
+
+                    // Making Chrome NOT headless in headers
+                    if (key.equals("sec-ch-ua")) {
+                        String newValue = headers.get(key).toString().replace("HeadlessChrome", "Google Chrome");
+                        headers.replace(key, newValue);
+                    }
+
+                    requestHeaders.put(key, headers.get(key).toString());
+                }
             }
         });
     }
@@ -28,5 +45,9 @@ public class DevToolsHelpers {
 
     public String getResponseBody() {
         return responseBody;
+    }
+
+    public HashMap<String, String> getRequestHeaders() {
+        return requestHeaders;
     }
 }

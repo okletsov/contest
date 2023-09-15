@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Test_Predictions {
@@ -23,6 +24,7 @@ public class Test_Predictions {
     private Connection conn = null;
     private ChromeDriver driver;
     private String followingJson;
+    private HashMap<String, String> requestHeaders;
 
     @BeforeClass
     public void setUp() {
@@ -50,6 +52,7 @@ public class Test_Predictions {
         // Setting up a listener to monitor and save json response with the list of participants
         DevToolsHelpers dtHelpers = new DevToolsHelpers();
         dtHelpers.captureResponseBody(devTools, "ajax-following");
+        dtHelpers.captureRequestHeaders(devTools, "ajax-communityFeed");
 
         // Performing actions in UI
         ce.clickRejectAllCookiesButton();
@@ -61,6 +64,9 @@ public class Test_Predictions {
 
         // Capturing json response with the list of participants
         this.followingJson = dtHelpers.getResponseBody();
+
+        // Capturing request headers to be used in subsequent API calls
+        this.requestHeaders = dtHelpers.getRequestHeaders();
     }
 
     @AfterClass

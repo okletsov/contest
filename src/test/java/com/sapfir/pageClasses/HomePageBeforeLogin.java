@@ -34,6 +34,6 @@ public class HomePageBeforeLogin {
         Log.debug("Clicking Login button on Home Page...");
         loginButton.click();
         sm.waitForElement(loginButtonInsideModal, Duration.ofSeconds(10));
-        Log.info("Starting log in...");
+        Log.info("Starting to login...");
     }
 }

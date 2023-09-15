@@ -31,7 +31,7 @@ public class ProfilePage {
     @FindBy(css = ".mt-3.items-center > :nth-child(2) .underline")
     private WebElement firstParticipant;
 
-    @FindBy(css = "[currenttab=\"feed\"]")
+    @FindBy(css = "[current-tab=\"feed\"]")
     private WebElement firstPrediction;
 
     @FindBy(css = ".bg-black-main .no-scrollbar li:nth-child(2)")
