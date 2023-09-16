@@ -12,6 +12,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,8 +94,9 @@ public class Test_Predictions {
         JsonHelpers jsonHelpers = new JsonHelpers();
         String jsonUserId = jsonHelpers.getUserIdByUsername(followingJson, username);
 
-        ApiHelpers apiHelpers = new ApiHelpers(driver);
-        String requestUrl = apiHelpers.createPredictionsRequestUrl(jsonUserId);
+        ApiHelpers apiHelpers = new ApiHelpers();
+        String requestUrl = apiHelpers.generatePredictionsRequestUrl(jsonUserId);
+        String predictionsJson = apiHelpers.makeApiRequestToGetPredictions(requestUrl, requestHeaders);
 
         /*
         ProfilePage pp = new ProfilePage(driver);
