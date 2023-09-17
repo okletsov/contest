@@ -9,6 +9,8 @@ import java.util.List;
 
 public class JsonHelpers {
 
+    private final String pathToUserDetails = "/d/info";
+
     public ArrayList<String> getUsernames(String jsonWithFollowingUsers) {
 
         ArrayList <String> usernames = new ArrayList<>();
@@ -17,10 +19,10 @@ public class JsonHelpers {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonWithFollowingUsers);
 
-            List<String> userIds = getUserIds(jsonWithFollowingUsers);
+            List<String> userIds = getParentFieldNames(jsonWithFollowingUsers, pathToUserDetails);
 
             for (String individualUserid: userIds) {
-                JsonNode userDetails = rootNode.at("/d/info/" + individualUserid);
+                JsonNode userDetails = rootNode.at(pathToUserDetails + "/" + individualUserid);
                 String username = userDetails.get("Username").toString().replaceAll("\"", "");
                 usernames.add(username);
             }
@@ -41,11 +43,11 @@ public class JsonHelpers {
             JsonNode rootNode = objectMapper.readTree(jsonWithFollowingUsers);
 
             // Getting all userIds from the json
-            List<String> userIds = getUserIds(jsonWithFollowingUsers);
+            List<String> userIds = getParentFieldNames(jsonWithFollowingUsers, pathToUserDetails);
 
             // Looping through userId objects to get usernames
             for (String individualUserid: userIds) {
-                JsonNode userDetails = rootNode.at("/d/info/" + individualUserid);
+                JsonNode userDetails = rootNode.at(pathToUserDetails + "/" + individualUserid);
 
                 // Getting username for a given userId
                 String username = userDetails.get("Username").toString().replaceAll("\"", "");
@@ -63,17 +65,17 @@ public class JsonHelpers {
         return foundUserId;
     }
 
-    private List<String> getUserIds(String jsonWithFollowingUsers) {
+    private List<String> getParentFieldNames(String json, String pathToFields) {
 
         List<String> userIds = new ArrayList<>();
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(jsonWithFollowingUsers);
+            JsonNode rootNode = objectMapper.readTree(json);
 
-            JsonNode usersInfo = rootNode.at("/d/info");
+            JsonNode pathToNodes = rootNode.at(pathToFields);
 
-            Iterator<String> iterator = usersInfo.fieldNames();
+            Iterator<String> iterator = pathToNodes.fieldNames();
             iterator.forEachRemaining(userIds::add);
 
         }  catch (Exception e) {
