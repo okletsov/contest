@@ -5,15 +5,11 @@ import com.sapfir.helpers.Properties;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 public class ApiHelpers {
-
-    private static final Logger Log = LogManager.getLogger(ApiHelpers.class.getName());
 
     public String generatePredictionsRequestUrl(String userId) {
 
@@ -49,6 +45,7 @@ public class ApiHelpers {
         // Make a call and save json response
         try {
             Response response = client.newCall(request).execute();
+            assert response.body() != null;
             responseBody = response.body().string();
         } catch (IOException e) {
             e.printStackTrace();

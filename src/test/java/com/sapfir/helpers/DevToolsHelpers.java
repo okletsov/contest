@@ -6,11 +6,12 @@ import org.openqa.selenium.devtools.v115.network.model.Headers;
 import org.openqa.selenium.devtools.v115.network.model.RequestId;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class DevToolsHelpers {
 
     private String responseBody;
-    private HashMap<String, String> requestHeaders = new HashMap<>();
+    private final HashMap<String, String> requestHeaders = new HashMap<>();
 
     public void captureRequestHeaders(DevTools devTools, String requestUrl) {
         devTools.addListener(Network.requestWillBeSent(), request -> {
@@ -24,11 +25,11 @@ public class DevToolsHelpers {
 
                     // Making Chrome NOT headless in headers
                     if (key.equals("sec-ch-ua")) {
-                        String newValue = headers.get(key).toString().replace("HeadlessChrome", "Google Chrome");
+                        String newValue = Objects.requireNonNull(headers.get(key)).toString().replace("HeadlessChrome", "Google Chrome");
                         headers.replace(key, newValue);
                     }
 
-                    requestHeaders.put(key, headers.get(key).toString());
+                    requestHeaders.put(key, Objects.requireNonNull(headers.get(key)).toString());
                 }
             }
         });
