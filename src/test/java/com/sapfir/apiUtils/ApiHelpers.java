@@ -25,8 +25,7 @@ public class ApiHelpers {
     public String makeApiRequestToGetPredictions(String url, HashMap<String, String> requestHeaders) {
 
         String responseBody = "";
-        
-        // todo: try to move client and headers to a private variable and assign it on the instance of a class
+
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
 

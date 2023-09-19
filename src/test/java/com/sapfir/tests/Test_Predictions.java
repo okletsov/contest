@@ -2,6 +2,7 @@ package com.sapfir.tests;
 
 import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.JsonHelpers;
+import com.sapfir.apiUtils.PredictionParser;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
@@ -91,12 +92,29 @@ public class Test_Predictions {
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
     public void testPredictions(String username) {
 
+        // Getting json user id for a user from data provider
         JsonHelpers jsonHelpers = new JsonHelpers();
         String jsonUserId = jsonHelpers.getUserIdByUsername(followingJson, username);
 
+        // Making a call to get a json with the first 20 predictions
         ApiHelpers apiHelpers = new ApiHelpers();
         String requestUrl = apiHelpers.generatePredictionsRequestUrl(jsonUserId);
         String predictionsJson = apiHelpers.makeApiRequestToGetPredictions(requestUrl, requestHeaders);
+
+        // Getting the list of feed item ids from json
+        List<String> feedItemIds = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
+
+        // Getting prediction metadata
+        for(String itemId: feedItemIds) {
+            PredictionParser parser = new PredictionParser(predictionsJson, itemId);
+
+            String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
+            String eventIdForDatabase = parser.getEventIdForDatabase();
+
+            System.out.println(eventIdForDatabase);
+        }
+
+
 
         /*
         ProfilePage pp = new ProfilePage(driver);

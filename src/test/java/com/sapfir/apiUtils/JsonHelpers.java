@@ -11,6 +11,43 @@ public class JsonHelpers {
 
     private final String pathToUserDetails = "/d/info";
 
+    public String getFieldValueByPathAndName(String json, String pathToField, String fieldName) {
+
+        String fieldValue = null;
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(json);
+
+            fieldValue = rootNode.at(pathToField).get(fieldName).toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fieldValue;
+    }
+
+    public List<String> getParentFieldNames(String json, String pathToFields) {
+
+        List<String> userIds = new ArrayList<>();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(json);
+
+            JsonNode pathToNodes = rootNode.at(pathToFields);
+
+            Iterator<String> iterator = pathToNodes.fieldNames();
+            iterator.forEachRemaining(userIds::add);
+
+        }  catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return userIds;
+    }
+
     public ArrayList<String> getUsernames(String jsonWithFollowingUsers) {
 
         ArrayList <String> usernames = new ArrayList<>();
@@ -65,23 +102,4 @@ public class JsonHelpers {
         return foundUserId;
     }
 
-    private List<String> getParentFieldNames(String json, String pathToFields) {
-
-        List<String> userIds = new ArrayList<>();
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(json);
-
-            JsonNode pathToNodes = rootNode.at(pathToFields);
-
-            Iterator<String> iterator = pathToNodes.fieldNames();
-            iterator.forEachRemaining(userIds::add);
-
-        }  catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return userIds;
-    }
 }
