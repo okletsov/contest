@@ -110,8 +110,9 @@ public class Test_Predictions {
 
             String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
             String eventIdForDatabase = parser.getEventIdForDatabase();
+            String sport = parser.getSport();
 
-            System.out.println(eventIdForDatabase);
+            System.out.println(sport);
         }
 
 

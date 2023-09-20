@@ -1,5 +1,9 @@
 package com.sapfir.apiUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class PredictionParser {
 
     private final JsonHelpers jsonHelpers = new JsonHelpers();
@@ -9,7 +13,7 @@ public class PredictionParser {
 
     private final String feedFieldsPath;
     private final String infoFieldsPath;
-    private String outcomesObjectsPath;
+    private List<String> outcomeNames = new ArrayList<>();
 
     public PredictionParser(String jsonWithPredictions, String feedItemId) {
         this.json = jsonWithPredictions;
@@ -18,6 +22,13 @@ public class PredictionParser {
 
         String predictionInfoId = getPredictionInfoId();
         this.infoFieldsPath = "/d/info/" + predictionInfoId;
+
+        this.outcomeNames = getOutcomeNames();
+        Collections.sort(this.outcomeNames);
+    }
+
+    private List<String> getOutcomeNames() {
+        return jsonHelpers.getParentFieldNames(json, infoFieldsPath + "/outcomes");
     }
 
     public String getFeedItemIdForDatabase() {
@@ -31,5 +42,9 @@ public class PredictionParser {
     public String getEventIdForDatabase() {
         String eventIdFromJson = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "EventID");
         return "status-" + eventIdFromJson;
+    }
+
+    public String getSport() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "sport-name");
     }
 }

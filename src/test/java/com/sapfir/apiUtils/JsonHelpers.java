@@ -25,7 +25,10 @@ public class JsonHelpers {
             e.printStackTrace();
         }
 
-        return fieldValue;
+        assert fieldValue != null;
+        return fieldValue
+                .replaceAll("\"", "")
+                .replaceAll("/", "");
     }
 
     public List<String> getParentFieldNames(String json, String pathToFields) {
