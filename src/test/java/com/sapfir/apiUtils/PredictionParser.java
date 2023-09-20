@@ -47,4 +47,12 @@ public class PredictionParser {
     public String getSport() {
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "sport-name");
     }
+
+    public String getRegion() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "country-name");
+    }
+
+    public String getTournamentName() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "tournament-name");
+    }
 }
