@@ -6,9 +6,6 @@ import com.sapfir.apiUtils.PredictionParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class JsonSandbox {
 
@@ -25,7 +22,7 @@ public class JsonSandbox {
             e.printStackTrace();
         }
 
-        PredictionParser predictionParser = new PredictionParser(json, "5407143703");
+        PredictionParser predictionParser = new PredictionParser(json, "5332908503");
 
         System.out.println(predictionParser.getFeedItemIdForDatabase());
         System.out.println(predictionParser.getPredictionInfoId());
@@ -33,6 +30,6 @@ public class JsonSandbox {
         System.out.println(predictionParser.getSport());
         System.out.println(predictionParser.getRegion());
         System.out.println(predictionParser.getTournamentName());
-
+        System.out.println(predictionParser.getMainScore());
     }
 }

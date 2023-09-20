@@ -19,16 +19,25 @@ public class JsonHelpers {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(json);
 
+            // Check if the field exists (e.g. Result field is not there for Winner bets)
+            if (!rootNode.at(pathToField).has(fieldName)) { return null; }
+
+            // Grab field value
             fieldValue = rootNode.at(pathToField).get(fieldName).toString();
+
+            // Removing quotation marks, slashes and HTML entities (e.g. "Yastremska&nbsp;D.&nbsp;ret.")
+            fieldValue = fieldValue
+                    .replaceAll("\"", "")
+                    .replaceAll("/", "")
+                    .replaceAll("&[a-zA-Z]+;", " ");
+
+            if (fieldValue.isEmpty()) { return null; }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        assert fieldValue != null;
-        return fieldValue
-                .replaceAll("\"", "")
-                .replaceAll("/", "");
+        return fieldValue;
     }
 
     public List<String> getParentFieldNames(String json, String pathToFields) {

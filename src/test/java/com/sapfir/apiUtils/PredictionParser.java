@@ -55,4 +55,14 @@ public class PredictionParser {
     public String getTournamentName() {
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "tournament-name");
     }
+
+    public String getMainScore() {
+        /*
+            Note: it is possible for main score:
+                - to not be present (Winner bets)
+                - to equal to null
+                - or to be an empty string
+         */
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Result");
+    }
 }
