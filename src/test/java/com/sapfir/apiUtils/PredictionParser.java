@@ -41,6 +41,11 @@ public class PredictionParser {
 
     public String getEventIdForDatabase() {
         String eventIdFromJson = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "EventID");
+
+        // Winner bets don't have a value for EventId, but have it for TournamentID field
+        if (eventIdFromJson.equals("null")) {
+            return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "TournamentID");
+        }
         return "status-" + eventIdFromJson;
     }
 
