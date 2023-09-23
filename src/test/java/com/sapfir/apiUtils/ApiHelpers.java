@@ -11,6 +11,20 @@ import java.util.HashMap;
 
 public class ApiHelpers {
 
+    private String usePremium;
+    private String bookieHash;
+    private HashMap<String, String> requestHeaders;
+
+    public ApiHelpers(String usePremium, String bookieHash, HashMap<String, String> requestHeaders) {
+        this.usePremium = usePremium;
+        this.bookieHash = bookieHash;
+        this.requestHeaders = requestHeaders;
+    }
+
+    public ApiHelpers() {
+        // to be accessed in a Sandbox class
+    }
+
     public String generatePredictionsRequestUrl(String userId) {
 
         Properties props = new Properties();
@@ -22,7 +36,7 @@ public class ApiHelpers {
         return siteUrl + "ajax-communityFeed/profile/" + userId + "/" + unixTimestamp + "/";
     }
 
-    public String makeApiRequestToGetPredictions(String url, HashMap<String, String> requestHeaders) {
+    public String makeApiRequest(String url) {
 
         String responseBody = "";
 

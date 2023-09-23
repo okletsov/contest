@@ -1,8 +1,11 @@
 package com.sapfir.apiUtils;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,14 +16,14 @@ public class JsonHelpers {
 
     public String getFieldValueByPathAndName(String json, String pathToField, String fieldName) {
 
-        String fieldValue = null;
+        String fieldValue = "null";
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(json);
 
             // Check if the field exists (e.g. Result field is not there for Winner bets)
-            if (!rootNode.at(pathToField).has(fieldName)) { return null; }
+            if (!rootNode.at(pathToField).has(fieldName)) { return "null"; }
 
             // Grab field value
             fieldValue = rootNode.at(pathToField).get(fieldName).toString();
@@ -31,7 +34,7 @@ public class JsonHelpers {
                     .replaceAll("/", "")
                     .replaceAll("&[a-zA-Z]+;", " ");
 
-            if (fieldValue.isEmpty()) { return null; }
+            if (fieldValue.isEmpty()) { return "null"; }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,6 +61,29 @@ public class JsonHelpers {
         }
 
         return userIds;
+    }
+
+    public String getJsonFromJsCode(String jsCode, String jsVariable) {
+
+        String json = null;
+
+        try {
+            
+            // Getting java object from provided JS code and JS variable
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            engine.eval(jsCode);
+            Object jsonData = engine.get(jsVariable);
+
+            // Converting java object into a json string
+            ObjectMapper objectMapper = new ObjectMapper();
+            json = objectMapper.writeValueAsString(jsonData);
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return json;
     }
 
     public ArrayList<String> getUsernames(String jsonWithFollowingUsers) {

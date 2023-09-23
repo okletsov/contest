@@ -12,7 +12,7 @@ public class DateTimeOperations {
 
 	private final String datePattern = "yyyy-MM-dd HH:mm:ss";
 
-	private String convertFromUnix(String unixTimeStamp){
+	public String convertFromUnix(String unixTimeStamp){
 		return Instant.ofEpochSecond(Long.parseLong(unixTimeStamp)).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(datePattern));
 	}
 

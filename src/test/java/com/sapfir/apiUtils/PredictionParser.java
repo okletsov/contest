@@ -1,7 +1,10 @@
 package com.sapfir.apiUtils;
 
+import com.sapfir.helpers.DateTimeOperations;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class PredictionParser {
@@ -10,18 +13,25 @@ public class PredictionParser {
 
     private final String json;
     private final String feedItemId;
+    private String predictionResultId;
 
     private final String feedFieldsPath;
     private final String infoFieldsPath;
     private List<String> outcomeNames = new ArrayList<>();
 
-    public PredictionParser(String jsonWithPredictions, String feedItemId) {
+    private ApiHelpers apiHelpers;
+
+    public PredictionParser(String jsonWithPredictions, String feedItemId, ApiHelpers apiHelpers) {
+        this.apiHelpers = apiHelpers;
+
         this.json = jsonWithPredictions;
         this.feedItemId = feedItemId;
         this.feedFieldsPath = "/d/feed/" + this.feedItemId;
 
         String predictionInfoId = getPredictionInfoId();
         this.infoFieldsPath = "/d/info/" + predictionInfoId;
+
+        this.predictionResultId = getPredictionResultId();
 
         this.outcomeNames = getOutcomeNames();
         Collections.sort(this.outcomeNames);
@@ -69,5 +79,38 @@ public class PredictionParser {
                 - or to be an empty string
          */
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Result");
+    }
+
+    public String getDetailedScore() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "partialresult");
+    }
+
+    public String getPredictionResultId() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "PredictionResultID");
+    }
+
+    public String getDateScheduled() {
+        String unixValue = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Time");
+        DateTimeOperations dateTimeOperations = new DateTimeOperations();
+
+        if (!unixValue.equals("null")) {
+            // e.g. if dateScheduled is known
+            return dateTimeOperations.convertFromUnix(unixValue);
+        } else if (!predictionResultId.equals("null")) {
+            // if dateScheduled is unknown but prediction outcome is known assuming the bet is for Winner market
+
+            // Generate tournament results page url
+            // Set up a listener to capture json for the tournament results
+            // Navigate to the url and capture results json
+            // Parse the result to find time of the latest game played by the team user bet on
+            // Convert that time to easy to read format
+            return "WIP";
+        } else {
+            /*
+                if both dateScheduled and prediction outcome are unknown,
+                then assuming the bet is for Winner market but result is still unknown
+             */
+            return null;
+        }
     }
 }

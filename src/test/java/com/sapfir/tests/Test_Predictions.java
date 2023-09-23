@@ -3,6 +3,7 @@ package com.sapfir.tests;
 import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.JsonHelpers;
 import com.sapfir.apiUtils.PredictionParser;
+import com.sapfir.apiUtils.UserDataParser;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +28,8 @@ public class Test_Predictions {
     private Connection conn = null;
     private ChromeDriver driver;
     private String followingJson;
-    private HashMap<String, String> requestHeaders;
+
+    private ApiHelpers apiHelpers;
 
     @BeforeClass
     public void setUp() {
@@ -48,6 +50,7 @@ public class Test_Predictions {
         LoginPage lp = new LoginPage(driver);
         CommonElements ce = new CommonElements(driver);
         ProfilePage pp = new ProfilePage(driver);
+        JsonHelpers jsonHelpers = new JsonHelpers();
 
         // Getting access to devTools
         DevTools devTools = bd.getDevTools();
@@ -56,6 +59,10 @@ public class Test_Predictions {
         DevToolsHelpers dtHelpers = new DevToolsHelpers();
         dtHelpers.captureResponseBody(devTools, "ajax-following");
         dtHelpers.captureRequestHeaders(devTools, "/ajax-communityFeed/profile/24836901");
+
+        // Setting up a listener to monitor and save user-data json
+        DevToolsHelpers dtHelpers2 = new DevToolsHelpers();
+        dtHelpers2.captureResponseBody(devTools, "ajax-user-data");
 
         // Performing actions in UI
         ce.clickRejectAllCookiesButton();
@@ -68,8 +75,21 @@ public class Test_Predictions {
         // Capturing json response with the list of participants
         this.followingJson = dtHelpers.getResponseBody();
 
-        // Capturing request headers to be used in subsequent API calls
-        this.requestHeaders = dtHelpers.getRequestHeaders();
+        // Capturing request headers, usePremium and bookieHash to be used in subsequent API calls
+
+            // Capturing request headers
+        HashMap<String, String> requestHeaders = dtHelpers.getRequestHeaders();
+
+            // Getting "bookieHash" and "usePremium" values (to be used in generating tournament results URL)
+        String userDataJS = dtHelpers2.getResponseBody();
+        String userDataJason = jsonHelpers.getJsonFromJsCode(userDataJS, "pageOutrightsVar");
+
+        UserDataParser userDataParser = new UserDataParser(userDataJason);
+        String usePremium = userDataParser.getUsePremium();
+        String bookieHash = userDataParser.getBookieHash();
+
+        // Creating an instance of ApiHelpers class
+        this.apiHelpers = new ApiHelpers(usePremium, bookieHash, requestHeaders);
     }
 
     @AfterClass
@@ -97,16 +117,15 @@ public class Test_Predictions {
         String jsonUserId = jsonHelpers.getUserIdByUsername(followingJson, username);
 
         // Making a call to get a json with the first 20 predictions
-        ApiHelpers apiHelpers = new ApiHelpers();
         String requestUrl = apiHelpers.generatePredictionsRequestUrl(jsonUserId);
-        String predictionsJson = apiHelpers.makeApiRequestToGetPredictions(requestUrl, requestHeaders);
+        String predictionsJson = apiHelpers.makeApiRequest(requestUrl);
 
         // Getting the list of feed item ids from json
         List<String> feedItemIds = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
 
         // Getting prediction metadata
         for(String itemId: feedItemIds) {
-            PredictionParser parser = new PredictionParser(predictionsJson, itemId);
+            PredictionParser parser = new PredictionParser(predictionsJson, itemId, apiHelpers);
 
             String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
             String eventIdForDatabase = parser.getEventIdForDatabase();
