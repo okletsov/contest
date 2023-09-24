@@ -1,6 +1,7 @@
 package com.sapfir.apiUtils;
 
 import com.sapfir.helpers.DateTimeOperations;
+import com.sapfir.helpers.TournamentResultsHelpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,6 +97,10 @@ public class PredictionParser {
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "encodeTournamentID");
     }
 
+    private String getCompetitors() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "event-name");
+    }
+
     public String getDateScheduled() {
         String unixValue = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Time");
         DateTimeOperations dateTimeOperations = new DateTimeOperations();
@@ -108,10 +113,11 @@ public class PredictionParser {
 
             String sportId = getSportId();
             String encodeTournamentId = getEncodeTournamentId();
+            String team = getCompetitors();
 
-            TournamentResults tournamentResults = new TournamentResults(apiHelpers, sportId, encodeTournamentId);
-            return tournamentResults.getDateScheduledByTeam("replace");
-            // Convert that time to easy to read format
+            TournamentResultsHelpers tournamentResults = new TournamentResultsHelpers(apiHelpers, sportId, encodeTournamentId);
+            unixValue = tournamentResults.getDateScheduledByTeam(team);
+            return dateTimeOperations.convertFromUnix(unixValue);
         } else {
             /*
                 if both dateScheduled and prediction outcome are unknown,
