@@ -24,11 +24,11 @@ public class BrowserDriver {
             options.addArguments("--window-size=1920,1080");
             this.driver = new ChromeDriver(options);
             setDevTools(driver);
-            limitChromeDriverLogs();
+            limitLogs();
         } else if (headless.equals("false")){
             this.driver = new ChromeDriver();
             setDevTools(driver);
-            limitChromeDriverLogs();
+            limitLogs();
         }
     }
 
@@ -42,7 +42,8 @@ public class BrowserDriver {
         ));
     }
 
-    public void limitChromeDriverLogs() {
+    public void limitLogs() {
+        System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
         System.setProperty("webdriver.chrome.silentOutput", "true");
         Logger.getLogger("org.openqa.selenium").setLevel(Level.WARNING);
     }
