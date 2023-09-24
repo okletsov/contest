@@ -66,4 +66,12 @@ public class ApiHelpers {
 
         return responseBody;
     }
+
+    public String getUsePremium() {
+        return usePremium;
+    }
+
+    public String getBookieHash() {
+        return bookieHash;
+    }
 }

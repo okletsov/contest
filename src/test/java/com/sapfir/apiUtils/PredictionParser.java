@@ -88,6 +88,14 @@ public class PredictionParser {
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "PredictionResultID");
     }
 
+    private String getSportId() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "sport-id");
+    }
+
+    private String getEncodeTournamentId() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "encodeTournamentID");
+    }
+
     public String getDateScheduled() {
         String unixValue = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Time");
         DateTimeOperations dateTimeOperations = new DateTimeOperations();
@@ -98,12 +106,12 @@ public class PredictionParser {
         } else if (!predictionResultId.equals("null")) {
             // if dateScheduled is unknown but prediction outcome is known assuming the bet is for Winner market
 
-            // Generate tournament results page url
-            // Set up a listener to capture json for the tournament results
-            // Navigate to the url and capture results json
-            // Parse the result to find time of the latest game played by the team user bet on
+            String sportId = getSportId();
+            String encodeTournamentId = getEncodeTournamentId();
+
+            TournamentResults tournamentResults = new TournamentResults(apiHelpers, sportId, encodeTournamentId);
+            return tournamentResults.getDateScheduledByTeam("replace");
             // Convert that time to easy to read format
-            return "WIP";
         } else {
             /*
                 if both dateScheduled and prediction outcome are unknown,
