@@ -1,6 +1,6 @@
 package com.sapfir.tests;
 
-import com.sapfir.apiUtils.JsonHelpers;
+import com.sapfir.apiUtils.FollowingUsersParser;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.CommonElements;
 import com.sapfir.pageClasses.HomePageBeforeLogin;
@@ -53,7 +53,6 @@ public class Test_Participants {
         ProfilePage pp = new ProfilePage(driver);
         UserOperations uo = new UserOperations(conn);
         DevToolsHelpers dtHelpers = new DevToolsHelpers();
-        JsonHelpers jsonHelpers = new JsonHelpers();
 
         // Setting up a listener to monitor and save json data
         dtHelpers.captureResponseBody(devTools, "ajax-following");
@@ -66,7 +65,8 @@ public class Test_Participants {
 
         // Getting the list of participants from json response
         String followingJson = dtHelpers.getResponseBody();
-        ArrayList<String> participants = jsonHelpers.getUsernames(followingJson);
+        FollowingUsersParser followingUsersParser = new FollowingUsersParser(followingJson);
+        ArrayList<String> participants = followingUsersParser.getUsernames(followingJson);
 
         // Inspecting participants
         uo.inspectParticipants(participants);

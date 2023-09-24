@@ -4,7 +4,6 @@ import com.sapfir.helpers.DateTimeOperations;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class PredictionParser {
@@ -13,13 +12,13 @@ public class PredictionParser {
 
     private final String json;
     private final String feedItemId;
-    private String predictionResultId;
+    private final String predictionResultId;
 
     private final String feedFieldsPath;
     private final String infoFieldsPath;
     private List<String> outcomeNames = new ArrayList<>();
 
-    private ApiHelpers apiHelpers;
+    private final ApiHelpers apiHelpers;
 
     public PredictionParser(String jsonWithPredictions, String feedItemId, ApiHelpers apiHelpers) {
         this.apiHelpers = apiHelpers;

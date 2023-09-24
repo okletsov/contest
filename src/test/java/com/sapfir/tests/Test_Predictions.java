@@ -1,9 +1,6 @@
 package com.sapfir.tests;
 
-import com.sapfir.apiUtils.ApiHelpers;
-import com.sapfir.apiUtils.JsonHelpers;
-import com.sapfir.apiUtils.PredictionParser;
-import com.sapfir.apiUtils.UserDataParser;
+import com.sapfir.apiUtils.*;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
@@ -112,15 +109,16 @@ public class Test_Predictions {
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
     public void testPredictions(String username) {
 
-        // Getting json user id for a user from data provider
-        JsonHelpers jsonHelpers = new JsonHelpers();
-        String jsonUserId = jsonHelpers.getUserIdByUsername(followingJson, username);
+        // Getting user id from a json for a user from data provider
+        FollowingUsersParser followingUsersParser = new FollowingUsersParser(followingJson);
+        String jsonUserId = followingUsersParser.getUserIdByUsername(followingJson, username);
 
         // Making a call to get a json with the first 20 predictions
         String requestUrl = apiHelpers.generatePredictionsRequestUrl(jsonUserId);
         String predictionsJson = apiHelpers.makeApiRequest(requestUrl);
 
         // Getting the list of feed item ids from json
+        JsonHelpers jsonHelpers = new JsonHelpers();
         List<String> feedItemIds = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
 
         // Getting prediction metadata
@@ -133,8 +131,6 @@ public class Test_Predictions {
 
             System.out.println(sport);
         }
-
-
 
         /*
         ProfilePage pp = new ProfilePage(driver);
