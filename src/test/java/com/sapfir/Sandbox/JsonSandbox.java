@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.PredictionParser;
+import com.sapfir.apiUtils.TournamentResultsParser;
+import com.sapfir.helpers.TournamentResultsHelpers;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +25,9 @@ public class JsonSandbox {
             e.printStackTrace();
         }
 
+
         ApiHelpers apiHelpers = new ApiHelpers();
-        PredictionParser predictionParser = new PredictionParser(json, "6246498203", apiHelpers);
+        PredictionParser predictionParser = new PredictionParser(json, "5349910003", apiHelpers);
 
         System.out.println(predictionParser.getFeedItemIdForDatabase());
         System.out.println(predictionParser.getPredictionInfoId());

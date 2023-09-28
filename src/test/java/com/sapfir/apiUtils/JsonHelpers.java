@@ -26,10 +26,9 @@ public class JsonHelpers {
             // Grab field value
             fieldValue = rootNode.at(pathToField).get(fieldName).toString();
 
-            // Removing quotation marks, slashes and HTML entities (e.g. "Yastremska&nbsp;D.&nbsp;ret.")
+            // Removing quotation marks and HTML entities (e.g. "Yastremska&nbsp;D.&nbsp;ret.")
             fieldValue = fieldValue
                     .replaceAll("\"", "")
-                    .replaceAll("/", "")
                     .replaceAll("&[a-zA-Z]+;", " ");
 
             if (fieldValue.isEmpty()) { return "null"; }

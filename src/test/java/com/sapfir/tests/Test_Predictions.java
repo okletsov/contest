@@ -11,7 +11,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,9 +126,11 @@ public class Test_Predictions {
 
             String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
             String eventIdForDatabase = parser.getEventIdForDatabase();
-            String sport = parser.getDateScheduled();
+            String market = parser.getMarket();
+            String competitors = parser.getCompetitors();
+            String dateScheduled = parser.getDateScheduled();
 
-            System.out.println(sport);
+            System.out.println(username + " - " + market + ": " + competitors + ": " + dateScheduled);
         }
 
         /*

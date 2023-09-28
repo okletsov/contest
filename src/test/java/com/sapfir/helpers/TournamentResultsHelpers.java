@@ -2,7 +2,6 @@ package com.sapfir.helpers;
 
 import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.TournamentResultsParser;
-import com.sapfir.helpers.Properties;
 
 public class TournamentResultsHelpers {
 
@@ -42,15 +41,36 @@ public class TournamentResultsHelpers {
         return apiHelpers.makeApiRequest(url);
     }
 
-    public String getDateScheduledByTeam(String team) {
-        // Get json for page 1, then check for team name match
-        // Continue until dateScheduled is found or until json indicates there are not more results to parse through
+    public String getDateScheduledByCompetitors(String competitors) {
 
-        int page = 1;
-        String json = getTournamentResultsJson(page);
-        TournamentResultsParser resultsParser = new TournamentResultsParser(json);
+        String dateScheduled = null;
 
-        return resultsParser.getDateScheduledByTeam(team);
+        // Making API call to get tournament results for the first page
+        String json = getTournamentResultsJson(1);
+
+        // Getting the total number of pages
+        TournamentResultsParser pagination = new TournamentResultsParser(json);
+        int pageCount = pagination.getPageCount();
+
+        // Parsing through tournament results pages
+        for (int page = 1; page <= pageCount; page++) {
+
+            // Making an API call to get tournament results for a given page
+            json = getTournamentResultsJson(page);
+
+            // Parsing through tournament results json to find date scheduled of the latest game
+            TournamentResultsParser resultsParser = new TournamentResultsParser(json);
+            dateScheduled = resultsParser.getUnixDateScheduledFromJson(competitors);
+
+            if (dateScheduled != null) {
+                return dateScheduled;
+            }
+
+            System.out.println("Match not found on page " + page + ", searching " + page);
+        }
+
+        return dateScheduled;
+
     }
 
 }

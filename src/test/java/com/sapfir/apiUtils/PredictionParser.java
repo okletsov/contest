@@ -97,26 +97,30 @@ public class PredictionParser {
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "encodeTournamentID");
     }
 
-    private String getCompetitors() {
+    public String getCompetitors() {
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "event-name");
     }
 
     public String getDateScheduled() {
+        // Getting raw unix value from json
         String unixValue = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Time");
         DateTimeOperations dateTimeOperations = new DateTimeOperations();
 
+        // e.g. if dateScheduled is known
         if (!unixValue.equals("null")) {
-            // e.g. if dateScheduled is known
             return dateTimeOperations.convertFromUnix(unixValue);
-        } else if (!predictionResultId.equals("null")) {
-            // if dateScheduled is unknown but prediction outcome is known assuming the bet is for Winner market
 
+        // if dateScheduled is unknown but prediction outcome is known assuming the bet is for Winner market
+        } else if (!predictionResultId.equals("null")) {
+
+            // Getting sport id and event id for making tournament results API call
             String sportId = getSportId();
             String encodeTournamentId = getEncodeTournamentId();
-            String team = getCompetitors();
-
             TournamentResultsHelpers tournamentResults = new TournamentResultsHelpers(apiHelpers, sportId, encodeTournamentId);
-            unixValue = tournamentResults.getDateScheduledByTeam(team);
+
+            // Getting competitors and searching for date scheduled in tournament results
+            String competitors = getCompetitors();
+            unixValue = tournamentResults.getDateScheduledByCompetitors(competitors);
             return dateTimeOperations.convertFromUnix(unixValue);
         } else {
             /*
@@ -125,5 +129,9 @@ public class PredictionParser {
              */
             return null;
         }
+    }
+
+    public String getMarket() {
+        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Bettype");
     }
 }
