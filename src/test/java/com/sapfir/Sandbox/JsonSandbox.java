@@ -39,5 +39,8 @@ public class JsonSandbox {
         System.out.println(predictionParser.getDetailedScore());
         System.out.println(predictionParser.getDateScheduled());
         System.out.println(predictionParser.getPredictionResultId());
+        System.out.println(predictionParser.getDatePredicted());
+        System.out.println(predictionParser.getMarketUrl());
+        System.out.println(predictionParser.feedUrl());
     }
 }

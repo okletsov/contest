@@ -1,6 +1,7 @@
 package com.sapfir.apiUtils;
 
 import com.sapfir.helpers.DateTimeOperations;
+import com.sapfir.helpers.Properties;
 import com.sapfir.helpers.TournamentResultsHelpers;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 public class PredictionParser {
 
     private final JsonHelpers jsonHelpers = new JsonHelpers();
+    private final Properties props = new Properties();
 
     private final String json;
     private final String feedItemId;
@@ -133,5 +135,24 @@ public class PredictionParser {
 
     public String getMarket() {
         return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Bettype");
+    }
+
+    public String getDatePredicted() {
+        String unixValue = jsonHelpers.getFieldValueByPathAndName(json, feedFieldsPath, "InsertTime");
+        DateTimeOperations dateTimeOperations = new DateTimeOperations();
+        return dateTimeOperations.convertFromUnix(unixValue);
+    }
+
+    public String getMarketUrl() {
+
+        String siteUrl = props.getSiteUrl();
+        String eventUrl = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "event-url");
+        String betTypeUrl = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "BettypeUrl");
+        return siteUrl + eventUrl + betTypeUrl;
+    }
+
+    public String feedUrl() {
+        String siteUrl = props.getSiteUrl();
+        return siteUrl + "community/feed/item/" + feedItemId;
     }
 }
