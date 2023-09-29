@@ -16,10 +16,11 @@ public class PredictionParser {
     private final String json;
     private final String feedItemId;
     private final String predictionResultId;
+    private final String market;
 
     private final String feedFieldsPath;
     private final String infoFieldsPath;
-    private List<String> outcomeNames = new ArrayList<>();
+    private List<String> rawOutcomeNames = new ArrayList<>();
 
     private final ApiHelpers apiHelpers;
 
@@ -34,12 +35,13 @@ public class PredictionParser {
         this.infoFieldsPath = "/d/info/" + predictionInfoId;
 
         this.predictionResultId = getPredictionResultId();
+        this.market = getMarket();
 
-        this.outcomeNames = getOutcomeNames();
-        Collections.sort(this.outcomeNames);
+        this.rawOutcomeNames = getRawOutcomeNames();
+        Collections.sort(this.rawOutcomeNames);
     }
 
-    private List<String> getOutcomeNames() {
+    public List<String> getRawOutcomeNames() {
         return jsonHelpers.getParentFieldNames(json, infoFieldsPath + "/outcomes");
     }
 
@@ -154,5 +156,47 @@ public class PredictionParser {
     public String feedUrl() {
         String siteUrl = props.getSiteUrl();
         return siteUrl + "community/feed/item/" + feedItemId;
+    }
+
+    private List<String> getEditedOptionNames() {
+
+        // This method gets modifies option names for markets which have unique behavior
+
+        List<String> names = new ArrayList<>();
+        
+        if (market.contains("Winner")) {
+            names.add(0,"Winner");
+        } else if (market.equals("DC")) {
+            names.add(0, "X2");
+            names.add(1, "12");
+            names.add(2, "1X");
+        } else if (market.equals("CS") || market.equals("HT/FT")) {
+            String path = infoFieldsPath + "/outcomes/" + rawOutcomeNames.get(0);
+            String nameToAdd = jsonHelpers.getFieldValueByPathAndName(json, path, "MixedParameterName");
+            names.add(0, nameToAdd);
+        }
+        else {
+            names = rawOutcomeNames;
+        }
+
+        return names;
+    }
+
+    public String getOptionName(int index) {
+
+        List<String> names = getEditedOptionNames();
+
+        String optionName;
+        if (index == 1) { optionName = names.get(0); }
+        else if (index == 2) {
+            if (names.size() >= 2) { optionName = names.get(1); }
+            else { optionName = null; }
+        } else if (index == 3) {
+            if (names.size() == 3) { optionName = names.get(2); }
+            else { optionName = null; }
+        } else {
+            optionName = null;
+        }
+        return optionName;
     }
 }
