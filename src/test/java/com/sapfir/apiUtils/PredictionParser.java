@@ -260,4 +260,17 @@ public class PredictionParser {
     public BigDecimal getUserPickValue() {
         return new BigDecimal(getOptionValues().get(userPickIndex));
     }
+
+    public String getResult() {
+        switch (predictionResultId) {
+            case "1": return "won";
+            case "2": return "lost";
+            case "3": return "void";
+            case "4": return "void-won";
+            case "5": return "void-lost";
+            case "null": return "not-played";
+        }
+
+        return null;
+    }
 }
