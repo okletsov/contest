@@ -4,6 +4,7 @@ import com.sapfir.helpers.DateTimeOperations;
 import com.sapfir.helpers.Properties;
 import com.sapfir.helpers.TournamentResultsHelpers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -198,5 +199,36 @@ public class PredictionParser {
             optionName = null;
         }
         return optionName;
+    }
+
+    private List<String> getOptionValues() {
+
+        List<String> optionValues = new ArrayList<>();
+
+        for (String outcomeName: rawOutcomeNames) {
+            String path = infoFieldsPath + "/outcomes/" + outcomeName;
+            String value = jsonHelpers.getFieldValueByPathAndName(json, path, "MaxOdds");
+            optionValues.add(value);
+        }
+
+        return optionValues;
+    }
+
+    public BigDecimal getOptionValue(int index) {
+
+        List<String> values = getOptionValues();
+
+        BigDecimal optionValue = null;
+        try {
+            if (index == 1) { optionValue = new BigDecimal(values.get(0)); }
+            else if (index == 2) {
+                if (values.size() >= 2) { optionValue = new BigDecimal(values.get(1)); }
+            } else if (index == 3) {
+                if (values.size() == 3) { optionValue = new BigDecimal(values.get(2)); }
+            }
+        } catch(NumberFormatException ex) {
+            ex.printStackTrace();
+        }
+        return optionValue;
     }
 }
