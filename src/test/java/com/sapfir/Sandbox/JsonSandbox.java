@@ -27,7 +27,7 @@ public class JsonSandbox {
 
 
         ApiHelpers apiHelpers = new ApiHelpers();
-        PredictionParser predictionParser = new PredictionParser(json, "6266027103", apiHelpers);
+        PredictionParser predictionParser = new PredictionParser(json, "5349910003", apiHelpers);
 
         System.out.println(predictionParser.getFeedItemIdForDatabase());
         System.out.println(predictionParser.getPredictionInfoId());
@@ -45,5 +45,7 @@ public class JsonSandbox {
         System.out.println(predictionParser.getMarket());
         System.out.println(predictionParser.getOptionName(3));
         System.out.println(predictionParser.getOptionValue(3));
+        System.out.println(predictionParser.getUserPickName());
+        System.out.println(predictionParser.getUserPickValue());
     }
 }

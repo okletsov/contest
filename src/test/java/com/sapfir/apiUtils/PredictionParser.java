@@ -18,6 +18,7 @@ public class PredictionParser {
     private final String feedItemId;
     private final String predictionResultId;
     private final String market;
+    private final int userPickIndex;
 
     private final String feedFieldsPath;
     private final String infoFieldsPath;
@@ -40,6 +41,8 @@ public class PredictionParser {
 
         this.rawOutcomeNames = getRawOutcomeNames();
         Collections.sort(this.rawOutcomeNames);
+
+        this.userPickIndex = getUserPickIndex();
     }
 
     public List<String> getRawOutcomeNames() {
@@ -168,6 +171,10 @@ public class PredictionParser {
         if (market.contains("Winner")) {
             names.add(0,"Winner");
         } else if (market.equals("DC")) {
+            /*
+                The following order is intentional: X2 = away, 12 = draw, 1X = home. That's how rawOutcomes are sorted
+                because rawOutcomeNames and editedOutcomeNames should always be sorted in the same way
+             */
             names.add(0, "X2");
             names.add(1, "12");
             names.add(2, "1X");
@@ -230,5 +237,27 @@ public class PredictionParser {
             ex.printStackTrace();
         }
         return optionValue;
+    }
+
+    private int getUserPickIndex() {
+
+        // The outcome user picked will always have null for ParentPredictionID field
+
+        for (int i=0; i<=rawOutcomeNames.size() - 1; i++) {
+            String path = infoFieldsPath + "/outcomes/" + rawOutcomeNames.get(i);
+            String parentPredictionId = jsonHelpers.getFieldValueByPathAndName(json, path, "ParentPredictionID");
+
+            if (parentPredictionId.equals("null")) { return i; }
+        }
+
+        return -1;
+    }
+
+    public String getUserPickName() {
+        return getEditedOptionNames().get(userPickIndex);
+    }
+
+    public BigDecimal getUserPickValue() {
+        return new BigDecimal(getOptionValues().get(userPickIndex));
     }
 }
