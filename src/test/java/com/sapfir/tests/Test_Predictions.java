@@ -112,26 +112,41 @@ public class Test_Predictions {
         FollowingUsersParser followingUsersParser = new FollowingUsersParser(followingJson);
         String jsonUserId = followingUsersParser.getUserIdByUsername(followingJson, username);
 
-        // Making a call to get a json with the first 20 predictions
-        String requestUrl = apiHelpers.generatePredictionsRequestUrl(jsonUserId);
-        String predictionsJson = apiHelpers.makeApiRequest(requestUrl);
+        int urlSuffix = 0;
+        List<String> feedItemIds;
 
-        // Getting the list of feed item ids from json
-        JsonHelpers jsonHelpers = new JsonHelpers();
-        List<String> feedItemIds = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
+        do {
+            /*
+                The logic in a do-while loop will:
+                    - make a call to get first 20 predictions
+                    - if the number of predictions equals to 20 url API will be changed to pull 20 more predictions
+                    - it will keep making more calls until the number of returned predictions is less than 20
+             */
 
-        // Getting prediction metadata
-        for(String itemId: feedItemIds) {
-            PredictionParser parser = new PredictionParser(predictionsJson, itemId, apiHelpers);
+            // Making a call to get a json with the list of predictions
+            String requestUrl = apiHelpers.generatePredictionsRequestUrl(jsonUserId, urlSuffix);
+            String predictionsJson = apiHelpers.makeApiRequest(requestUrl);
 
-            String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
-            String eventIdForDatabase = parser.getEventIdForDatabase();
-            String market = parser.getMarket();
-            String competitors = parser.getCompetitors();
-            String dateScheduled = parser.getDateScheduled();
+            // Getting the list of feed item ids from json
+            JsonHelpers jsonHelpers = new JsonHelpers();
+            feedItemIds = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
 
-            System.out.println(username + " - " + market + ": " + competitors + ": " + dateScheduled);
-        }
+            // Getting prediction metadata
+            for(String itemId: feedItemIds) {
+                PredictionParser parser = new PredictionParser(predictionsJson, itemId, apiHelpers);
+
+                String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
+                String eventIdForDatabase = parser.getEventIdForDatabase();
+                String market = parser.getMarket();
+                String competitors = parser.getCompetitors();
+                String dateScheduled = parser.getDateScheduled();
+
+                System.out.println(username + " - " + market + ": " + competitors + ": " + dateScheduled);
+            }
+
+            urlSuffix += 20;
+        } while (feedItemIds.size() == 20);
+
 
         /*
         ProfilePage pp = new ProfilePage(driver);

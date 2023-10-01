@@ -3,16 +3,20 @@ package com.sapfir.Sandbox;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sapfir.apiUtils.ApiHelpers;
+import com.sapfir.apiUtils.JsonHelpers;
 import com.sapfir.apiUtils.PredictionParser;
 import com.sapfir.apiUtils.TournamentResultsParser;
 import com.sapfir.helpers.TournamentResultsHelpers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class JsonSandbox {
 
     public static void main(final String... args) throws IOException {
+
+        JsonHelpers jsonHelpers = new JsonHelpers();
 
         File jsonFile = new File("jsonExample.json");
         String json = "";
@@ -29,6 +33,7 @@ public class JsonSandbox {
         ApiHelpers apiHelpers = new ApiHelpers();
         PredictionParser predictionParser = new PredictionParser(json, "6266037503", apiHelpers);
 
+        /*
         System.out.println(predictionParser.getFeedItemIdForDatabase());
         System.out.println(predictionParser.getPredictionInfoId());
         System.out.println(predictionParser.getEventIdForDatabase());
@@ -48,5 +53,10 @@ public class JsonSandbox {
         System.out.println(predictionParser.getUserPickName());
         System.out.println(predictionParser.getUserPickValue());
         System.out.println(predictionParser.getResult());
+
+         */
+
+        List<String> feedItemIds = jsonHelpers.getParentFieldNames(json, "/d/feed");
+        System.out.println("Predictions returned: " + feedItemIds.size());
     }
 }
