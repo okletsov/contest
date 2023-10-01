@@ -3,6 +3,8 @@ package com.sapfir.apiUtils;
 import com.sapfir.helpers.DateTimeOperations;
 import com.sapfir.helpers.Properties;
 import com.sapfir.helpers.TournamentResultsHelpers;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class PredictionParser {
+
+    private static final Logger Log = LogManager.getLogger(PredictionParser.class.getName());
 
     private final JsonHelpers jsonHelpers = new JsonHelpers();
     private final Properties props = new Properties();
@@ -120,6 +124,8 @@ public class PredictionParser {
 
         // if dateScheduled is unknown but prediction outcome is known assuming the bet is for Winner market
         } else if (!predictionResultId.equals("null")) {
+
+            Log.info("Attempting to find dateScheduled for a Winner bet");
 
             // Getting sport id and event id for making tournament results API call
             String sportId = getSportId();

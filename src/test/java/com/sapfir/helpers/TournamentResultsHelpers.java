@@ -2,8 +2,12 @@ package com.sapfir.helpers;
 
 import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.TournamentResultsParser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TournamentResultsHelpers {
+
+    private static final Logger Log = LogManager.getLogger(TournamentResultsHelpers.class.getName());
 
     private final ApiHelpers apiHelpers;
     private final String sportId;
@@ -43,20 +47,20 @@ public class TournamentResultsHelpers {
 
     public String getDateScheduledByCompetitors(String competitors) {
 
-        String dateScheduled = null;
+        String dateScheduled;
+        int page = 1;
+        int pageCount = 1;
 
-        // Making API call to get tournament results for the first page
-        String json = getTournamentResultsJson(1);
+        // Parsing through tournament results pages until new page index is greater than total number of pages
+        do {
+            // Making API call to get tournament results for a given page
+            String json = getTournamentResultsJson(page);
 
-        // Getting the total number of pages
-        TournamentResultsParser pagination = new TournamentResultsParser(json);
-        int pageCount = pagination.getPageCount();
-
-        // Parsing through tournament results pages
-        for (int page = 1; page <= pageCount; page++) {
-
-            // Making an API call to get tournament results for a given page
-            json = getTournamentResultsJson(page);
+            // Getting the total number of pages
+            if (page == 1) {
+                TournamentResultsParser pagination = new TournamentResultsParser(json);
+                pageCount = pagination.getPageCount();
+            }
 
             // Parsing through tournament results json to find date scheduled of the latest game
             TournamentResultsParser resultsParser = new TournamentResultsParser(json);
@@ -66,8 +70,9 @@ public class TournamentResultsHelpers {
                 return dateScheduled;
             }
 
-            System.out.println("Match not found on page " + page + ", searching " + page);
-        }
+            Log.info("Match not found on page " + page);
+            page++;
+        } while (page < pageCount);
 
         return dateScheduled;
 
