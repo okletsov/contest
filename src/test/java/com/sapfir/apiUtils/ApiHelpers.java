@@ -82,8 +82,8 @@ public class ApiHelpers {
 
                 Log.info("Call " + callNumber + ": " + url);
 
-                // Works better with a little delay
-                Thread.sleep(50);
+                // Delaying the subsequent calls if the first call failed
+                if (callNumber != 1) { Thread.sleep(2000); }
                 Response response = client.newCall(request).execute();
 
                 // Inspecting the response body to make sure the call succeeded
