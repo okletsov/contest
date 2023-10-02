@@ -30,7 +30,7 @@ public class Test_Predictions {
     @BeforeClass
     public void setUp() {
 
-//        conn = dbOp.connectToDatabase();
+        conn = dbOp.connectToDatabase();
 
         // Setting up ChromeDriver
         BrowserDriver bd = new BrowserDriver();
@@ -99,11 +99,10 @@ public class Test_Predictions {
         BackgroundJobs bj = new BackgroundJobs(conn);
         String jobName = Test_Predictions.class.getSimpleName();
         bj.addToBackgroundJobLog(jobName);
+         */
 
 //        Close connection
         dbOp.closeConnection(conn);
-
-         */
     }
 
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
@@ -115,7 +114,7 @@ public class Test_Predictions {
 
         int totalFeedItems = 0;
         int urlSuffix = 0;
-        List<String> feedItemIds;
+        List<String> predictions;
 
         UserStatisticsParser userStats = new UserStatisticsParser(username, apiHelpers);
         int totalSettledPredictions = userStats.getTotalSettledPredictions();
@@ -135,24 +134,40 @@ public class Test_Predictions {
 
             // Getting the list of feed item ids from json
             JsonHelpers jsonHelpers = new JsonHelpers();
-            feedItemIds = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
-            totalFeedItems += feedItemIds.size();
+            predictions = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
+            totalFeedItems += predictions.size();
 
             // Getting prediction metadata
-            for(String itemId: feedItemIds) {
-                PredictionParser parser = new PredictionParser(predictionsJson, itemId, apiHelpers);
+            for(String predictionIdJson: predictions) {
 
-                String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
-                String eventIdForDatabase = parser.getEventIdForDatabase();
+                String predictionIdDb = "feed_item_" + predictionIdJson;
+
+                // New logic
+                PredictionOperations predOp = new PredictionOperations(driver, conn);
+                boolean predictionExist = predOp.checkIfExist(predictionIdDb);
+
+                if (!predictionExist){
+                    // todo: change addPrediction method before enablement
+//                    predOp.addPrediction(predictionIdDb, username);
+                } else {
+                    boolean predictionFinalized = predOp.predictionFinalized(predictionIdDb, username);
+
+                    if (!predictionFinalized) {
+                        // todo: change updatePrediction method before enablement
+//                        predOp.updatePrediction(predictionIdDb);
+                    }
+                }
+
+                // todo: remove lines below (created for testing purposes)
+                PredictionParser parser = new PredictionParser(predictionsJson, predictionIdJson, apiHelpers);
                 String market = parser.getMarket();
                 String competitors = parser.getCompetitors();
                 String dateScheduled = parser.getDateScheduled();
-
                 System.out.println(username + " - " + market + ": " + competitors + ": " + dateScheduled);
             }
 
             urlSuffix += 20;
-        } while (feedItemIds.size() == 20);
+        } while (predictions.size() == 20);
 
         /*
             Making sure number of feed items matches the number of predictions on the profile page
