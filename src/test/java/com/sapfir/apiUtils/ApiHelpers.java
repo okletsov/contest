@@ -80,7 +80,7 @@ public class ApiHelpers {
             //  A do-while loop implements a retry for the failed call attempts
             do {
 
-                Log.info("Call " + callNumber + ": " + url);
+                Log.info("Attempt " + callNumber + ": " + url);
 
                 // Delaying the subsequent calls if the first call failed
                 if (callNumber != 1) { Thread.sleep(2000); }

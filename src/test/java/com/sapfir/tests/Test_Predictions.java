@@ -83,6 +83,7 @@ public class Test_Predictions {
         UserDataParser userDataParser = new UserDataParser(userDataJason);
         String usePremium = userDataParser.getUsePremium();
         String bookieHash = userDataParser.getBookieHash();
+        assert !usePremium.isEmpty() && !bookieHash.isEmpty();
 
         // Creating an instance of ApiHelpers class
         this.apiHelpers = new ApiHelpers(usePremium, bookieHash, requestHeaders);
