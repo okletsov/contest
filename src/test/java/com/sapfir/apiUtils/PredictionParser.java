@@ -53,10 +53,6 @@ public class PredictionParser {
         return jsonHelpers.getParentFieldNames(json, infoFieldsPath + "/outcomes");
     }
 
-    public String getFeedItemIdForDatabase() {
-        return "feed_item_" + feedItemId;
-    }
-
     public String getPredictionInfoId() {
         return jsonHelpers.getFieldValueByPathAndName(json, feedFieldsPath, "SubjectUID");
     }
@@ -65,10 +61,10 @@ public class PredictionParser {
         String eventIdFromJson = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "EventID");
 
         // Winner bets don't have a value for EventId, but have it for TournamentID field
-        if (eventIdFromJson.equals("null")) {
-            return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "TournamentID");
+        if (eventIdFromJson == null) {
+            return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "TournamentID") + "-winner";
         }
-        return "status-" + eventIdFromJson;
+        return eventIdFromJson;
     }
 
     public String getSport() {
@@ -119,11 +115,11 @@ public class PredictionParser {
         DateTimeOperations dateTimeOperations = new DateTimeOperations();
 
         // e.g. if dateScheduled is known
-        if (!unixValue.equals("null")) {
+        if (unixValue != null) {
             return dateTimeOperations.convertFromUnix(unixValue);
 
         // if dateScheduled is unknown but prediction outcome is known assuming the bet is for Winner market
-        } else if (!predictionResultId.equals("null")) {
+        } else if (predictionResultId != null) {
 
             Log.info("Attempting to find dateScheduled for a Winner bet");
 
@@ -163,7 +159,7 @@ public class PredictionParser {
         return siteUrl + eventUrl + betTypeUrl;
     }
 
-    public String feedUrl() {
+    public String getFeedUrl() {
         String siteUrl = props.getSiteUrl();
         return siteUrl + "community/feed/item/" + feedItemId;
     }
@@ -253,7 +249,7 @@ public class PredictionParser {
             String path = infoFieldsPath + "/outcomes/" + rawOutcomeNames.get(i);
             String parentPredictionId = jsonHelpers.getFieldValueByPathAndName(json, path, "ParentPredictionID");
 
-            if (parentPredictionId.equals("null")) { return i; }
+            if (parentPredictionId == null) { return i; }
         }
 
         return -1;
@@ -268,15 +264,58 @@ public class PredictionParser {
     }
 
     public String getResult() {
-        switch (predictionResultId) {
-            case "1": return "won";
-            case "2": return "lost";
-            case "3": return "void";
-            case "4": return "void-won";
-            case "5": return "void-lost";
-            case "null": return "not-played";
+
+        if (predictionResultId != null) {
+            switch (predictionResultId) {
+                case "1": return "won";
+                case "2": return "lost";
+                case "3": return "void";
+                case "4": return "void-won";
+                case "5": return "void-lost";
+            }
         }
 
-        return null;
+        return "not-played";
+    }
+
+    public BigDecimal getUnitOutcome() {
+        Log.debug("Getting unit outcome...");
+
+        BigDecimal unitOutcome = new BigDecimal("0");
+        String result = getResult();
+
+        if (!result.equals("not-played")) {
+            BigDecimal userPickValue = getUserPickValue();
+            unitOutcome = calculateUnitOutcome(userPickValue, result);
+        }
+        Log.debug("Successfully got unit outcome: " + unitOutcome);
+        return unitOutcome;
+    }
+
+    private BigDecimal calculateUnitOutcome(BigDecimal userPickValue, String result) {
+        BigDecimal unitOutcome = new BigDecimal("0");
+        BigDecimal betUnits = new BigDecimal("1");
+        BigDecimal betUnitsQuarterGoal = new BigDecimal("0.5");
+
+        switch (result) {
+            case "won":
+                unitOutcome = userPickValue.subtract(betUnits);
+                break;
+            case "lost":
+                unitOutcome = unitOutcome.subtract(betUnits);
+                break;
+            case "void-won":
+                unitOutcome = betUnitsQuarterGoal.multiply(userPickValue).add(betUnitsQuarterGoal).subtract(betUnits);
+                break;
+            case "void-lost":
+                unitOutcome = unitOutcome.subtract(betUnitsQuarterGoal);
+                break;
+            case "void":
+                break;
+            default:
+                Log.error("Result not supported");
+                return null;
+        }
+        return unitOutcome;
     }
 }

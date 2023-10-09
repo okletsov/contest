@@ -14,14 +14,14 @@ public class JsonHelpers {
 
     public String getFieldValueByPathAndName(String json, String pathToField, String fieldName) {
 
-        String fieldValue = "null";
+        String fieldValue = null;
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(json);
 
             // Check if the field exists (e.g. Result field is not there for Winner bets)
-            if (!rootNode.at(pathToField).has(fieldName)) { return "null"; }
+            if (!rootNode.at(pathToField).has(fieldName)) { return null; }
 
             // Grab field value
             fieldValue = rootNode.at(pathToField).get(fieldName).toString();
@@ -29,9 +29,11 @@ public class JsonHelpers {
             // Removing quotation marks and HTML entities (e.g. "Yastremska&nbsp;D.&nbsp;ret.")
             fieldValue = fieldValue
                     .replaceAll("\"", "")
-                    .replaceAll("&[a-zA-Z]+;", " ");
+                    .replaceAll("&[a-zA-Z]+;", " ")
+                    .replaceAll("<div><sup>", "[") // this and next line is to deal with tiebreak scores in tennis
+                    .replaceAll("</sup></div>", "]");
 
-            if (fieldValue.isEmpty()) { return "null"; }
+            if (fieldValue.isEmpty() || fieldValue.equals("null")) { return null; }
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,8 +3,6 @@ package com.sapfir.tests;
 import com.sapfir.apiUtils.*;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.testng.annotations.AfterClass;
@@ -12,13 +10,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class Test_Predictions {
-
-    private static final Logger Log = LogManager.getLogger(Test_Predictions.class.getName());
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -30,7 +25,7 @@ public class Test_Predictions {
     @BeforeClass
     public void setUp() {
 
-//        conn = dbOp.connectToDatabase();
+        conn = dbOp.connectToDatabase();
 
         // Setting up ChromeDriver
         BrowserDriver bd = new BrowserDriver();
@@ -73,10 +68,10 @@ public class Test_Predictions {
 
         // Capturing request headers, usePremium and bookieHash to be used in subsequent API calls
 
-            // Capturing request headers
+        // Capturing request headers
         HashMap<String, String> requestHeaders = dtHelpers.getRequestHeaders();
 
-            // Getting "bookieHash" and "usePremium" values (to be used in generating tournament results URL)
+        // Getting "bookieHash" and "usePremium" values (to be used in generating tournament results URL)
         String userDataJS = dtHelpers2.getResponseBody();
         String userDataJason = jsonHelpers.getJsonFromJsCode(userDataJS, "pageOutrightsVar");
 
@@ -95,15 +90,12 @@ public class Test_Predictions {
 
 //        Insert background job timestamp
 
-        /*
         BackgroundJobs bj = new BackgroundJobs(conn);
         String jobName = Test_Predictions.class.getSimpleName();
         bj.addToBackgroundJobLog(jobName);
 
 //        Close connection
         dbOp.closeConnection(conn);
-
-         */
     }
 
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
@@ -115,7 +107,7 @@ public class Test_Predictions {
 
         int totalFeedItems = 0;
         int urlSuffix = 0;
-        List<String> feedItemIds;
+        List<String> predictions;
 
         UserStatisticsParser userStats = new UserStatisticsParser(username, apiHelpers);
         int totalSettledPredictions = userStats.getTotalSettledPredictions();
@@ -125,7 +117,7 @@ public class Test_Predictions {
             /*
                 The logic in a do-while loop will:
                     - make a call to get first 20 predictions
-                    - if the number of predictions equals to 20 url API will be changed to pull 20 more predictions
+                    - if the number of predictions equals to 20, API url will be changed to pull 20 more predictions
                     - it will keep making more calls until the number of returned predictions is less than 20
              */
 
@@ -135,24 +127,28 @@ public class Test_Predictions {
 
             // Getting the list of feed item ids from json
             JsonHelpers jsonHelpers = new JsonHelpers();
-            feedItemIds = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
-            totalFeedItems += feedItemIds.size();
+            predictions = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
+            totalFeedItems += predictions.size();
 
             // Getting prediction metadata
-            for(String itemId: feedItemIds) {
-                PredictionParser parser = new PredictionParser(predictionsJson, itemId, apiHelpers);
+            for (String predictionId: predictions) {
 
-                String feedItemIdForDatabase = parser.getFeedItemIdForDatabase();
-                String eventIdForDatabase = parser.getEventIdForDatabase();
-                String market = parser.getMarket();
-                String competitors = parser.getCompetitors();
-                String dateScheduled = parser.getDateScheduled();
+                PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
+                boolean predictionExist = predOp.checkIfExist(predictionId);
 
-                System.out.println(username + " - " + market + ": " + competitors + ": " + dateScheduled);
+                if (!predictionExist){
+                    predOp.addPrediction(username);
+                } else {
+                    boolean predictionFinalized = predOp.predictionFinalized(predictionId, username);
+
+                    if (!predictionFinalized) {
+                        predOp.updatePrediction();
+                    }
+                }
             }
 
             urlSuffix += 20;
-        } while (feedItemIds.size() == 20);
+        } while (predictions.size() == 20);
 
         /*
             Making sure number of feed items matches the number of predictions on the profile page
@@ -160,47 +156,5 @@ public class Test_Predictions {
          */
         assert totalFeedItems == totalSettledPredictions + totalNextPredictions;
 
-        /*
-        ProfilePage pp = new ProfilePage(driver);
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        PredictionOperations predOp = new PredictionOperations(driver, conn);
-
-        pp.viewParticipants();
-        pp.clickParticipantUsername(username);
-        pp.viewPredictions(username);
-
-        List<String> predictions = pi.getPredictions();
-
-         */
-
-//        List<String> predictions = new ArrayList<>();
-//        predictions.add("feed_item_3191037203");
-
-        /*
-
-        for (String predictionID: predictions) {
-            boolean predictionRemoved = pi.predictionRemoved(predictionID);
-            boolean predictionExist = predOp.checkIfExist(predictionID);
-
-            if (!predictionRemoved && !predictionExist){
-                predOp.addPrediction(predictionID, username);
-            } else if (predictionRemoved){
-               Log.warn("Prediction " + predictionID + " was removed by " + username +
-                       ". Exist in db? - " + predictionExist);
-            } else{
-                boolean predictionFinalized = predOp.predictionFinalized(predictionID, username);
-                if (!predictionFinalized) {
-                    predOp.updatePrediction(predictionID);
-                }
-            }
-        }
-
-         */
-        CommonElements ce = new CommonElements(driver);
-
-        /*
-        ce.openProfilePage();
-
-         */
     }
 }

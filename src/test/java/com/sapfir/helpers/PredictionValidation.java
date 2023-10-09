@@ -207,7 +207,7 @@ public class PredictionValidation {
         if (dateScheduledKnown && userPickValue > 10 && userPickValue <= 15 && indexWithOddsBetween10And15InMonth > 1) { return 23; } // Step 2.3
         if (indexPerEventPerUser > 1) { return 24; } // Step 2.4
         if (dateScheduledKnown && indexOnGivenDayByUser > 10) { return 25; } // Step 2.5
-        if (userPickName.contains("Odd") || userPickName.contains("Even")) { return 26; } // Step 2.6
+        if (userPickName.contains("odd") || userPickName.contains("even")) { return 26; } // Step 2.6
 
         if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction == 1) { updateWarningStatus(1); } // Step 2.7.1
         if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction == 2) { updateWarningStatus(2); } // Step 2.7.2
