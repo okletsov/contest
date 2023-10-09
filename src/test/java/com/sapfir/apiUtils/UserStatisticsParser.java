@@ -25,7 +25,7 @@ public class UserStatisticsParser {
         String pathToField = "/d/total";
         String rawFieldValue = jsonHelpers.getFieldValueByPathAndName(json, pathToField, "total");
 
-        if (!rawFieldValue.equals("null")) {
+        if (rawFieldValue != null) {
             return Integer.parseInt(rawFieldValue);
         }
         return 0;
@@ -41,7 +41,7 @@ public class UserStatisticsParser {
 
         String rawFieldValue = jsonHelpers.getFieldValueByPathAndName(json, pathToField, "total");
 
-        if (!rawFieldValue.equals("null")) {
+        if (rawFieldValue != null) {
             return Integer.parseInt(rawFieldValue);
         }
 

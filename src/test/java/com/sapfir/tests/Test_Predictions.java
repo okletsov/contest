@@ -3,8 +3,6 @@ package com.sapfir.tests;
 import com.sapfir.apiUtils.*;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.testng.annotations.AfterClass;
@@ -12,13 +10,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class Test_Predictions {
-
-    private static final Logger Log = LogManager.getLogger(Test_Predictions.class.getName());
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -95,11 +90,9 @@ public class Test_Predictions {
 
 //        Insert background job timestamp
 
-        /*
         BackgroundJobs bj = new BackgroundJobs(conn);
         String jobName = Test_Predictions.class.getSimpleName();
         bj.addToBackgroundJobLog(jobName);
-         */
 
 //        Close connection
         dbOp.closeConnection(conn);
@@ -124,7 +117,7 @@ public class Test_Predictions {
             /*
                 The logic in a do-while loop will:
                     - make a call to get first 20 predictions
-                    - if the number of predictions equals to 20 url API will be changed to pull 20 more predictions
+                    - if the number of predictions equals to 20, API url will be changed to pull 20 more predictions
                     - it will keep making more calls until the number of returned predictions is less than 20
              */
 
@@ -138,32 +131,20 @@ public class Test_Predictions {
             totalFeedItems += predictions.size();
 
             // Getting prediction metadata
-            for(String predictionIdJson: predictions) {
+            for (String predictionId: predictions) {
 
-                String predictionIdDb = "feed_item_" + predictionIdJson;
-
-                // New logic
-                PredictionOperations predOp = new PredictionOperations(driver, conn);
-                boolean predictionExist = predOp.checkIfExist(predictionIdDb);
+                PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
+                boolean predictionExist = predOp.checkIfExist(predictionId);
 
                 if (!predictionExist){
-                    // todo: change addPrediction method before enablement
-//                    predOp.addPrediction(predictionIdDb, username);
+                    predOp.addPrediction(username);
                 } else {
-                    boolean predictionFinalized = predOp.predictionFinalized(predictionIdDb, username);
+                    boolean predictionFinalized = predOp.predictionFinalized(predictionId, username);
 
                     if (!predictionFinalized) {
-                        // todo: change updatePrediction method before enablement
-//                        predOp.updatePrediction(predictionIdDb);
+                        predOp.updatePrediction();
                     }
                 }
-
-                // todo: remove lines below (created for testing purposes)
-                PredictionParser parser = new PredictionParser(predictionsJson, predictionIdJson, apiHelpers);
-                String market = parser.getMarket();
-                String competitors = parser.getCompetitors();
-                String dateScheduled = parser.getDateScheduled();
-                System.out.println(username + " - " + market + ": " + competitors + ": " + dateScheduled);
             }
 
             urlSuffix += 20;
@@ -175,47 +156,5 @@ public class Test_Predictions {
          */
         assert totalFeedItems == totalSettledPredictions + totalNextPredictions;
 
-        /*
-        ProfilePage pp = new ProfilePage(driver);
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        PredictionOperations predOp = new PredictionOperations(driver, conn);
-
-        pp.viewParticipants();
-        pp.clickParticipantUsername(username);
-        pp.viewPredictions(username);
-
-        List<String> predictions = pi.getPredictions();
-
-         */
-
-//        List<String> predictions = new ArrayList<>();
-//        predictions.add("feed_item_3191037203");
-
-        /*
-
-        for (String predictionID: predictions) {
-            boolean predictionRemoved = pi.predictionRemoved(predictionID);
-            boolean predictionExist = predOp.checkIfExist(predictionID);
-
-            if (!predictionRemoved && !predictionExist){
-                predOp.addPrediction(predictionID, username);
-            } else if (predictionRemoved){
-               Log.warn("Prediction " + predictionID + " was removed by " + username +
-                       ". Exist in db? - " + predictionExist);
-            } else{
-                boolean predictionFinalized = predOp.predictionFinalized(predictionID, username);
-                if (!predictionFinalized) {
-                    predOp.updatePrediction(predictionID);
-                }
-            }
-        }
-
-         */
-        CommonElements ce = new CommonElements(driver);
-
-        /*
-        ce.openProfilePage();
-
-         */
     }
 }

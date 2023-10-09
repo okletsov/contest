@@ -1,5 +1,7 @@
 package com.sapfir.helpers;
 
+import com.sapfir.apiUtils.ApiHelpers;
+import com.sapfir.apiUtils.PredictionParser;
 import com.sapfir.pageClasses.PredictionsInspection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,17 +14,29 @@ import java.sql.SQLException;
 
 public class PredictionOperations {
 
+    private final Connection conn;
+//    private WebDriver driver;
+    private PredictionParser parser;
+    private String predictionID;
+
     private static final Logger Log = LogManager.getLogger(PredictionOperations.class.getName());
+
+    /*
     public PredictionOperations(WebDriver driver, Connection conn) {
         this.conn = conn;
         this.driver = driver;
     }
+     */
+
     public PredictionOperations(Connection conn) {
         this.conn = conn;
     }
 
-    private final Connection conn;
-    private WebDriver driver;
+    public PredictionOperations(Connection conn, ApiHelpers apiHelpers, String json, String predictionIdJson) {
+        this.conn = conn;
+        this.parser = new PredictionParser(json, predictionIdJson, apiHelpers);
+        this.predictionID = predictionIdJson;
+    }
 
     public String getDbPredictionResult(String predictionID) {
         Log.debug("Getting result written to database for prediction id " + predictionID + "...");
@@ -658,14 +672,13 @@ public class PredictionOperations {
         return Float.parseFloat(payout);
     }
 
-    private boolean resultDifferent(String predictionID) {
+    private boolean resultDifferent() {
         /*
             This method compare web prediction result vs db prediction result and returns:
                 true - if result different
-                false - if result match
+                false - if results match
          */
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        String webPredictionResult = pi.getResult(predictionID);
+        String webPredictionResult = parser.getResult();
         String dbPredictionResult = getDbPredictionResult(predictionID);
 
         boolean resultDifferent;
@@ -673,16 +686,14 @@ public class PredictionOperations {
         return resultDifferent;
     }
 
-    private boolean dateScheduledDifferent(String predictionID) {
+    private boolean dateScheduledDifferent() {
         /*
             This method compare web prediction date scheduled vs db prediction date scheduled and returns:
                 true - if result different
                 false - if result match
          */
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        String webDateScheduled = pi.getDateScheduled(predictionID);
+        String webDateScheduled = parser.getDateScheduled();
         String dbDateScheduled = getDbDateScheduled(predictionID);
-
 
         boolean dateScheduledDifferent = false;
         if(dbDateScheduled != null && webDateScheduled != null) {
@@ -746,10 +757,9 @@ public class PredictionOperations {
         }
     }
 
-    private void updateMainScore(String predictionID) {
+    private void updateMainScore() {
         Log.debug("Updating main score for prediction " + predictionID + "...");
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        String webMainScore = pi.getMainScore(predictionID);
+        String webMainScore = parser.getMainScore();
 
         String sql = "update prediction set main_score = '" + webMainScore + "' where id = '" + predictionID + "';";
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
@@ -757,10 +767,9 @@ public class PredictionOperations {
         Log.info("Updated main_score for " + predictionID + ". New main_score: " + webMainScore);
     }
 
-    private void updateDetailedScore(String predictionID) {
+    private void updateDetailedScore() {
         Log.debug("Updating detailed score for prediction " + predictionID + "...");
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        String webDetailedScore = pi.getDetailedScore(predictionID);
+        String webDetailedScore = parser.getDetailedScore();
 
         String sql =
                 "update prediction set detailed_score = '" + webDetailedScore + "' where id = '" + predictionID + "';";
@@ -769,11 +778,10 @@ public class PredictionOperations {
         Log.info("Updated detailed_score for " + predictionID + ". New detailed_score: " + webDetailedScore);
     }
 
-    private void updateResult(String predictionID) {
+    private void updateResult() {
         Log.debug("Updating prediction result for prediction " + predictionID + "...");
 
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        String webPredictionResult = pi.getResult(predictionID);
+        String webPredictionResult = parser.getResult();
 
         String sql = "update prediction set result = '" + webPredictionResult + "' where id = '" + predictionID + "';";
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
@@ -793,9 +801,8 @@ public class PredictionOperations {
         }
     }
 
-    private void updateDateScheduled(String predictionID) {
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        String webDateScheduled = pi.getDateScheduled(predictionID);
+    private void updateDateScheduled() {
+        String webDateScheduled = parser.getDateScheduled();
 
         String updateDateScheduled =
                 "update prediction set date_scheduled = '" + webDateScheduled + "' where id = '" + predictionID + "';";
@@ -804,11 +811,10 @@ public class PredictionOperations {
         Log.info("Updated date_scheduled for prediction: " + predictionID + ". New date: " + webDateScheduled);
     }
 
-    private void updateUnitOutcome(String predictionID) {
+    private void updateUnitOutcome() {
         Log.debug("Updating unit outcome for prediction " + predictionID + "...");
 
-        PredictionsInspection pi = new PredictionsInspection(driver);
-        BigDecimal unitOutcome = pi.getUnitOutcome(predictionID);
+        BigDecimal unitOutcome = parser.getUnitOutcome();
 
         String sql = "update prediction set unit_outcome = '" + unitOutcome + "' where id = '" + predictionID + "';";
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
@@ -829,19 +835,15 @@ public class PredictionOperations {
         Log.debug("Success. New monthly_contest_id: " + monthlyContestId);
     }
 
-    public void addPrediction(String predictionID, String username) {
+    public void addPrediction(String username) {
         Log.debug("Adding prediction to database...");
 
         ContestOperations cop = new ContestOperations(conn);
         String contestID = cop.getActiveSeasonalContestID();
 
         if (contestID != null) {
-            PredictionsInspection pred = new PredictionsInspection(driver);
             UserOperations uo = new UserOperations(conn);
             DateTimeOperations dateOp = new DateTimeOperations();
-
-            int userPick = pred.getUserPick(predictionID);
-            String feedUrl = "https://www.oddsportal.com/community/feed/item/" + predictionID.replace("feed_item_", "");
 
             PreparedStatement sql = null;
             try {
@@ -860,29 +862,29 @@ public class PredictionOperations {
                 sql.setInt(3, 0);
                 sql.setInt(4, 0);
                 sql.setString(5, uo.getUserID(username));
-                sql.setString(6, pred.getEventIdentifier(predictionID));
-                sql.setString(7, pred.getSport(predictionID));
-                sql.setString(8, pred.getRegion(predictionID));
-                sql.setString(9, pred.getTournament(predictionID));
-                sql.setString(10, pred.getMainScore(predictionID));
-                sql.setString(11, pred.getDetailedScore(predictionID));
-                sql.setString(12, pred.getResult(predictionID));
-                sql.setString(13, pred.getDateScheduled(predictionID));
-                sql.setString(14, pred.getDatePredicted(predictionID));
-                sql.setString(15, pred.getCompetitorsText(predictionID));
-                sql.setString(16, pred.getMarket(predictionID));
-                sql.setString(17, pred.getOptionName(predictionID, 1));
-                sql.setBigDecimal(18, pred.getOptionValue(predictionID, 1));
-                sql.setString(19, pred.getOptionName(predictionID, 2));
-                sql.setBigDecimal(20, pred.getOptionValue(predictionID, 2));
-                sql.setString(21, pred.getOptionName(predictionID, 3));
-                sql.setBigDecimal(22, pred.getOptionValue(predictionID, 3));
-                sql.setString(23, pred.getOptionName(predictionID, userPick));
-                sql.setBigDecimal(24, pred.getOptionValue(predictionID, userPick));
-                sql.setBigDecimal(25, pred.getUnitOutcome(predictionID));
+                sql.setString(6, parser.getEventIdForDatabase());
+                sql.setString(7, parser.getSport());
+                sql.setString(8, parser.getRegion());
+                sql.setString(9, parser.getTournamentName());
+                sql.setString(10, parser.getMainScore());
+                sql.setString(11, parser.getDetailedScore());
+                sql.setString(12, parser.getResult());
+                sql.setString(13, parser.getDateScheduled());
+                sql.setString(14, parser.getDatePredicted());
+                sql.setString(15, parser.getCompetitors());
+                sql.setString(16, parser.getMarket());
+                sql.setString(17, parser.getOptionName(1));
+                sql.setBigDecimal(18, parser.getOptionValue(1));
+                sql.setString(19, parser.getOptionName(2));
+                sql.setBigDecimal(20, parser.getOptionValue(2));
+                sql.setString(21, parser.getOptionName(3));
+                sql.setBigDecimal(22, parser.getOptionValue(3));
+                sql.setString(23, parser.getUserPickName());
+                sql.setBigDecimal(24, parser.getUserPickValue());
+                sql.setBigDecimal(25, parser.getUnitOutcome());
                 sql.setString(26, dateOp.getTimestamp());
-                sql.setString(27, pred.getMarketUrl(predictionID));
-                sql.setString(28, feedUrl);
+                sql.setString(27, parser.getMarketUrl());
+                sql.setString(28, parser.getFeedUrl());
 
                 sql.executeUpdate();
                 sql.close();
@@ -933,7 +935,7 @@ public class PredictionOperations {
         return predictionFinalized;
     }
 
-    public void updatePrediction(String predictionID) {
+    public void updatePrediction() {
         /*
             This method will determine and perform an update if it is needed for:
                 - date_scheduled
@@ -944,17 +946,17 @@ public class PredictionOperations {
          */
 
         Log.debug("Updating date_scheduled for prediction " + predictionID + "...");
-        if (dateScheduledDifferent(predictionID)) {
+        if (dateScheduledDifferent()) {
             logPreviousDateScheduled(predictionID);
-            updateDateScheduled(predictionID);
+            updateDateScheduled();
         } else { Log.debug("No update needed"); }
 
         Log.debug("Updating result for prediction " + predictionID + "...");
-        if (resultDifferent(predictionID)) {
-            updateResult(predictionID);
-            updateMainScore(predictionID);
-            updateDetailedScore(predictionID);
-            updateUnitOutcome(predictionID);
+        if (resultDifferent()) {
+            updateResult();
+            updateMainScore();
+            updateDetailedScore();
+            updateUnitOutcome();
         } else {Log.debug("No update needed"); }
     }
 

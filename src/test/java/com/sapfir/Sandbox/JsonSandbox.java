@@ -6,21 +6,30 @@ import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.JsonHelpers;
 import com.sapfir.apiUtils.PredictionParser;
 import com.sapfir.apiUtils.TournamentResultsParser;
+import com.sapfir.helpers.DatabaseOperations;
+import com.sapfir.helpers.PredictionOperations;
 import com.sapfir.helpers.TournamentResultsHelpers;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 
 public class JsonSandbox {
 
     public static void main(final String... args) throws IOException {
 
-        JsonHelpers jsonHelpers = new JsonHelpers();
+        // Connect to database
+        DatabaseOperations dbOp = new DatabaseOperations();
+        Connection conn = dbOp.connectToDatabase();
 
+        // Add necessary helpers
+        JsonHelpers jsonHelpers = new JsonHelpers();
+        ApiHelpers apiHelpers = new ApiHelpers();
+
+        // Get json from a file
         File jsonFile = new File("jsonExample.json");
         String json = "";
-
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonFile);
@@ -29,34 +38,14 @@ public class JsonSandbox {
             e.printStackTrace();
         }
 
+        // Code to test
+        PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, json, "6288602303-test");
+//        predOp.addPrediction("Deagle");
+        predOp.updatePrediction();
 
-        ApiHelpers apiHelpers = new ApiHelpers();
-        PredictionParser predictionParser = new PredictionParser(json, "6266037503", apiHelpers);
+        // Close database connection
+        dbOp.closeConnection(conn);
 
-        /*
-        System.out.println(predictionParser.getFeedItemIdForDatabase());
-        System.out.println(predictionParser.getPredictionInfoId());
-        System.out.println(predictionParser.getEventIdForDatabase());
-        System.out.println(predictionParser.getSport());
-        System.out.println(predictionParser.getRegion());
-        System.out.println(predictionParser.getTournamentName());
-        System.out.println(predictionParser.getMainScore());
-        System.out.println(predictionParser.getDetailedScore());
-        System.out.println(predictionParser.getDateScheduled());
-        System.out.println(predictionParser.getPredictionResultId());
-        System.out.println(predictionParser.getDatePredicted());
-        System.out.println(predictionParser.getMarketUrl());
-        System.out.println(predictionParser.feedUrl());
-        System.out.println(predictionParser.getMarket());
-        System.out.println(predictionParser.getOptionName(2));
-        System.out.println(predictionParser.getOptionValue(2));
-        System.out.println(predictionParser.getUserPickName());
-        System.out.println(predictionParser.getUserPickValue());
-        System.out.println(predictionParser.getResult());
-
-         */
-
-        List<String> feedItemIds = jsonHelpers.getParentFieldNames(json, "/d/feed");
-        System.out.println("Predictions returned: " + feedItemIds.size());
+        System.out.println("stop here");
     }
 }
