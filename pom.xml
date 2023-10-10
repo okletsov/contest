@@ -62,8 +62,8 @@
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-devtools-v115</artifactId>
-      <version>4.12.1</version>
+      <artifactId>selenium-devtools-v92</artifactId>
+      <version>4.0.0-rc-1</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
