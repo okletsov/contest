@@ -1,9 +1,9 @@
 package com.sapfir.helpers;
 
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v115.network.Network;
-import org.openqa.selenium.devtools.v115.network.model.Headers;
-import org.openqa.selenium.devtools.v115.network.model.RequestId;
+import org.openqa.selenium.devtools.v92.network.Network;
+import org.openqa.selenium.devtools.v92.network.model.Headers;
+import org.openqa.selenium.devtools.v92.network.model.RequestId;
 
 import java.util.HashMap;
 import java.util.Objects;
