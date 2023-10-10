@@ -69,8 +69,7 @@ public class JsonHelpers {
         try {
             
             // Getting java object from provided JS code and JS variable
-            ScriptEngineManager manager = new ScriptEngineManager();
-            ScriptEngine engine = manager.getEngineByName("graal.js");
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             engine.eval(jsCode);
             Object jsonData = engine.get(jsVariable);
 
