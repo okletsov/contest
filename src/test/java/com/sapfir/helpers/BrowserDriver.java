@@ -1,5 +1,6 @@
 package com.sapfir.helpers;
 
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
@@ -11,12 +12,21 @@ import java.util.logging.Logger;
 
 public class BrowserDriver {
 
+    private static final org.apache.logging.log4j.Logger Log = LogManager.getLogger(BrowserDriver.class.getName());
+
     private ChromeDriver driver;
     private DevTools devTools;
 
     public BrowserDriver() {
         Properties prop = new Properties();
         String headless = prop.getHeadless();
+
+        String osName = System.getProperty("os.name");
+        Log.info("Operating system: " + osName);
+
+        if (osName.contains("Linux")) {
+            System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+        }
 
         if (headless.equals("true")){
             ChromeOptions options = new ChromeOptions();
