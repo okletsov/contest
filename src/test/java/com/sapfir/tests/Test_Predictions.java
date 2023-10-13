@@ -28,7 +28,6 @@ public class Test_Predictions {
         conn = dbOp.connectToDatabase();
 
         // Setting up ChromeDriver
-        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
