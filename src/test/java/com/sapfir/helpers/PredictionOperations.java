@@ -48,14 +48,14 @@ public class PredictionOperations {
     }
 
     public String getDbDateScheduled(String predictionID) {
-        String sql = "select date_scheduled from prediction where id = '" + predictionID + "';";
+        String sql = "SELECT DATE_FORMAT(date_scheduled,'%Y-%m-%d %H:%i:%s') as date_scheduled from prediction where id = '" + predictionID + "';";
         DatabaseOperations dbOp = new DatabaseOperations();
         return dbOp.getSingleValue(conn, "date_scheduled", sql);
     }
 
     public String getDbInitialDateScheduled(String predictionId) {
         String sql = "select \n" +
-                "\tmin(t1.date_scheduled) as initial_date_scheduled\n" +
+                "\tmin(DATE_FORMAT(t1.date_scheduled,'%Y-%m-%d %H:%i:%s')) as initial_date_scheduled\n" +
                 "from (\n" +
                 "\tselect \n" +
                 "\t\tp.id \n" +
