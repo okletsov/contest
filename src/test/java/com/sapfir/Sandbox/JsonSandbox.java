@@ -41,11 +41,9 @@ public class JsonSandbox {
         }
 
         // Code to test
-        PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, json, "5395446703");
-        PredictionParser parser = new PredictionParser(json, "5395446703", apiHelpers);
+        PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, json, "6054898903");
+        PredictionParser parser = new PredictionParser(json, "6054898903", apiHelpers);
 
-        boolean isFinalized =  predOp.predictionFinalized("5395446703", "gorgEuro");
-//        predOp.updatePrediction();
 
         // Close database connection
         dbOp.closeConnection(conn);

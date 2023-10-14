@@ -40,13 +40,13 @@ public class PredictionParser {
         String predictionInfoId = getPredictionInfoId();
         this.infoFieldsPath = "/d/info/" + predictionInfoId;
 
-        this.predictionResultId = getPredictionResultId();
         this.market = getMarket();
 
         this.rawOutcomeNames = getRawOutcomeNames();
         Collections.sort(this.rawOutcomeNames);
 
         this.userPickIndex = getUserPickIndex();
+        this.predictionResultId = getPredictionResultId();
     }
 
     public List<String> getRawOutcomeNames() {
@@ -94,7 +94,9 @@ public class PredictionParser {
     }
 
     public String getPredictionResultId() {
-        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "PredictionResultID");
+
+        String path = infoFieldsPath + "/outcomes/" + rawOutcomeNames.get(userPickIndex);
+        return jsonHelpers.getFieldValueByPathAndName(json, path, "OutcomeResultID");
     }
 
     private String getSportId() {
