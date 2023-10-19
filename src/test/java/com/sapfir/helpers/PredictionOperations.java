@@ -1,11 +1,9 @@
 package com.sapfir.helpers;
 
 import com.sapfir.apiUtils.ApiHelpers;
-import com.sapfir.apiUtils.PredictionParser;
-import com.sapfir.pageClasses.PredictionsInspection;
+import com.sapfir.apiUtils.WebPredictionParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.WebDriver;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -16,7 +14,7 @@ public class PredictionOperations {
 
     private final Connection conn;
 //    private WebDriver driver;
-    private PredictionParser parser;
+    private WebPredictionParser webParser;
     private String predictionID;
 
     private static final Logger Log = LogManager.getLogger(PredictionOperations.class.getName());
@@ -34,7 +32,7 @@ public class PredictionOperations {
 
     public PredictionOperations(Connection conn, ApiHelpers apiHelpers, String json, String predictionIdJson) {
         this.conn = conn;
-        this.parser = new PredictionParser(json, predictionIdJson, apiHelpers);
+        this.webParser = new WebPredictionParser(json, predictionIdJson, apiHelpers);
         this.predictionID = predictionIdJson;
     }
 
@@ -678,7 +676,7 @@ public class PredictionOperations {
                 true - if result different
                 false - if results match
          */
-        String webPredictionResult = parser.getResult();
+        String webPredictionResult = webParser.getResult();
         String dbPredictionResult = getDbPredictionResult(predictionID);
 
         boolean resultDifferent;
@@ -692,7 +690,7 @@ public class PredictionOperations {
                 true - if result different
                 false - if result match
          */
-        String webDateScheduled = parser.getDateScheduled();
+        String webDateScheduled = webParser.getDateScheduled();
         String dbDateScheduled = getDbDateScheduled(predictionID);
 
         boolean dateScheduledDifferent = false;
@@ -759,7 +757,7 @@ public class PredictionOperations {
 
     private void updateMainScore() {
         Log.debug("Updating main score for prediction " + predictionID + "...");
-        String webMainScore = parser.getMainScore();
+        String webMainScore = webParser.getMainScore();
 
         String sql = "update prediction set main_score = '" + webMainScore + "' where id = '" + predictionID + "';";
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
@@ -769,7 +767,7 @@ public class PredictionOperations {
 
     private void updateDetailedScore() {
         Log.debug("Updating detailed score for prediction " + predictionID + "...");
-        String webDetailedScore = parser.getDetailedScore();
+        String webDetailedScore = webParser.getDetailedScore();
 
         String sql =
                 "update prediction set detailed_score = '" + webDetailedScore + "' where id = '" + predictionID + "';";
@@ -781,7 +779,7 @@ public class PredictionOperations {
     private void updateResult() {
         Log.debug("Updating prediction result for prediction " + predictionID + "...");
 
-        String webPredictionResult = parser.getResult();
+        String webPredictionResult = webParser.getResult();
 
         String sql = "update prediction set result = '" + webPredictionResult + "' where id = '" + predictionID + "';";
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
@@ -802,7 +800,7 @@ public class PredictionOperations {
     }
 
     private void updateDateScheduled() {
-        String webDateScheduled = parser.getDateScheduled();
+        String webDateScheduled = webParser.getDateScheduled();
 
         String updateDateScheduled =
                 "update prediction set date_scheduled = '" + webDateScheduled + "' where id = '" + predictionID + "';";
@@ -814,7 +812,7 @@ public class PredictionOperations {
     private void updateUnitOutcome() {
         Log.debug("Updating unit outcome for prediction " + predictionID + "...");
 
-        BigDecimal unitOutcome = parser.getUnitOutcome();
+        BigDecimal unitOutcome = webParser.getUnitOutcome();
 
         String sql = "update prediction set unit_outcome = '" + unitOutcome + "' where id = '" + predictionID + "';";
         ExecuteQuery eq = new ExecuteQuery(conn, sql);
@@ -862,29 +860,29 @@ public class PredictionOperations {
                 sql.setInt(3, 0);
                 sql.setInt(4, 0);
                 sql.setString(5, uo.getUserID(username));
-                sql.setString(6, parser.getEventIdForDatabase());
-                sql.setString(7, parser.getSport());
-                sql.setString(8, parser.getRegion());
-                sql.setString(9, parser.getTournamentName());
-                sql.setString(10, parser.getMainScore());
-                sql.setString(11, parser.getDetailedScore());
-                sql.setString(12, parser.getResult());
-                sql.setString(13, parser.getDateScheduled());
-                sql.setString(14, parser.getDatePredicted());
-                sql.setString(15, parser.getCompetitors());
-                sql.setString(16, parser.getMarket());
-                sql.setString(17, parser.getOptionName(1));
-                sql.setBigDecimal(18, parser.getOptionValue(1));
-                sql.setString(19, parser.getOptionName(2));
-                sql.setBigDecimal(20, parser.getOptionValue(2));
-                sql.setString(21, parser.getOptionName(3));
-                sql.setBigDecimal(22, parser.getOptionValue(3));
-                sql.setString(23, parser.getUserPickName());
-                sql.setBigDecimal(24, parser.getUserPickValue());
-                sql.setBigDecimal(25, parser.getUnitOutcome());
+                sql.setString(6, webParser.getEventIdForDatabase());
+                sql.setString(7, webParser.getSport());
+                sql.setString(8, webParser.getRegion());
+                sql.setString(9, webParser.getTournamentName());
+                sql.setString(10, webParser.getMainScore());
+                sql.setString(11, webParser.getDetailedScore());
+                sql.setString(12, webParser.getResult());
+                sql.setString(13, webParser.getDateScheduled());
+                sql.setString(14, webParser.getDatePredicted());
+                sql.setString(15, webParser.getCompetitors());
+                sql.setString(16, webParser.getMarket());
+                sql.setString(17, webParser.getOptionName(1));
+                sql.setBigDecimal(18, webParser.getOptionValue(1));
+                sql.setString(19, webParser.getOptionName(2));
+                sql.setBigDecimal(20, webParser.getOptionValue(2));
+                sql.setString(21, webParser.getOptionName(3));
+                sql.setBigDecimal(22, webParser.getOptionValue(3));
+                sql.setString(23, webParser.getUserPickName());
+                sql.setBigDecimal(24, webParser.getUserPickValue());
+                sql.setBigDecimal(25, webParser.getUnitOutcome());
                 sql.setString(26, dateOp.getTimestamp());
-                sql.setString(27, parser.getMarketUrl());
-                sql.setString(28, parser.getFeedUrl());
+                sql.setString(27, webParser.getMarketUrl());
+                sql.setString(28, webParser.getFeedUrl());
 
                 sql.executeUpdate();
                 sql.close();

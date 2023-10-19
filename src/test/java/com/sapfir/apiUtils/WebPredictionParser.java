@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PredictionParser {
+public class WebPredictionParser {
 
-    private static final Logger Log = LogManager.getLogger(PredictionParser.class.getName());
+    private static final Logger Log = LogManager.getLogger(WebPredictionParser.class.getName());
 
     private final JsonHelpers jsonHelpers = new JsonHelpers();
     private final Properties props = new Properties();
@@ -30,7 +30,7 @@ public class PredictionParser {
 
     private final ApiHelpers apiHelpers;
 
-    public PredictionParser(String jsonWithPredictions, String feedItemId, ApiHelpers apiHelpers) {
+    public WebPredictionParser(String jsonWithPredictions, String feedItemId, ApiHelpers apiHelpers) {
         this.apiHelpers = apiHelpers;
 
         this.json = jsonWithPredictions;

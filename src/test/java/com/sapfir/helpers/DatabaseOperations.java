@@ -1,5 +1,8 @@
 package com.sapfir.helpers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -137,6 +140,15 @@ public class DatabaseOperations {
         eq.cleanUp();
         Log.trace("Successfully retrieved sql result as a list");
         return list;
+    }
+
+    public String sqlToJson(Connection conn, String sql) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.serializeNulls();
+        Gson gson = gsonBuilder.create();
+
+        List<HashMap<String, Object>> listOfMaps = getListOfHashMaps(conn, sql);
+        return gson.toJson(listOfMaps);
     }
 
 }

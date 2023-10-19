@@ -1,21 +1,10 @@
 package com.sapfir.Sandbox;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sapfir.apiUtils.ApiHelpers;
-import com.sapfir.apiUtils.JsonHelpers;
-import com.sapfir.apiUtils.PredictionParser;
-import com.sapfir.apiUtils.TournamentResultsParser;
-import com.sapfir.helpers.DatabaseOperations;
-import com.sapfir.helpers.DateTimeOperations;
-import com.sapfir.helpers.PredictionOperations;
-import com.sapfir.helpers.TournamentResultsHelpers;
+import com.sapfir.helpers.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.sql.ResultSet;
 
 public class JsonSandbox {
 
@@ -26,23 +15,16 @@ public class JsonSandbox {
         Connection conn = dbOp.connectToDatabase();
 
         // Add necessary helpers
-        JsonHelpers jsonHelpers = new JsonHelpers();
-        ApiHelpers apiHelpers = new ApiHelpers();
 
-        // Get json from a file
-        File jsonFile = new File("jsonExample.json");
-        String json = "";
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(jsonFile);
-            json = rootNode.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         // Code to test
-        PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, json, "6054898903");
-        PredictionParser parser = new PredictionParser(json, "6054898903", apiHelpers);
+        String sql = "SELECT * from contest c where is_active = 1;";
+        ExecuteQuery eq = new ExecuteQuery(conn, sql);
+        ResultSet rs = eq.getSelectResult();
+
+
+        String json = dbOp.sqlToJson(conn, sql);
+
 
 
         // Close database connection
