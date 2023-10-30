@@ -25,7 +25,6 @@ public class Test_EndContest {
         dbOp.closeConnection(conn);
     }
 
-    @Ignore
     @Test
     public void endContest() {
 
@@ -35,7 +34,7 @@ public class Test_EndContest {
 
 //        Step 1: Specify contest id to end and find its type (seasonal vs monthly)
 
-        String contestId = "d28a83e2-0e33-11ec-ab01-288316e63e84";
+        String contestId = "06a1b96b-53c4-11ec-ac22-2c9153eeaea0";
 
         Contest c = new Contest(conn, contestId);
         String contestType = c.getContestType();

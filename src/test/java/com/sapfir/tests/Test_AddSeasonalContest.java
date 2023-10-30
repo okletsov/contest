@@ -25,7 +25,6 @@ public class Test_AddSeasonalContest {
 		dbOp.closeConnection(conn);
 	}
 
-	@Ignore
 	@Test
 	public void addSeasonalContest() {
 		ContestOperations co = new ContestOperations(conn);

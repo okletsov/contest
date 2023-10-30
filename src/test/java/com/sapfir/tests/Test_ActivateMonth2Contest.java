@@ -25,7 +25,6 @@ public class Test_ActivateMonth2Contest {
 		dbOp.closeConnection(conn);
 	}
 
-	@Ignore
 	@Test
 	public void test() {
 		ContestOperations co = new ContestOperations(conn);

@@ -25,7 +25,6 @@ public class Test_EndAnnualContest {
         dbOp.closeConnection(conn);
     }
 
-    @Ignore
     @Test
     public void endAnnualContest() {
 
@@ -36,7 +35,7 @@ public class Test_EndAnnualContest {
 
 
 //        Step 1: Specify id of an annual contest
-        String contestId = "0afbf8c9-ce22-11ea-93d2-74852a015562";
+        String contestId = "d2a41eba-0e33-11ec-ab01-288316e63e84";
 
 //        Step 2: Getting results of annual contest
         List<HashMap<String,Object>> annContestResults = contRes.getGeneralContestResultsToWrite(contestId);

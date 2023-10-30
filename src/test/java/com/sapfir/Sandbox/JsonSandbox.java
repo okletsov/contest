@@ -6,15 +6,13 @@ import com.sapfir.apiUtils.ApiHelpers;
 import com.sapfir.apiUtils.JsonHelpers;
 import com.sapfir.apiUtils.PredictionParser;
 import com.sapfir.apiUtils.TournamentResultsParser;
-import com.sapfir.helpers.DatabaseOperations;
-import com.sapfir.helpers.DateTimeOperations;
-import com.sapfir.helpers.PredictionOperations;
-import com.sapfir.helpers.TournamentResultsHelpers;
+import com.sapfir.helpers.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JsonSandbox {
@@ -43,6 +41,9 @@ public class JsonSandbox {
         // Code to test
         PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, json, "6054898903");
         PredictionParser parser = new PredictionParser(json, "6054898903", apiHelpers);
+        Contest contest = new Contest(conn, "d2a41eba-0e33-11ec-ab01-288316e63e84");
+
+        ArrayList<String> seasIds = contest.getSeasIdsForAnnContest();
 
 
         // Close database connection
