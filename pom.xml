@@ -100,7 +100,7 @@
             </suiteXmlFiles>
             <systemPropertyVariables>
              <log4j.configurationFile>resources/log4j2.xml</log4j.configurationFile>
-             <year>2021</year>
+             <year>2023</year>
              <season>Winter</season>
             </systemPropertyVariables>
           </configuration>
