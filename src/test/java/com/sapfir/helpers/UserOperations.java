@@ -102,13 +102,11 @@ public class UserOperations {
                         - increase counter
                         - display an error message that user does not exist in database
                         - (optional) add user to database
-                        - (optional) add participation ID to `user_seasonal_contest_participation` table
-                        - (optional) add entrance fee to `cr_finance` table
+                        - (optional) add participation ID to `user_seasonal_contest_participation` table (also automatically insert entrance fee)
              */
 
         Log.info("Inspecting participants...");
         ContestOperations co = new ContestOperations(conn);
-        ContestFinanceOperations cfo = new ContestFinanceOperations(conn);
         String contestID = co.getActiveSeasonalContestID();
         if (contestID != null) {
             int counter = 0;
@@ -121,7 +119,6 @@ public class UserOperations {
                     Log.warn("User " + username + " does not exist in database");
                 addUser(username, "Zizu");
                 addParticipationID(contestID, username);
-                cfo.addEntranceFee(contestID, username);
                 }
             }
             if (counter == 0) { Log.info("Inspection complete: all participants exist and linked to contest"); }
