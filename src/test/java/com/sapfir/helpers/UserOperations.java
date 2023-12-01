@@ -108,6 +108,7 @@ public class UserOperations {
 
         Log.info("Inspecting participants...");
         ContestOperations co = new ContestOperations(conn);
+        ContestFinanceOperations cfo = new ContestFinanceOperations(conn);
         String contestID = co.getActiveSeasonalContestID();
         if (contestID != null) {
             int counter = 0;
@@ -118,9 +119,9 @@ public class UserOperations {
                 } else {
                     counter = counter + 1;
                     Log.warn("User " + username + " does not exist in database");
-//                addUser(username, "New Participant");
-//                addParticipationID(contestID, username);
-//                cfo.addEntranceFee(contestID, username);
+                addUser(username, "Zizu");
+                addParticipationID(contestID, username);
+                cfo.addEntranceFee(contestID, username);
                 }
             }
             if (counter == 0) { Log.info("Inspection complete: all participants exist and linked to contest"); }
