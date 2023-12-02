@@ -9,6 +9,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +97,17 @@ public class Test_Predictions {
 
 //        Close connection
         dbOp.closeConnection(conn);
+
+//        Tear down resources after all tests in the class
+        String osName = System.getProperty("os.name");
+
+        if (osName.contains("Linux")) {
+            try {
+                Runtime.getRuntime().exec("pkill chrome");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
