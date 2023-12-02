@@ -117,8 +117,8 @@ public class UserOperations {
                 } else {
                     counter = counter + 1;
                     Log.warn("User " + username + " does not exist in database");
-                addUser(username, "Zizu");
-                addParticipationID(contestID, username);
+//                    addUser(username, "New Participant");
+//                    addParticipationID(contestID, username);
                 }
             }
             if (counter == 0) { Log.info("Inspection complete: all participants exist and linked to contest"); }
