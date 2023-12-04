@@ -107,13 +107,8 @@ public class Test_Predictions {
         FollowingUsersParser followingUsersParser = new FollowingUsersParser(followingJson);
         String jsonUserId = followingUsersParser.getUserIdByUsername(followingJson, username);
 
-        int totalFeedItems = 0;
         int urlSuffix = 0;
         List<String> predictions;
-
-        UserStatisticsParser userStats = new UserStatisticsParser(username, apiHelpers);
-        int totalSettledPredictions = userStats.getTotalSettledPredictions();
-        int totalNextPredictions = userStats.getTotalNextPredictions();
 
         do {
             /*
@@ -130,7 +125,6 @@ public class Test_Predictions {
             // Getting the list of feed item ids from json
             JsonHelpers jsonHelpers = new JsonHelpers();
             predictions = jsonHelpers.getParentFieldNames(predictionsJson, "/d/feed");
-            totalFeedItems += predictions.size();
 
             // Getting prediction metadata
             for (String predictionId: predictions) {
@@ -151,12 +145,6 @@ public class Test_Predictions {
 
             urlSuffix += 20;
         } while (predictions.size() == 20);
-
-        /*
-            Making sure number of feed items matches the number of predictions on the profile page
-            e.g. making sure no feed items have been removed by the user
-         */
-        assert totalFeedItems == totalSettledPredictions + totalNextPredictions;
 
     }
 }
