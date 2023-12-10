@@ -182,7 +182,7 @@ public class PredictionParser {
             names.add(0, "X2");
             names.add(1, "12");
             names.add(2, "1X");
-        } else if (market.equals("CS") || market.equals("HT/FT")) {
+        } else if (market.contains("CS") || market.contains("HT/FT")) {
             String path = infoFieldsPath + "/outcomes/" + rawOutcomeNames.get(0);
             String nameToAdd = jsonHelpers.getFieldValueByPathAndName(json, path, "MixedParameterName");
             names.add(0, nameToAdd);
