@@ -41,7 +41,8 @@ public class ContestFinance {
     }
 
     private BigDecimal seasPrize() {
-        return getSumEntranceFees().multiply(BigDecimal.valueOf(0.8));
+        // Temporarily changing the ...valueOf below to 1.0, because of no annual contest in 2023-2024
+        return getSumEntranceFees().multiply(BigDecimal.valueOf(1.0));
     }
 
     private BigDecimal getAnnPrize() {
