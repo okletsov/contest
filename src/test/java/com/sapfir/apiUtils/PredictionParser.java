@@ -31,6 +31,9 @@ public class PredictionParser {
     private final ApiHelpers apiHelpers;
 
     public PredictionParser(String jsonWithPredictions, String feedItemId, ApiHelpers apiHelpers) {
+
+        Log.debug("Starting to parse " + feedItemId);
+
         this.apiHelpers = apiHelpers;
 
         this.json = jsonWithPredictions;
