@@ -129,26 +129,17 @@ public class Test_Predictions {
             // Getting prediction metadata
             for (String predictionId: predictions) {
 
-                // Remove this IF statement once 2023-2024 winter contest is over
-                // It was added due to website glitch
-                if (
-                    !predictionId.equals("6432684903") &&
-                    !predictionId.equals("6519965503")
-                ) {
+                PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
+                boolean predictionExist = predOp.checkIfExist(predictionId);
 
-                    PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
-                    boolean predictionExist = predOp.checkIfExist(predictionId);
+                if (!predictionExist){
+                    predOp.addPrediction(username);
+                } else {
+                    boolean predictionFinalized = predOp.predictionFinalized(predictionId, username);
 
-                    if (!predictionExist){
-                        predOp.addPrediction(username);
-                    } else {
-                        boolean predictionFinalized = predOp.predictionFinalized(predictionId, username);
-
-                        if (!predictionFinalized) {
-                            predOp.updatePrediction();
-                        }
+                    if (!predictionFinalized) {
+                        predOp.updatePrediction();
                     }
-
                 }
             }
 
