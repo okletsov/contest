@@ -228,7 +228,7 @@ public class Contest {
 				"\t\tor ids.initial_date_scheduled >=\n" +
 				"\t\t\t(\n" +
 				"\t\t\t\tSELECT \n" +
-				"\t\t\t\t\tmax(ids2.initial_date_scheduled)\n" +
+				"\t\t\t\t\tmin(ids2.initial_date_scheduled)\n" +
 				"\t\t\t\tfrom prediction p2 \n" +
 				"\t\t\t\t\tjoin initial_date_scheduled ids2 on ids2.id = p2.id\n" +
 				"\t\t\t\twhere 1=1\n" +
