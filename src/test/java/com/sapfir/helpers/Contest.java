@@ -218,31 +218,44 @@ public class Contest {
 	}
 
 	public ArrayList<String> getPredictionsToValidate() {
-		String sql = "SELECT \n" +
-				"\tp.id \n" +
-				"from prediction p \n" +
-				"\tjoin initial_date_scheduled ids on ids.id = p.id \n" +
+		String sql = "select \n" +
+				"\tt2.id\n" +
+				"from (\n" +
+				"\tselect \n" +
+				"\t\tt1.id\n" +
+				"\t\t, min(t1.date_scheduled) as initial_date_scheduled\n" +
+				"\t\t, t1.date_predicted\n" +
+				"\tfrom (\n" +
+				"\t\tselect \n" +
+				"\t\t\tp.id \n" +
+				"\t\t\t, p.date_scheduled\n" +
+				"\t\t\t, p.date_predicted \n" +
+				"\t\tfrom prediction p\n" +
+				"\t\twhere 1=1\n" +
+				"\t\t\tand p.seasonal_contest_id = '" + contestId + "'\n" +
+				"\t\t\n" +
+				"\t\tunion all\n" +
+				"\t\t\n" +
+				"\t\tselect \n" +
+				"\t\t\tpsc.prediction_id\n" +
+				"\t\t\t, psc.previous_date_scheduled\n" +
+				"\t\t\t, p2.date_predicted \n" +
+				"\t\tfrom prediction_schedule_changes psc\n" +
+				"\t\t\tjoin prediction p2 on psc.prediction_id = p2.id \n" +
+				"\t\twhere 1=1 \n" +
+				"\t\t\tand p2.seasonal_contest_id = '" + contestId + "'\n" +
+				"\t\t) t1\n" +
+				"\twhere 1=1\n" +
+				"\tgroup by \n" +
+				"\t\tt1.id\n" +
+				"\t\t, t1.date_predicted\n" +
+				"\t) t2\n" +
 				"where 1=1\n" +
-				"\tand p.seasonal_contest_id = '" + contestId + "'\n" +
-				"\tand (ids.initial_date_scheduled is null \n" +
-				"\t\tor ids.initial_date_scheduled >=\n" +
-				"\t\t\t(\n" +
-				"\t\t\t\tSELECT \n" +
-				"\t\t\t\t\tmin(ids2.initial_date_scheduled)\n" +
-				"\t\t\t\tfrom prediction p2 \n" +
-				"\t\t\t\t\tjoin initial_date_scheduled ids2 on ids2.id = p2.id\n" +
-				"\t\t\t\twhere 1=1\n" +
-				"\t\t\t\t\tand p2.seasonal_contest_id = '" + contestId + "'\n" +
-				"\t\t\t\t\tand (\n" +
-				"\t\t\t\t\t\tp2.result = 'not-played'\n" +
-				"\t\t\t\t\t\tor p2.seasonal_validity_status is null\n" +
-				"\t\t\t\t\t)\n" +
-				"\t\t\t)\n" +
-				"\t\t)\n" +
 				"order by \n" +
-				"\tcase when ids.initial_date_scheduled is null then 1 else 0 end\n" +
-				"\t, ids.initial_date_scheduled asc\n" +
-				"\t, ids.date_predicted asc;";
+				"\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
+				"\t, t2.initial_date_scheduled asc\n" +
+				"\t, t2.date_predicted asc\n" +
+				"\t, t2.id asc;";
 		return dbOp.getArray(conn, "id", sql);
 	}
 
