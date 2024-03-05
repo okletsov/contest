@@ -78,6 +78,9 @@ public class Test_ValidatePredictions {
 
             int mon2Status = predValMon2.getStatus();
             if (mon2Status != 11 && mon2Status != 12) { predOp.updateValidityStatus(predictionId, mon2Status, "monthly"); }
+
+            // Step 4: Update date_validated for prediction in the DB
+            predOp.updateDateValidated(predictionId);
         }
 
 //        Step 4: insert background job timestamp
