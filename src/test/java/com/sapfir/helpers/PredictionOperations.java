@@ -811,6 +811,28 @@ public class PredictionOperations {
         Log.info("Updated date_scheduled for prediction: " + predictionID + ". New date: " + webDateScheduled);
     }
 
+    private void updateDateUpdated() {
+        DateTimeOperations dateOp = new DateTimeOperations();
+        String timestamp = dateOp.getTimestamp();
+
+        String updateDateScheduled =
+                "update prediction set date_updated = '" + dateOp.getTimestamp() + "' where id = '" + predictionID + "';";
+        ExecuteQuery executeUpdate = new ExecuteQuery(conn, updateDateScheduled);
+        executeUpdate.cleanUp();
+        Log.debug("Updated date_updated for prediction: " + predictionID + ". New date: " + timestamp);
+    }
+
+    public void updateDateValidated(String predictionId) {
+        DateTimeOperations dateOp = new DateTimeOperations();
+        String timestamp = dateOp.getTimestamp();
+
+        String updateDateScheduled =
+                "update prediction set date_validated = '" + dateOp.getTimestamp() + "' where id = '" + predictionId + "';";
+        ExecuteQuery executeUpdate = new ExecuteQuery(conn, updateDateScheduled);
+        executeUpdate.cleanUp();
+        Log.debug("Updated date_validated for prediction: " + predictionId + ". New date: " + timestamp);
+    }
+
     private void updateUnitOutcome() {
         Log.debug("Updating unit outcome for prediction " + predictionID + "...");
 
@@ -949,6 +971,7 @@ public class PredictionOperations {
         if (dateScheduledDifferent()) {
             logPreviousDateScheduled(predictionID);
             updateDateScheduled();
+            updateDateUpdated();
         } else { Log.debug("No update needed"); }
 
         Log.debug("Updating result for prediction " + predictionID + "...");
@@ -957,6 +980,7 @@ public class PredictionOperations {
             updateMainScore();
             updateDetailedScore();
             updateUnitOutcome();
+            updateDateUpdated();
         } else {Log.debug("No update needed"); }
     }
 
