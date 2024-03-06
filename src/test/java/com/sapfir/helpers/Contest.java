@@ -241,8 +241,7 @@ public class Contest {
 				"\t\t\t\twhere 1=1\n" +
 				"\t\t\t\t\tand p2.seasonal_contest_id = '" + contestId + "'\n" +
 				"\t\t\t\t\tand (\n" +
-				"\t\t\t\t\t\tp2.result = 'not-played'\n" +
-				"\t\t\t\t\t\tor p2.date_validated is null\n" +
+				"\t\t\t\t\t\tp2.date_validated is null\n" +
 				"\t\t\t\t\t\tor p2.date_updated >= p2.date_validated\n" +
 				"\t\t\t\t\t)\n" +
 				"\t\t\t)\n" +
