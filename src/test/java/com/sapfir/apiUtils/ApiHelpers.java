@@ -38,7 +38,7 @@ public class ApiHelpers {
         DateTimeOperations dateTimeOperations = new DateTimeOperations();
         String unixTimestamp = dateTimeOperations.getUnixTimestamp();
 
-        String corePath = siteUrl + "ajax-communityFeed/profile/" + userId + "/" + unixTimestamp + "/";
+        String corePath = siteUrl + "/ajax-communityFeed/profile/" + userId + "/" + unixTimestamp + "/";
 
         if (suffix == 0) {
             return corePath;

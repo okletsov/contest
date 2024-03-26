@@ -166,7 +166,7 @@ public class PredictionParser {
 
     public String getFeedUrl() {
         String siteUrl = props.getSiteUrl();
-        return siteUrl + "community/feed/item/" + feedItemId;
+        return siteUrl + "/community/feed/item/" + feedItemId;
     }
 
     private List<String> getEditedOptionNames() {

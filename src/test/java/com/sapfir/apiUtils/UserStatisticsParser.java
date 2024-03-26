@@ -19,7 +19,7 @@ public class UserStatisticsParser {
 
     public int getTotalSettledPredictions() {
 
-        String url = siteUrl + "myPredictions/overallStats/" + username + "/";
+        String url = siteUrl + "/myPredictions/overallStats/" + username + "/";
         String json = apiHelpers.makeApiRequest(url);
 
         String pathToField = "/d/total";

@@ -27,7 +27,7 @@ public class TournamentResultsHelpers {
 
         Properties properties = new Properties();
         String siteUrl = properties.getSiteUrl();
-        String path = "ajax-sport-country-tournament-archive_/";
+        String path = "/ajax-sport-country-tournament-archive_/";
 
         return siteUrl +
                 path +
