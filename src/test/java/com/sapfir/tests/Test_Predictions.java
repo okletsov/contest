@@ -129,16 +129,22 @@ public class Test_Predictions {
             // Getting prediction metadata
             for (String predictionId: predictions) {
 
-                PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
-                boolean predictionExist = predOp.checkIfExist(predictionId);
+                // If statement has bad ids
+                if (
+                        !predictionId.equals("6652239303")
+                        && !predictionId.equals("6660653703")
+                ) {
+                    PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
+                    boolean predictionExist = predOp.checkIfExist(predictionId);
 
-                if (!predictionExist){
-                    predOp.addPrediction(username);
-                } else {
-                    boolean predictionFinalized = predOp.predictionFinalized(predictionId, username);
+                    if (!predictionExist){
+                        predOp.addPrediction(username);
+                    } else {
+                        boolean predictionFinalized = predOp.predictionFinalized(predictionId, username);
 
-                    if (!predictionFinalized) {
-                        predOp.updatePrediction();
+                        if (!predictionFinalized) {
+                            predOp.updatePrediction();
+                        }
                     }
                 }
             }
