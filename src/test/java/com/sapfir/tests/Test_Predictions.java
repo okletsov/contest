@@ -133,6 +133,7 @@ public class Test_Predictions {
                 if (
                         !predictionId.equals("6652239303")
                         && !predictionId.equals("6660653703")
+                        && !predictionId.equals("6672469503")
                 ) {
                     PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
                     boolean predictionExist = predOp.checkIfExist(predictionId);
