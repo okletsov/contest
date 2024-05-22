@@ -39,12 +39,10 @@ public class JsonSandbox {
         }
 
         // Code to test
-        PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, json, "6054898903");
-        PredictionParser parser = new PredictionParser(json, "6054898903", apiHelpers);
-        Contest contest = new Contest(conn, "d2a41eba-0e33-11ec-ab01-288316e63e84");
-
-        ArrayList<String> seasIds = contest.getSeasIdsForAnnContest();
-
+//        PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, json, "6652239303");
+        PredictionParser parser = new PredictionParser(json, "6652239303");
+        boolean isBroken = parser.getPredictionInfoId().equals("2");
+        System.out.println(isBroken);
 
         // Close database connection
         dbOp.closeConnection(conn);

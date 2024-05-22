@@ -130,11 +130,8 @@ public class Test_Predictions {
             for (String predictionId: predictions) {
 
                 // If statement has bad ids
-                if (
-                        !predictionId.equals("6652239303")
-                        && !predictionId.equals("6660653703")
-                        && !predictionId.equals("6672469503")
-                ) {
+                PredictionParser parser = new PredictionParser(predictionsJson, predictionId);
+                if (!parser.isPredictionBroken()) {
                     PredictionOperations predOp = new PredictionOperations(conn, apiHelpers, predictionsJson, predictionId);
                     boolean predictionExist = predOp.checkIfExist(predictionId);
 

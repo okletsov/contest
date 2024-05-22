@@ -49,6 +49,9 @@ public class ApiHelpers {
     }
 
     public String generateIndividualPredictionRequestUrl(String predictionId) {
+
+        Log.info("Generating individual URL for " + predictionId);
+
         Properties props = new Properties();
         String siteUrl = props.getSiteUrl();
 

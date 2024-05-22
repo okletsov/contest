@@ -20,15 +20,15 @@ public class PredictionParser {
 
     private final String json;
     private final String feedItemId;
-    private final String predictionResultId;
-    private final String market;
-    private final int userPickIndex;
+    private String predictionResultId;
+    private String market;
+    private int userPickIndex;
 
     private final String feedFieldsPath;
-    private final String infoFieldsPath;
+    private String infoFieldsPath;
     private List<String> rawOutcomeNames = new ArrayList<>();
 
-    private final ApiHelpers apiHelpers;
+    private ApiHelpers apiHelpers;
 
     public PredictionParser(String jsonWithPredictions, String feedItemId, ApiHelpers apiHelpers) {
 
@@ -50,6 +50,15 @@ public class PredictionParser {
 
         this.userPickIndex = getUserPickIndex();
         this.predictionResultId = getPredictionResultId();
+    }
+
+    public PredictionParser(String jsonWithPredictions, String feedItemId) {
+
+        Log.debug("Starting to parse " + feedItemId);
+
+        this.json = jsonWithPredictions;
+        this.feedItemId = feedItemId;
+        this.feedFieldsPath = "/d/feed/" + this.feedItemId;
     }
 
     public List<String> getRawOutcomeNames() {
@@ -322,5 +331,14 @@ public class PredictionParser {
                 return null;
         }
         return unitOutcome;
+    }
+
+    public boolean isPredictionBroken() {
+        if(getPredictionInfoId().equals("2")) {
+            Log.warn("Prediction " + feedItemId + " is broken");
+            return true;
+        } else {
+            return false;
+        }
     }
 }
