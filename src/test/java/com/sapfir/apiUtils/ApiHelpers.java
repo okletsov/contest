@@ -48,6 +48,13 @@ public class ApiHelpers {
 
     }
 
+    public String generateIndividualPredictionRequestUrl(String predictionId) {
+        Properties props = new Properties();
+        String siteUrl = props.getSiteUrl();
+
+        return siteUrl + "/ajax-communityFeed/getItem/" + predictionId + "/";
+    }
+
     public String makeApiRequest(String url) {
 
         String responseBody = "";

@@ -153,5 +153,19 @@ public class Test_Predictions {
             urlSuffix += 20;
         } while (predictions.size() == 20);
 
+        // Individually inspect not settled predictions with dateScheduled in the past
+
+        PredictionOperations predOp2 = new PredictionOperations(conn);
+        predictions = predOp2.getInPlayPredictionsByUsername(username);
+
+        for (String predictionId: predictions) {
+
+            String requestUrl = apiHelpers.generateIndividualPredictionRequestUrl(predictionId);
+            String predictionJson = apiHelpers.makeApiRequest(requestUrl);
+
+            PredictionOperations predOp3 = new PredictionOperations(conn, apiHelpers, predictionJson, predictionId);
+            predOp3.updatePrediction();
+        }
+
     }
 }
