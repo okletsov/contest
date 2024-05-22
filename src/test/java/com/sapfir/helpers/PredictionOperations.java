@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class PredictionOperations {
 
@@ -670,6 +671,31 @@ public class PredictionOperations {
         String payout =  dbOp.getSingleValue(conn, "payout", sql);
 
         return Float.parseFloat(payout);
+    }
+
+    public ArrayList<String> getInPlayPredictionsByUsername(String username) {
+
+        // Returns predictions with dateScheduled greater than current timestamp
+
+        String sql = "SELECT \n" +
+                "\tp.id\n" +
+                "from prediction p \n" +
+                "\tjoin user_nickname un on un.user_id = p.user_id \n" +
+                "where 1=1\n" +
+                "\tand un.is_active = 1\n" +
+                "\tand un.nickname = '" + username + "'\n" +
+                "\tand p.`result` = 'not-played'\n" +
+                "\tand p.date_scheduled <= utc_timestamp()\n" +
+                "\tand p.seasonal_contest_id = (\n" +
+                "\t\tselect\n" +
+                "\t\t\tc.id\n" +
+                "\t\tfrom contest c \n" +
+                "\t\twhere c.is_active = 1\n" +
+                "\t\tand c.`type` = 'seasonal'\n" +
+                "\t);";
+
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getArray(conn, "id", sql);
     }
 
     private boolean resultDifferent() {
