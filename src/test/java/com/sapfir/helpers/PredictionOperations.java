@@ -54,6 +54,12 @@ public class PredictionOperations {
         return dbOp.getSingleValue(conn, "date_scheduled", sql);
     }
 
+    public String getDbDatePredicted(String predictionID) {
+        String sql = "SELECT DATE_FORMAT(date_predicted,'%Y-%m-%d %H:%i:%s') as date_predicted from prediction where id = '" + predictionID + "';";
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "date_predicted", sql);
+    }
+
     public String getDbInitialDateScheduled(String predictionId) {
         String sql = "select \n" +
                 "\tmin(DATE_FORMAT(t1.date_scheduled,'%Y-%m-%d %H:%i:%s')) as initial_date_scheduled\n" +
@@ -568,6 +574,7 @@ public class PredictionOperations {
         String endDate = dtOp.convertToStringFromDateTime(contest.getEndDate());
         String userId = getDbUserId(predictionId);
         String initialDateScheduled = getDbInitialDateScheduled(predictionId);
+        String datePredicted = getDbDatePredicted(predictionId);
 
         String sql = "select \n" +
                 "\tcount(t3.id) as count\n" +
@@ -610,7 +617,7 @@ public class PredictionOperations {
                 "\t\t) t2\n" +
                 "\twhere 1=1 \n" +
                 "\t-- only including predictions scheduled after currently being inspected prediction\n" +
-                "\t\tand t2.initial_date_scheduled >= '" + initialDateScheduled + "' -- current prediction's initial_date_scheduled\n" +
+                "\t\tand t2.initial_date_scheduled > '" + initialDateScheduled + "' -- current prediction's initial_date_scheduled\n" +
                 "\t\tand t2.initial_date_scheduled <= '" + endDate + "' -- contest end date\n" +
                 "\t\tand t2.id != '" + predictionId + "' -- exclude current prediction from result set\n" +
                 "\t\t-- including predictions with unknown initial_date_scheduled only if contest is not over yet\n" +
@@ -618,6 +625,13 @@ public class PredictionOperations {
                 "\t\t\tt2.initial_date_scheduled is null\n" +
                 "\t\t\tand now() <= '" + endDate + "' -- contest end date\n" +
                 "\t\t\t)\n" +
+                "-- including predictions with same initial_date_scheduled but greater date_predicted\n" +
+                "\t\tor (\n" +
+                "\t\t\tCASE \n" +
+                "\t\t\t\twhen t2.initial_date_scheduled = '" + initialDateScheduled + "'\n" +
+                "\t\t\t\tthen t2.date_predicted > '" + datePredicted + "'\n" +
+                "\t\t\tEND\n" +
+                "\t\t)" +
                 "\torder by\n" +
                 "\t\tcase when t2.initial_date_scheduled is null then 1 else 0 end\n" +
                 "\t\t, t2.initial_date_scheduled asc\n" +
