@@ -108,7 +108,7 @@ public class ContestOperations {
             sql.setString(6, seasonal_end_date);
             sql.setInt(7, 1);
             sql.setString(8, dtOp.getTimestamp());
-            sql.setInt(9, 250);
+            sql.setInt(9, 400);
             sql.executeUpdate();
             Log.info("Successfully added " + season + " " + year + " contest");
 
