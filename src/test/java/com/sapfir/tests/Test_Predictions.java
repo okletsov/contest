@@ -57,7 +57,7 @@ public class Test_Predictions {
         dtHelpers2.captureResponseBody(devTools, "ajax-user-data");
 
         // Performing actions in UI
-        ce.clickRejectAllCookiesButton();
+        // ce.clickRejectAllCookiesButton(); -- website behavior changed, this button no longer shown
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
