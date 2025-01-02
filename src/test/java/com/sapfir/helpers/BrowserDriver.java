@@ -3,7 +3,7 @@ package com.sapfir.helpers;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v122.network.Network;
+import org.openqa.selenium.devtools.v131.network.Network;
 
 import java.util.Optional;
 import java.util.logging.Level;
