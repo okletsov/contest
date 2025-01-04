@@ -9,8 +9,19 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,7 +76,11 @@ public class Test_Predictions {
         pp.clickFeedTab();
 
         // Capturing json response with the list of participants
-        this.followingJson = dtHelpers.getResponseBody();
+        try {
+            this.followingJson = decodeResponse(dtHelpers.getResponseBody());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         // Capturing request headers, usePremium and bookieHash to be used in subsequent API calls
 
@@ -85,6 +100,54 @@ public class Test_Predictions {
         this.apiHelpers = new ApiHelpers(usePremium, bookieHash, requestHeaders);
     }
 
+     private byte[] decodeDynamicKey(String key) {
+        // sample key = "5dec1dd50e1135ccc169be257859da4d";
+        // expected value [93, 236, 29, 213, 14, 17, 53, 204, 193, 105, 190, 37, 120, 89, 218, 77]
+        // Split the string into chunks of 2 characters
+        List<String> hexPairs = new ArrayList<>();
+        for (int i = 0; i < key.length(); i += 2) {
+            hexPairs.add(key.substring(i, i + 2));
+        }
+
+        // Convert each hex pair to a byte
+        byte[] byteArray = new byte[hexPairs.size()];
+        for (int i = 0; i < hexPairs.size(); i++) {
+            byteArray[i] = (byte) Integer.parseInt(hexPairs.get(i), 16);
+        }
+        return byteArray;
+    }
+
+    @Test private String decodeResponse(String rawResponse) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        // Base64 decode
+        String decodedResponse = new String(Base64.getDecoder().decode(rawResponse));
+        String[] responseElements = decodedResponse.split(":");
+        // TODO: add validation
+
+        // Original password and salt
+        final String password = "%RtR8AB&nWsh=AQC+v!=pgAe@dSQG3kQ";
+        final String salt = "orieC_jQQWRmhkPvR6u2kzXeTube6aYupiOddsPortal";
+        byte[] iv = decodeDynamicKey(responseElements[1]);
+        byte[] encryptedData = Base64.getDecoder().decode(responseElements[0]);
+
+        // Key derivation using PBKDF2
+        int iterations = 1000;
+        int keyLength = 256;
+        PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(StandardCharsets.UTF_8), iterations, keyLength);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        byte[] keyBytes = keyFactory.generateSecret(pbeKeySpec).getEncoded();
+
+        // Convert PBKDF2 key to AES key
+        SecretKeySpec aesKey = new SecretKeySpec(keyBytes, "AES");
+
+        // AES decryption
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+        cipher.init(Cipher.DECRYPT_MODE, aesKey, ivSpec);
+        byte[] decryptedData = cipher.doFinal(encryptedData);
+
+        // Output decrypted data
+        return new String(decryptedData, StandardCharsets.UTF_8);
+    }
     @AfterClass
     public void tearDown() {
         driver.quit();
