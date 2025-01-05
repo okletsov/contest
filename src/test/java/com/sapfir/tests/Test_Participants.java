@@ -1,6 +1,7 @@
 package com.sapfir.tests;
 
 import com.sapfir.apiUtils.FollowingUsersParser;
+import com.sapfir.apiUtils.ResponseDecoder;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.CommonElements;
 import com.sapfir.pageClasses.HomePageBeforeLogin;
@@ -65,7 +66,13 @@ public class Test_Participants {
         pp.viewParticipants();
 
         // Getting the list of participants from json response
-        String followingJson = dtHelpers.getResponseBody();
+        ResponseDecoder decoder = new ResponseDecoder();
+        String followingJson;
+        try {
+            followingJson = decoder.decodeResponse(dtHelpers.getResponseBody());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         FollowingUsersParser followingUsersParser = new FollowingUsersParser(followingJson);
         ArrayList<String> participants = followingUsersParser.getUsernames(followingJson);
 

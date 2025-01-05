@@ -98,7 +98,12 @@ public class ApiHelpers {
 
                 // Inspecting the response body to make sure the call succeeded
                 assert response.body() != null;
-                responseBody = response.body().string();
+                ResponseDecoder decoder = new ResponseDecoder();
+                try{
+                    responseBody = decoder.decodeResponse(response.body().string());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 requestFailed = responseBody.contains("{'e':'503'}"); // this indicates request failure
                 callNumber++;
             } while (requestFailed && callNumber < 20);
