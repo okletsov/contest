@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>4.18.1</version>
+      <version>4.13.0</version>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
@@ -62,8 +62,8 @@
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-devtools-v131</artifactId>
-      <version>4.27.0</version>
+      <artifactId>selenium-devtools-v115</artifactId>
+      <version>4.13.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

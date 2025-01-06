@@ -9,8 +9,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.sql.Connection;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,17 +32,20 @@ public class Test_Predictions {
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(180));
+        driver.manage().timeouts().setScriptTimeout(Duration.ofSeconds(180));
 
         Properties prop = new Properties();
         String baseUrl = prop.getSiteUrl();
         driver.get(baseUrl);
 
-        // Getting necessary page classes
+        // Getting necessary classes
         HomePageBeforeLogin hpbl = new HomePageBeforeLogin(driver);
         LoginPage lp = new LoginPage(driver);
         CommonElements ce = new CommonElements(driver);
         ProfilePage pp = new ProfilePage(driver);
         JsonHelpers jsonHelpers = new JsonHelpers();
+        ResponseDecoder decoder = new ResponseDecoder();
 
         // Getting access to devTools
         DevTools devTools = bd.getDevTools();
@@ -65,7 +68,11 @@ public class Test_Predictions {
         pp.clickFeedTab();
 
         // Capturing json response with the list of participants
-        this.followingJson = dtHelpers.getResponseBody();
+        try {
+            this.followingJson = decoder.decodeResponse(dtHelpers.getResponseBody());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         // Capturing request headers, usePremium and bookieHash to be used in subsequent API calls
 
