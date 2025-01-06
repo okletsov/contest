@@ -10,6 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.sql.Connection;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class Test_Predictions {
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(180));
+        driver.manage().timeouts().setScriptTimeout(Duration.ofSeconds(180));
 
         Properties prop = new Properties();
         String baseUrl = prop.getSiteUrl();

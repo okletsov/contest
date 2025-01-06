@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.time.Duration;
 import java.util.ArrayList;
 
 public class Test_Participants {
@@ -33,6 +34,8 @@ public class Test_Participants {
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(180));
+        driver.manage().timeouts().setScriptTimeout(Duration.ofSeconds(180));
         devTools = bd.getDevTools();
 
         Properties prop = new Properties();
