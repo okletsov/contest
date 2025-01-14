@@ -3,11 +3,11 @@ package com.sapfir.tests;
 import com.sapfir.apiUtils.*;
 import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.sql.Connection;
 import java.time.Duration;
@@ -16,6 +16,8 @@ import java.util.List;
 
 public class Test_Predictions {
 
+    private static final Logger Log = LogManager.getLogger(Test_Predictions.class.getName());
+
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
     private ChromeDriver driver;
@@ -23,8 +25,21 @@ public class Test_Predictions {
 
     private ApiHelpers apiHelpers;
 
-    @BeforeClass
+    @BeforeSuite
     public void setUp() {
+
+        // Register the shutdown hook for fallback cleanup
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Log.info("Shutdown hook triggered. Performing cleanup...");
+            if (driver != null) {
+                driver.quit();
+                Log.info("WebDriver closed via shutdown hook.");
+            }
+            if (conn != null) {
+                dbOp.closeConnection(conn);
+                Log.info("Database connection closed via shutdown hook.");
+            }
+        }));
 
         conn = dbOp.connectToDatabase();
 
@@ -32,8 +47,6 @@ public class Test_Predictions {
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(180));
-        driver.manage().timeouts().setScriptTimeout(Duration.ofSeconds(180));
 
         Properties prop = new Properties();
         String baseUrl = prop.getSiteUrl();
@@ -92,7 +105,7 @@ public class Test_Predictions {
         this.apiHelpers = new ApiHelpers(usePremium, bookieHash, requestHeaders);
     }
 
-    @AfterClass
+    @AfterSuite
     public void tearDown() {
         driver.quit();
 

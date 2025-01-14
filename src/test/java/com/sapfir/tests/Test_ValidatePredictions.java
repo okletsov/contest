@@ -3,9 +3,7 @@ package com.sapfir.tests;
 import com.sapfir.helpers.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -17,12 +15,22 @@ public class Test_ValidatePredictions {
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
 
-    @BeforeClass
+    @BeforeSuite
     public void setUp() {
+
+        // Register the shutdown hook for fallback cleanup
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Log.info("Shutdown hook triggered. Performing cleanup...");
+            if (conn != null) {
+                dbOp.closeConnection(conn);
+                Log.info("Database connection closed via shutdown hook.");
+            }
+        }));
+
         conn = dbOp.connectToDatabase();
     }
 
-    @AfterClass
+    @AfterSuite
     public void tearDown() {
         dbOp.closeConnection(conn);
     }

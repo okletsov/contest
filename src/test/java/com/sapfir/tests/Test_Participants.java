@@ -7,18 +7,18 @@ import com.sapfir.pageClasses.CommonElements;
 import com.sapfir.pageClasses.HomePageBeforeLogin;
 import com.sapfir.pageClasses.LoginPage;
 import com.sapfir.pageClasses.ProfilePage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.time.Duration;
 import java.util.ArrayList;
 
 public class Test_Participants {
+
+    private static final Logger Log = LogManager.getLogger(Test_Participants.class.getName());
 
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
@@ -26,23 +26,34 @@ public class Test_Participants {
     private String baseUrl;
     private DevTools devTools;
 
-    @BeforeClass
+    @BeforeSuite
     public void setUp() {
+
+        // Register the shutdown hook for fallback cleanup
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Log.info("Shutdown hook triggered. Performing cleanup...");
+            if (driver != null) {
+                driver.quit();
+                Log.info("WebDriver closed via shutdown hook.");
+            }
+            if (conn != null) {
+                dbOp.closeConnection(conn);
+                Log.info("Database connection closed via shutdown hook.");
+            }
+        }));
 
         conn = dbOp.connectToDatabase();
 
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(180));
-        driver.manage().timeouts().setScriptTimeout(Duration.ofSeconds(180));
         devTools = bd.getDevTools();
 
         Properties prop = new Properties();
         baseUrl = prop.getSiteUrl();
     }
 
-    @AfterClass
+    @AfterSuite
     public void tearDown() {
         driver.quit();
         dbOp.closeConnection(conn);
