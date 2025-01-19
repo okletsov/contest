@@ -1,5 +1,7 @@
 package com.sapfir.helpers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v131.network.Network;
 import org.openqa.selenium.devtools.v131.network.model.Headers;
@@ -9,6 +11,8 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class DevToolsHelpers {
+
+    private static final Logger Log = LogManager.getLogger(DevToolsHelpers.class.getName());
 
     private String responseBody;
     private final HashMap<String, String> requestHeaders = new HashMap<>();
@@ -36,10 +40,17 @@ public class DevToolsHelpers {
     }
 
     public void captureResponseBody(DevTools devTools, String url) {
+        Log.info("Capturing response body for: " + url);
         devTools.addListener(Network.responseReceived(), response -> {
             if (response.getResponse().getUrl().contains(url)) {
+                Log.info("Response status for " + response.getResponse().getUrl() + ": " + response.getResponse().getStatus());
+
                 RequestId requestId = response.getRequestId();
                 this.responseBody = devTools.send(Network.getResponseBody(requestId)).getBody();
+
+                String trimmedResponse =
+                        this.responseBody.length() > 50 ? this.responseBody.substring(0,50) : this.responseBody;
+                Log.info("Response body for " + url + ": " + trimmedResponse + "...");
             }
         });
     }
