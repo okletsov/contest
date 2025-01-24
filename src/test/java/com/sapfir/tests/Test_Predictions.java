@@ -61,13 +61,10 @@ public class Test_Predictions {
         // Getting access to devTools
         DevTools devTools = bd.getDevTools();
 
-        // Setting up a listener to monitor and save json response with the list of participants
+        // Setting up a listener to monitor and save request headers and user-data json
         DevToolsHelpers dtHelpers = new DevToolsHelpers();
         dtHelpers.captureRequestHeaders(devTools, "/ajax-communityFeed/profile/24836901");
-
-        // Setting up a listener to monitor and save user-data json
-        DevToolsHelpers dtHelpers2 = new DevToolsHelpers();
-        dtHelpers2.captureResponseBody(devTools, "ajax-user-data");
+        dtHelpers.captureResponseBody(devTools, "ajax-user-data");
 
         // Performing actions in UI
         // ce.clickRejectAllCookiesButton(); -- website behavior changed, this button no longer shown
@@ -82,7 +79,7 @@ public class Test_Predictions {
         HashMap<String, String> requestHeaders = dtHelpers.getRequestHeaders();
 
         // Getting "bookieHash" and "usePremium" values (to be used in generating tournament results URL)
-        String userDataJS = dtHelpers2.getResponseBody();
+        String userDataJS = dtHelpers.getResponseBody();
         String userDataJason = jsonHelpers.getJsonFromJsCode(userDataJS, "pageOutrightsVar");
 
         UserDataParser userDataParser = new UserDataParser(userDataJason);
