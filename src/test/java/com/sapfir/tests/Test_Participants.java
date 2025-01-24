@@ -93,6 +93,16 @@ public class Test_Participants {
         // Inspecting participants
         uo.inspectParticipants(participants);
 
+        // Update portal id for participants
+        for (String username : participants) {
+            String dbPortalUserId = uo.getPortalUserIdByUsername(username);
+            if (dbPortalUserId == null) {
+                Log.info(username + ": DB portal_id is null. Writing portal id...");
+                String webPortalUserId = followingUsersParser.getUserIdByUsername(followingJson, username);
+                uo.addPortalUserId(username, webPortalUserId);
+            }
+        }
+
 //        Insert background job timestamp
         BackgroundJobs bj = new BackgroundJobs(conn);
         String jobName = Test_Participants.class.getSimpleName();
