@@ -10,7 +10,6 @@ import org.openqa.selenium.devtools.DevTools;
 import org.testng.annotations.*;
 
 import java.sql.Connection;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,7 +20,6 @@ public class Test_Predictions {
     private final DatabaseOperations dbOp = new DatabaseOperations();
     private Connection conn = null;
     private ChromeDriver driver;
-    private String followingJson;
 
     private ApiHelpers apiHelpers;
 
@@ -65,7 +63,6 @@ public class Test_Predictions {
 
         // Setting up a listener to monitor and save json response with the list of participants
         DevToolsHelpers dtHelpers = new DevToolsHelpers();
-        dtHelpers.captureResponseBody(devTools, "ajax-following");
         dtHelpers.captureRequestHeaders(devTools, "/ajax-communityFeed/profile/24836901");
 
         // Setting up a listener to monitor and save user-data json
@@ -77,15 +74,7 @@ public class Test_Predictions {
         hpbl.clickLogin();
         lp.signIn();
         ce.openProfilePage();
-        pp.viewParticipants();
         pp.clickFeedTab();
-
-        // Capturing json response with the list of participants
-        try {
-            this.followingJson = decoder.decodeResponse(dtHelpers.getResponseBody());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
         // Capturing request headers, usePremium and bookieHash to be used in subsequent API calls
 
@@ -123,9 +112,9 @@ public class Test_Predictions {
     @Test(dataProvider = "participants", dataProviderClass = Participants.class)
     public void testPredictions(String username) {
 
-        // Getting user id from a json for a user from data provider
-        FollowingUsersParser followingUsersParser = new FollowingUsersParser(followingJson);
-        String jsonUserId = followingUsersParser.getUserIdByUsername(followingJson, username);
+//        Getting portal user id from database for a user from data provider
+        UserOperations uo = new UserOperations(conn);
+        String webPortalUserId = uo.getPortalUserIdByUsername(username);
 
         int urlSuffix = 0;
         List<String> predictions;
@@ -139,7 +128,7 @@ public class Test_Predictions {
              */
 
             // Making a call to get a json with the list of predictions
-            String requestUrl = apiHelpers.generatePredictionsRequestUrl(jsonUserId, urlSuffix);
+            String requestUrl = apiHelpers.generatePredictionsRequestUrl(webPortalUserId, urlSuffix);
             String predictionsJson = apiHelpers.makeApiRequest(requestUrl);
 
             // Getting the list of feed item ids from json

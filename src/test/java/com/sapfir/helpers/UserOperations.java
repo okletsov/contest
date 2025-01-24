@@ -70,8 +70,8 @@ public class UserOperations {
         Log.debug("Adding nickaname '" + nickname + "' to 'user_nickname' table for '" + targetUser + "' user");
         deactivateNickname(targetUser);
         String userId = getUserID(targetUser);
-        String addNicknameSql = "insert into user_nickname (id, user_id, nickname, is_active) " +
-                "values (uuid(), '" + userId + "', '" + nickname + "', 1);";
+        String addNicknameSql = "insert into user_nickname (id, user_id, nickname, is_active, portal_id) " +
+                "values (uuid(), '" + userId + "', '" + nickname + "', 1, '');";
         ExecuteQuery eq = new ExecuteQuery(conn, addNicknameSql);
         eq.cleanUp();
         Log.info("Successfully added " + nickname + " to 'user_nickname' table for '" + targetUser + "' user");
@@ -160,5 +160,21 @@ public class UserOperations {
             Log.debug("User " + username + " is already participating in current contest");
         }
 
+    }
+
+    public String getPortalUserIdByUsername(String username) {
+        String sqlPortalId = "select portal_id from user_nickname where nickname = '" + username + "';" ;
+        DatabaseOperations dbOp = new DatabaseOperations();
+        return dbOp.getSingleValue(conn, "portal_id", sqlPortalId);
+    }
+
+    public void addPortalUserId(String username, String portalId) {
+        String userId = getUserID(username);
+        String sqlAddPortalId = "UPDATE user_nickname SET portal_id='" + portalId +
+                "' WHERE user_id='"+ userId +
+                "' and nickname = '"+ username +"';";
+        ExecuteQuery eq = new ExecuteQuery(conn, sqlAddPortalId);
+        eq.cleanUp();
+        Log.info("Successfully added portal_id for " + username + ": " + portalId);
     }
 }
