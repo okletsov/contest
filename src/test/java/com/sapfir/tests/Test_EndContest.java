@@ -31,10 +31,11 @@ public class Test_EndContest {
         ContestResults contRes = new ContestResults(conn);
         ContestResultsOperations contResOp = new ContestResultsOperations(conn);
         ContestFinanceOperations contFinOp = new ContestFinanceOperations(conn);
+        Properties prop = new Properties();
 
 //        Step 1: Specify contest id to end and find its type (seasonal vs monthly)
 
-        String contestId = "64d69f8f-785d-11ee-a454-152fabcd04aa";
+        String contestId = prop.getContestId();
 
         Contest c = new Contest(conn, contestId);
         String contestType = c.getContestType();

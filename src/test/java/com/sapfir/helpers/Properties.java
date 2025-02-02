@@ -23,6 +23,7 @@ public class Properties {
     private final String sandboxPassword;
 
     private final String headless;
+    private final String contestId;
 
     public Properties() {
         java.util.Properties properties = new java.util.Properties();
@@ -51,6 +52,7 @@ public class Properties {
         this.sandboxPassword = properties.getProperty("sandbox_password");
 
         this.headless = properties.getProperty("headless");
+        this.contestId = properties.getProperty("contest_id");
     }
 
     public String getDatabaseURL() {return databaseURL;}
@@ -66,4 +68,5 @@ public class Properties {
     public String getSandboxPassword() {return sandboxPassword;}
 
     public String getHeadless() {return headless;}
+    public String getContestId() {return contestId;}
 }
