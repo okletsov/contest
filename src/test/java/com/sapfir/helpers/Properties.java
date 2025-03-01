@@ -24,6 +24,8 @@ public class Properties {
 
     private final String headless;
     private final String contestId;
+    private final String season;
+    private final String year;
 
     public Properties() {
         java.util.Properties properties = new java.util.Properties();
@@ -53,6 +55,8 @@ public class Properties {
 
         this.headless = properties.getProperty("headless");
         this.contestId = properties.getProperty("contest_id");
+        this.season = properties.getProperty("season");
+        this.year = properties.getProperty("year");
     }
 
     public String getDatabaseURL() {return databaseURL;}
@@ -69,4 +73,8 @@ public class Properties {
 
     public String getHeadless() {return headless;}
     public String getContestId() {return contestId;}
+
+    public String getSeason() {return season;}
+
+    public String getYear() {return year;}
 }

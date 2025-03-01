@@ -3,6 +3,7 @@ package com.sapfir.tests;
 import com.sapfir.helpers.BackgroundJobs;
 import com.sapfir.helpers.ContestOperations;
 import com.sapfir.helpers.DatabaseOperations;
+import com.sapfir.helpers.Properties;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Ignore;
@@ -28,9 +29,10 @@ public class Test_AddSeasonalContest {
 	@Test
 	public void addSeasonalContest() {
 		ContestOperations co = new ContestOperations(conn);
+		Properties prop = new Properties();
 
-		int year = Integer.parseInt(System.getProperty("year"));
-		String season = System.getProperty("season");
+		int year = Integer.parseInt(prop.getYear());
+		String season =prop.getSeason();
 
 		co.addContest(year, season);
 
