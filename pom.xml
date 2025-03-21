@@ -36,17 +36,17 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.20.0</version>
+      <version>2.24.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.20.0</version>
+      <version>2.24.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.20.0</version>
+      <version>2.24.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -97,6 +97,9 @@
             <suiteXmlFiles>
               <suiteXmlFile>testng.xml</suiteXmlFile>
             </suiteXmlFiles>
+            <systemPropertyVariables>
+              <log4j.configurationFile>resources/log4j2.xml</log4j.configurationFile>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
         <plugin>
