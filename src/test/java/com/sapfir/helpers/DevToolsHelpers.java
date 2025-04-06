@@ -3,9 +3,9 @@ package com.sapfir.helpers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v134.network.Network;
-import org.openqa.selenium.devtools.v134.network.model.Headers;
-import org.openqa.selenium.devtools.v134.network.model.RequestId;
+import org.openqa.selenium.devtools.v135.network.Network;
+import org.openqa.selenium.devtools.v135.network.model.Headers;
+import org.openqa.selenium.devtools.v135.network.model.RequestId;
 
 import java.util.HashMap;
 import java.util.Objects;
