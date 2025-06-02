@@ -21,7 +21,6 @@ public class ApiSandbox {
         // Get chromedriver
         BrowserDriver bd = new BrowserDriver();
         ChromeDriver driver = bd.getDriver();
-        driver.manage().window().maximize();
 
         // Login
         Properties prop = new Properties();

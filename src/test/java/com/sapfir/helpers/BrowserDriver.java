@@ -26,6 +26,10 @@ public class BrowserDriver {
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");
             options.addArguments("--window-size=1920,1080");
+            options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
+            options.addArguments("--window-position=0,0");
+            options.addArguments("--force-device-scale-factor=1");
             this.driver = new ChromeDriver(options);
         } else if (headless.equals("false")){
             this.driver = new ChromeDriver();

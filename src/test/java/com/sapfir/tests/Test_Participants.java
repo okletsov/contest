@@ -9,10 +9,16 @@ import com.sapfir.pageClasses.LoginPage;
 import com.sapfir.pageClasses.ProfilePage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.testng.annotations.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.util.ArrayList;
 
@@ -46,7 +52,6 @@ public class Test_Participants {
 
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
-        driver.manage().window().maximize();
         devTools = bd.getDevTools();
 
         Properties prop = new Properties();
@@ -74,10 +79,24 @@ public class Test_Participants {
         dtHelpers.captureResponseBody(devTools, "ajax-following");
 
         // Logging in and viewing the "Following tab" to trigger API call with the list of participants
-        hpbl.clickLogin();
-        lp.signIn();
-        ce.openProfilePage();
-        pp.viewParticipants();
+        try {
+            ce.clickRejectAllCookiesButton();
+            hpbl.clickLogin();
+            lp.signIn();
+            ce.openProfilePage();
+            pp.viewParticipants();
+        } catch (Exception e) {
+            File scr = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            File destination = new File("failure-screenshot.png");
+            try {
+                Files.copy(scr.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Log.error("Screenshot saved to " + destination.getAbsolutePath());
+            } catch (IOException ex) {
+                Log.error("Failed to save screenshot: " + ex.getMessage());
+                throw new RuntimeException(ex);
+            }
+            throw e;
+        }
 
         // Getting the list of participants from json response
         ResponseDecoder decoder = new ResponseDecoder();

@@ -17,7 +17,6 @@ public class Test_Sandbox {
 
 		BrowserDriver bd = new BrowserDriver();
 		driver = bd.getDriver();
-		driver.manage().window().maximize();
 
 		Properties prop = new Properties();
 		sandboxBaseUrl = prop.getSandboxUrl();

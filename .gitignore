@@ -4,3 +4,4 @@ target/
 logs/
 config.properties
 jsonExample.json
+failure-screenshot.png

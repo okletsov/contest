@@ -5,10 +5,16 @@ import com.sapfir.helpers.*;
 import com.sapfir.pageClasses.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.testng.annotations.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +50,6 @@ public class Test_Predictions {
         // Setting up ChromeDriver
         BrowserDriver bd = new BrowserDriver();
         driver = bd.getDriver();
-        driver.manage().window().maximize();
 
         Properties prop = new Properties();
         String baseUrl = prop.getSiteUrl();
@@ -67,11 +72,26 @@ public class Test_Predictions {
         dtHelpers.captureResponseBody(devTools, "ajax-user-data");
 
         // Performing actions in UI
-        // ce.clickRejectAllCookiesButton(); -- website behavior changed, this button no longer shown
-        hpbl.clickLogin();
-        lp.signIn();
-        ce.openProfilePage();
-        pp.clickFeedTab();
+        try {
+            ce.clickRejectAllCookiesButton();
+            hpbl.clickLogin();
+            lp.signIn();
+            ce.openProfilePage();
+            pp.clickFeedTab();
+
+        } catch (Exception e) {
+            File scr = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            File destination = new File("failure-screenshot.png");
+            try {
+                Files.copy(scr.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Log.error("Screenshot saved to " + destination.getAbsolutePath());
+            } catch (IOException ex) {
+                Log.error("Failed to save screenshot: " + ex.getMessage());
+                throw new RuntimeException(ex);
+            }
+            throw e;
+        }
+
 
         // Capturing request headers, usePremium and bookieHash to be used in subsequent API calls
 
