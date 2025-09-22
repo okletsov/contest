@@ -30,6 +30,7 @@ public class BrowserDriver {
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");
             options.addArguments("--window-position=0,0");
             options.addArguments("--force-device-scale-factor=1");
+//            options.setBinary("C:\\path\\to\\your\\chrome-win64\\chrome.exe"); //to test on windows
             this.driver = new ChromeDriver(options);
         } else if (headless.equals("false")){
             this.driver = new ChromeDriver();
