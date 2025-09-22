@@ -27,8 +27,8 @@ public class ResponseDecoder {
         // TODO: add validation
 
         // Original password and salt
-        final String password = "%RtR8AB&nWsh=AQC+v!=pgAe@dSQG3kQ";
-        final String salt = "orieC_jQQWRmhkPvR6u2kzXeTube6aYupiOddsPortal";
+        final String password = "J*8sQ!p$7aD_fR2yW@gHn*3bVp#sAdLd_k";
+        final String salt = "5b9a8f2c3e6d1a4b7c8e9d0f1a2b3c4d";
         byte[] iv = decodeDynamicKey(responseElements[1]);
         byte[] encryptedData = Base64.getDecoder().decode(responseElements[0]);
 
