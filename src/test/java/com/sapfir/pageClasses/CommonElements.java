@@ -30,6 +30,9 @@ public class CommonElements {
     @FindBy(id = "onetrust-reject-all-handler")
     public WebElement rejectAllCookiesButton;
 
+    @FindBy(css = ".inset-0 [aria-label=\"Close\"]")
+    public WebElement closeTeamPageButton;
+
     public void openProfilePage(){
 
         SeleniumMethods sm = new SeleniumMethods(driver);
@@ -49,5 +52,12 @@ public class CommonElements {
         SeleniumMethods sm = new SeleniumMethods(driver);
         sm.waitForElement(rejectAllCookiesButton, Duration.ofSeconds(10));
         rejectAllCookiesButton.click();
+    }
+
+    public void clickCloseTeamPageButton(){
+
+        SeleniumMethods sm = new SeleniumMethods(driver);
+        sm.waitForElement(closeTeamPageButton, Duration.ofSeconds(10));
+        closeTeamPageButton.click();
     }
 }

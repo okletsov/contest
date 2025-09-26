@@ -81,6 +81,7 @@ public class Test_Participants {
         // Logging in and viewing the "Following tab" to trigger API call with the list of participants
         try {
             ce.clickRejectAllCookiesButton();
+            ce.clickCloseTeamPageButton();
             hpbl.clickLogin();
             lp.signIn();
             ce.openProfilePage();
