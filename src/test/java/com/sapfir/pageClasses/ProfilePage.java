@@ -35,7 +35,7 @@ public class ProfilePage {
     private WebElement firstPrediction;
 
     @FindBy(css = ".bg-black-main .no-scrollbar li:nth-child(2)")
-    private WebElement feedTab;
+    public WebElement feedTab;
 
     @FindBy(className = "view-more")
     private WebElement viewMoreButton;
@@ -64,7 +64,7 @@ public class ProfilePage {
         //Waiting for the first Unfollow button to appear
         sm.waitForElement(firstPrediction, Duration.ofSeconds(30));
 
-        Log.debug("Successfully clicked Feed Tab");
+        Log.info("Successfully clicked Feed Tab");
     }
 
     public ArrayList getParticipantUsernames() {
