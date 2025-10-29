@@ -21,6 +21,7 @@ public class BrowserDriver {
         String headless = prop.getHeadless();
         setChromedriverPath();
         System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
+        System.setProperty("com.sun.security.enableAIAcaIssuers", "true");
 
         if (headless.equals("true")){
             ChromeOptions options = new ChromeOptions();
