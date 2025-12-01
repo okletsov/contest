@@ -40,8 +40,8 @@ public class ContestResults {
                 sql = "select \n" +
                         "\t(\n" +
                         "\t\tcase \n" +
-                        "\t\t\twhen t5.active_days >=20 then (row_number() over (order by \n" +
-                        "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcase when t5.active_days >= 20 then 0 else 1 end\n" +
+                        "\t\t\twhen t5.active_days >= 0 then (row_number() over (order by \n" +
+                        "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcase when t5.active_days >= 0 then 0 else 1 end\n" +
                         "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t, t5.units desc\n" +
                         "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t)\n" +
                         "\t\t\t\t\t\t\t\t\t\t)\n" +
