@@ -74,7 +74,7 @@ public class Test_Predictions {
         // Performing actions in UI
         try {
             ce.clickRejectAllCookiesButton();
-//            ce.clickCloseTeamPageButton(); -- popup no longer displayed
+            ce.clickCloseTeamPageButton();
             hpbl.clickLogin();
             lp.signIn();
             ce.openProfilePage();
