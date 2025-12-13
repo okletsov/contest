@@ -3,12 +3,14 @@ package com.sapfir.pageClasses;
 import com.sapfir.helpers.SeleniumMethods;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import java.time.Duration;
+import java.util.List;
 
 public class CommonElements {
 
@@ -29,9 +31,6 @@ public class CommonElements {
 
     @FindBy(id = "onetrust-reject-all-handler")
     public WebElement rejectAllCookiesButton;
-
-    @FindBy(css = ".inset-0 [aria-label=\"Close\"]")
-    public WebElement closeTeamPageButton;
 
     public void openProfilePage(){
 
@@ -54,10 +53,23 @@ public class CommonElements {
         rejectAllCookiesButton.click();
     }
 
-    public void clickCloseTeamPageButton(){
+    public void closeAllModals() {
 
-        SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(closeTeamPageButton, Duration.ofSeconds(10));
-        closeTeamPageButton.click();
+        Log.info("Detecting and closing modals");
+        String[] modalCssSelectors = {
+                ".inset-0 [aria-label=\"Close\"]",
+                "[class=\"overlay-bookie-modal flex-center\"] .cursor-pointer"
+        };
+
+        int counter = 0;
+
+        for(String cssSelector: modalCssSelectors) {
+            List<WebElement> closeBtnElements = driver.findElements(By.cssSelector(cssSelector));
+            if (!closeBtnElements.isEmpty()) {
+                driver.findElement(By.cssSelector(cssSelector)).click();
+                counter++;
+            }
+        }
+        Log.info("Closed modals " + counter);
     }
 }
