@@ -192,7 +192,7 @@ public class PredictionValidation {
                     3.12 Initial_date_scheduled on the last day, date_scheduled on the last day and event cancelled - doesn't count
                     3.13 Initial_date_scheduled on the last day, date_scheduled on the last + 24hrs day and event cancelled - count void
                     3.14 Initial_date_scheduled on the last day, date_scheduled on the last + 24hrs day and event not cancelled - valid prediction
-                    3.15 Initial_date_scheduled on the last day, date_scheduled after last dat + 24hrs
+                    3.15 Initial_date_scheduled on the last day, date_scheduled after last day + 24hrs - count void
 
          */
 
