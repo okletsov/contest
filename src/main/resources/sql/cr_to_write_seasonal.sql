@@ -1,13 +1,5 @@
 select
-	(
-		case
-			when t5.active_days >= 0 then (row_number() over (order by
-																case when t5.active_days >= 0 then 0 else 1 end
-																, t5.units desc
-															)
-										)
-		else 0 end
-	) as place
+	row_number() over (order by t5.units desc) as place
 	, t5.nickname
 	, t5.user_id
 	, t5.seasonal_contest_id as contest_id
@@ -118,4 +110,4 @@ from (
 			, t3.seasonal_contest_id
 		) t4 -- calculating raw contest result measures
 	) t5 -- applying rules for user who did no make 100 predictions
-; -- applying rules for users with less than 20 active days
+; -- ordering results by units

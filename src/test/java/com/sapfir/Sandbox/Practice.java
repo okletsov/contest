@@ -22,7 +22,7 @@ public class Practice {
         String monContestId = "36da5a22-ce59-11f0-8b23-000017024a87";
         String annualContestId = "2cdc9aed-84fd-11f0-8b23-000017024a87";
 
-        List<HashMap<String,Object>> resultsToWrite = contRes.getGeneralContestResultsToWrite(annualContestId);
+        List<HashMap<String,Object>> resultsToWrite = contRes.getGeneralContestResultsToWrite(seasContestId);
         System.out.println("Stop Here");
 
 //        Close database connection
