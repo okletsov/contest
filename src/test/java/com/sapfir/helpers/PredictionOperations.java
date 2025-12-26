@@ -677,7 +677,7 @@ public class PredictionOperations {
         String sql = "select \n" +
                 "round(" +
                 "if(market != 'DC', 1, 2)/(1/option1_value + 1/option2_value + if(option3_value is null, 0, 1/option3_value))" +
-                ", 4) as payout\n" +
+                ", 2) as payout\n" +
                 "from prediction\n" +
                 "where id = '" + predictionId + "';";
 
