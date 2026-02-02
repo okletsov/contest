@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v139.network.Network;
+import org.openqa.selenium.devtools.v144.network.Network;
 
 import java.util.Optional;
 
@@ -44,6 +44,7 @@ public class BrowserDriver {
         this.devTools = driver.getDevTools();
         devTools.createSession();
         devTools.send(Network.enable(
+                Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
