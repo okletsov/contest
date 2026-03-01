@@ -992,7 +992,8 @@ public class PredictionOperations {
         Log.debug("Checking if prediction " + predictionID + " is finalized...");
         boolean predictionFinalized;
         String dbPredictionResult = getDbPredictionResult(predictionID);
-        predictionFinalized = !dbPredictionResult.equals("not-played");
+        String dbMainScore = getDbMainScore(predictionID);
+        predictionFinalized = !dbPredictionResult.equals("not-played") && !dbMainScore.equals("null");
         Log.info(username + ": prediction " + predictionID + " finalized? - " + predictionFinalized);
         return predictionFinalized;
     }
@@ -1017,11 +1018,15 @@ public class PredictionOperations {
         Log.debug("Updating result for prediction " + predictionID + "...");
         if (resultDifferent()) {
             updateResult();
-            updateMainScore();
-            updateDetailedScore();
             updateUnitOutcome();
             updateDateUpdated();
         } else {Log.debug("No update needed"); }
+
+        /*
+            There is an edge case to ho website works when the actual score gets updated later than the outcome
+         */
+        updateMainScore();
+        updateDetailedScore();
     }
 
     public void updateValidityStatus(String predictionId, int status, String contestType) {
