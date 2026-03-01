@@ -1025,8 +1025,10 @@ public class PredictionOperations {
         /*
             There is an edge case to ho website works when the actual score gets updated later than the outcome
          */
+//        ToDo: make updating main and detailed scores conditional
         updateMainScore();
         updateDetailedScore();
+        updateDateUpdated();
     }
 
     public void updateValidityStatus(String predictionId, int status, String contestType) {
