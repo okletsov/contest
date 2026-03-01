@@ -92,17 +92,30 @@ public class PredictionParser {
     }
 
     public String getMainScore() {
-        /*
-            Note: it is possible for main score:
-                - to not be present (Winner bets)
-                - to equal to null
-                - or to be an empty string
-         */
-        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Result");
+    /*
+        Note: it is possible for main score:
+            - to not be present (Winner bets)
+            - to equal to null
+            - or to be an empty string
+            - they will all be converted to java null
+     */
+        String result = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "Result");
+
+        if (result == null || result.trim().isEmpty() || "null".equalsIgnoreCase(result.trim())) {
+            return null;
+        }
+
+        return result.trim();
     }
 
     public String getDetailedScore() {
-        return jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "partialresult");
+        String partialResult = jsonHelpers.getFieldValueByPathAndName(json, infoFieldsPath, "partialresult");
+
+        if (partialResult == null || partialResult.trim().isEmpty() || "null".equalsIgnoreCase(partialResult.trim())) {
+            return null;
+        }
+
+        return partialResult.trim();
     }
 
     public String getPredictionResultId() {

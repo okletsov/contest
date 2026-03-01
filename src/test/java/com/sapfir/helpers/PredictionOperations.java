@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PredictionOperations {
 
@@ -726,6 +727,18 @@ public class PredictionOperations {
         return resultDifferent;
     }
 
+    private boolean mainScoreDifferent() {
+    /*
+        This method compare web prediction result vs db prediction result and returns:
+            true - if main score different
+            false - if main score matches
+     */
+        String webPredictionMainScore = parser.getMainScore();
+        String dbPredictionMainScore = getDbMainScore(predictionID);
+
+        return !Objects.equals(webPredictionMainScore, dbPredictionMainScore);
+    }
+
     private boolean dateScheduledDifferent() {
         /*
             This method compare web prediction date scheduled vs db prediction date scheduled and returns:
@@ -993,7 +1006,17 @@ public class PredictionOperations {
         boolean predictionFinalized;
         String dbPredictionResult = getDbPredictionResult(predictionID);
         String dbMainScore = getDbMainScore(predictionID);
-        predictionFinalized = !dbPredictionResult.equals("not-played") && !dbMainScore.equals("null");
+        String dbMarket = getDbMarket(predictionID);
+
+        if (dbMarket.contains("Winner")) {
+            predictionFinalized = !dbPredictionResult.equals("not-played");
+        } else {
+            predictionFinalized =
+                    !dbPredictionResult.equals("not-played") &&
+                    dbMainScore != null &&
+                    !dbMainScore.equals("null");
+        }
+
         Log.info(username + ": prediction " + predictionID + " finalized? - " + predictionFinalized);
         return predictionFinalized;
     }
@@ -1025,10 +1048,12 @@ public class PredictionOperations {
         /*
             There is an edge case to ho website works when the actual score gets updated later than the outcome
          */
-//        ToDo: make updating main and detailed scores conditional
-        updateMainScore();
-        updateDetailedScore();
-        updateDateUpdated();
+        Log.debug("Updating scores for prediction " + predictionID + "...");
+        if (mainScoreDifferent()) {
+            updateMainScore();
+            updateDetailedScore();
+            updateDateUpdated();
+        } else {Log.debug("No update needed"); }
     }
 
     public void updateValidityStatus(String predictionId, int status, String contestType) {
