@@ -37,8 +37,13 @@ public class ContestResultsOperations {
             int finalBetsCount = Integer.parseInt(results.get(i).get("final_bets_count").toString());
             int origBetsCount = Integer.parseInt(results.get(i).get("orig_bets_count").toString());
             int activeDays = Integer.parseInt(results.get(i).get("active_days").toString());
-            BigDecimal won = new BigDecimal(results.get(i).get("won").toString());
-            BigDecimal lost = new BigDecimal(results.get(i).get("lost").toString());
+
+            Object wonObj = results.get(i).get("won");
+            BigDecimal won = wonObj != null ? new BigDecimal(wonObj.toString()) : null;
+
+            Object lostObj = results.get(i).get("lost");
+            BigDecimal lost = lostObj != null ? new BigDecimal(lostObj.toString()) : null;
+
             BigDecimal units = new BigDecimal(results.get(i).get("units").toString());
             BigDecimal roi = new BigDecimal(results.get(i).get("roi").toString());
 
