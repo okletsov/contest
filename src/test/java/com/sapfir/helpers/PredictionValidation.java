@@ -214,7 +214,7 @@ public class PredictionValidation {
         if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction == 2) { updateWarningStatus(2); } // Step 2.7.2
         if (indexPerEventMarketUserPickNameCompetitors > 1 && indexOfDuplPrediction > 2) { return 27; } // Step 2.7.3
 
-        if (option2Value > 0 && payout.compareTo(BigDecimal.valueOf(1.05)) > -1) { return 60; } // Step 2.8
+        if (option2Value > 0 && payout.compareTo(BigDecimal.valueOf(1.06)) > -1) { return 60; } // Step 2.8
 
         if (dateScheduledKnown && isBeforeLastDay(initialDateScheduled)) {
 
