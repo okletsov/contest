@@ -814,21 +814,44 @@ public class PredictionOperations {
         Log.debug("Updating main score for prediction " + predictionID + "...");
         String webMainScore = parser.getMainScore();
 
-        String sql = "update prediction set main_score = '" + webMainScore + "' where id = '" + predictionID + "';";
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        eq.cleanUp();
-        Log.info("Updated main_score for " + predictionID + ". New main_score: " + webMainScore);
+        PreparedStatement sql = null;
+        try {
+            sql = conn.prepareStatement("update prediction set main_score = ? where id = ?");
+            sql.setString(1, webMainScore);
+            sql.setString(2, predictionID);
+            sql.executeUpdate();
+            sql.close();
+
+            Log.info("Updated main_score for " + predictionID + ". New main_score: " + webMainScore);
+        } catch (SQLException ex) {
+            Log.error("SQLException: " + ex.getMessage());
+            Log.error("SQLState: " + ex.getSQLState());
+            Log.error("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            Log.error("Failing sql statement: " + sql);
+        }
     }
 
     private void updateDetailedScore() {
         Log.debug("Updating detailed score for prediction " + predictionID + "...");
         String webDetailedScore = parser.getDetailedScore();
 
-        String sql =
-                "update prediction set detailed_score = '" + webDetailedScore + "' where id = '" + predictionID + "';";
-        ExecuteQuery eq = new ExecuteQuery(conn, sql);
-        eq.cleanUp();
-        Log.info("Updated detailed_score for " + predictionID + ". New detailed_score: " + webDetailedScore);
+        PreparedStatement sql = null;
+        try {
+            sql = conn.prepareStatement("update prediction set detailed_score = ? where id = ?");
+            sql.setString(1, webDetailedScore);
+            sql.setString(2, predictionID);
+            sql.executeUpdate();
+            sql.close();
+
+            Log.info("Updated detailed_score for " + predictionID + ". New detailed_score: " + webDetailedScore);
+        } catch (SQLException ex) {
+            Log.error("SQLException: " + ex.getMessage());
+            Log.error("SQLState: " + ex.getSQLState());
+            Log.error("VendorError: " + ex.getErrorCode());
+            Log.trace("Stack trace: ", ex);
+            Log.error("Failing sql statement: " + sql);
+        }
     }
 
     private void updateResult() {
