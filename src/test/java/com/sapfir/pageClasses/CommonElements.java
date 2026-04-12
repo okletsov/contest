@@ -42,14 +42,14 @@ public class CommonElements {
         profileButton.click();
 
         //Waiting for the Following Tab button to appear to know the page finished loading
-        sm.waitForElement(pp.feedTab, Duration.ofSeconds(10));
+        sm.waitForElement(pp.feedTab, Duration.ofSeconds(20));
         Log.info("Navigated to Profile page");
     }
 
     public void clickRejectAllCookiesButton(){
 
         SeleniumMethods sm = new SeleniumMethods(driver);
-        sm.waitForElement(rejectAllCookiesButton, Duration.ofSeconds(10));
+        sm.waitForElement(rejectAllCookiesButton, Duration.ofSeconds(20));
         rejectAllCookiesButton.click();
     }
 

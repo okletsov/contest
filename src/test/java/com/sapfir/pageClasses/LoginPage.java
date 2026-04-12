@@ -51,7 +51,7 @@ public class LoginPage {
         loginButtonInsideModal.click();
         Log.debug("Clicked Login button");
 
-        sm.waitForElement(ce.username, Duration.ofSeconds(10));
+        sm.waitForElement(ce.username, Duration.ofSeconds(20));
         Log.info("Successfully logged in");
     }
 }

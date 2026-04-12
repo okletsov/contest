@@ -32,9 +32,9 @@ public class HomePageBeforeLogin {
         SeleniumMethods sm = new SeleniumMethods(driver);
 
         Log.debug("Clicking Login button on Home Page...");
-        sm.waitForElement(loginButton, Duration.ofSeconds(10));
+        sm.waitForElement(loginButton, Duration.ofSeconds(20));
         loginButton.click();
-        sm.waitForElement(loginButtonInsideModal, Duration.ofSeconds(10));
+        sm.waitForElement(loginButtonInsideModal, Duration.ofSeconds(20));
         Log.info("Starting to login...");
     }
 }

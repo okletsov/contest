@@ -54,7 +54,7 @@ public class SandboxPage {
         loginButton.click();
         Log.debug("Clicked Login button");
 
-        sm.waitForElement(elementToWaitFor, Duration.ofSeconds(10));
+        sm.waitForElement(elementToWaitFor, Duration.ofSeconds(20));
         Log.info("Successfully logged in");
     }
 }

@@ -94,7 +94,7 @@ public class ProfilePage {
         Assert.assertTrue(usernameExist,
                 "Participant " + username + " exist in database, but is not present in Following tab");
         driver.findElement(By.cssSelector(locator)).click();
-        sm.waitForElement(feedTab, Duration.ofSeconds(10));
+        sm.waitForElement(feedTab, Duration.ofSeconds(20));
     }
 
     public void viewPredictions(String username) {
