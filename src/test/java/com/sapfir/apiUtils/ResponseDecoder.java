@@ -7,6 +7,10 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -15,12 +19,13 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 public class ResponseDecoder {
 
     private static final Logger Log = LogManager.getLogger(ResponseDecoder.class.getName());
 
-    public String decodeResponse(String rawResponse) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public String decodeResponse(String rawResponse) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
         // Base64 decode
         String decodedResponse = new String(Base64.getDecoder().decode(rawResponse));
         String[] responseElements = decodedResponse.split(":");
@@ -49,7 +54,21 @@ public class ResponseDecoder {
         byte[] decryptedData = cipher.doFinal(encryptedData);
 
         // Output decrypted data
-        return new String(decryptedData, StandardCharsets.UTF_8);
+        return decompressGzip(decryptedData);
+    }
+
+    private String decompressGzip(byte[] data) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        GZIPInputStream gis = new GZIPInputStream(bis);
+        InputStreamReader isr = new InputStreamReader(gis, StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr);
+
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
     }
 
     private byte[] decodeDynamicKey(String key) {
