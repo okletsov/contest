@@ -1037,7 +1037,8 @@ public class PredictionOperations {
             predictionFinalized =
                     !dbPredictionResult.equals("not-played") &&
                     dbMainScore != null &&
-                    !dbMainScore.equals("null");
+                    !dbMainScore.equals("null") &&
+                    !mainScoreDifferent();
         }
 
         Log.info(username + ": prediction " + predictionID + " finalized? - " + predictionFinalized);
